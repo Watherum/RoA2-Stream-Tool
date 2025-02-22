@@ -309,25 +309,25 @@ class GuiSettings {
 
     /**
      * Will copy the current match info to the clipboard
-     * Format: "Tournament Name - Round - Player1 (Character1) VS Player2 (Character2)"
+     * Format: "Tournament Name Round - Player1 (Character1) Vs Player2 (Character2) - Rivals 2"
      */
     copyMatch() {
 
         // initialize the string
-        let copiedText = tournament.getText() + " - " + round.getText() + " - ";
+        let copiedText = tournament.getText() + "  " + round.getText() + " - ";
 
         if (gamemode.getGm() == 1) { // for singles matches
             // check if the player has a tag to add
             if (players[0].tag) {
                 copiedText += players[0].tag + " | ";
             }
-            copiedText += players[0].getName() + " (" + players[0].char +") VS ";
+            copiedText += players[0].getName() + " (" + players[0].char +") Vs ";
             if (players[1].tag) {
                 copiedText += players[1].tag + " | ";
             }
-            copiedText += players[1].getName() + " (" +  players[1].char +")";
+            copiedText += players[1].getName() + " (" +  players[1].char +")" + " - Rivals 2";
         } else { // for team matches
-            copiedText += teams[0].getName() + " VS " + teams[1].getName();
+            copiedText += teams[0].getName() + " Vs " + teams[1].getName();
         }
 
         // send the string to the user's clipboard

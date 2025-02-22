@@ -5,6 +5,7 @@ import { round } from './Round.mjs';
 import { scores } from './Score/Scores.mjs';
 import { teams } from './Team/Teams.mjs';
 import { tournament } from './Tournament.mjs';
+import { wl } from './WinnersLosers.mjs';
 
 /**
  * Returns parsed json data from a local file
@@ -181,7 +182,10 @@ export function saveSimpleTexts() {
     const fs = require('fs');
 
     for (let i = 0; i < players.length; i++) {
-        fs.writeFileSync(`${stPath.text}/Simple Texts/Player ${i+1}.txt`, players[i].getName());        
+        fs.writeFileSync(`${stPath.text}/Simple Texts/Player ${i+1}.txt`, players[i].getName());
+        fs.writeFileSync(`${stPath.text}/Simple Texts/Player ${i+1} Tag.txt`, players[i].getTag());
+        fs.writeFileSync(`${stPath.text}/Simple Texts/Player ${i+1} Pronouns.txt`, players[i].getPronouns());
+        fs.writeFileSync(`${stPath.text}/Simple Texts/Player ${i+1} Character.txt`, players[i].char);           
     }
 
     fs.writeFileSync(`${stPath.text}/Simple Texts/Team 1.txt`, teams[0].getName());
@@ -189,6 +193,10 @@ export function saveSimpleTexts() {
 
     fs.writeFileSync(`${stPath.text}/Simple Texts/Score L.txt`, scores[0].getScore().toString());
     fs.writeFileSync(`${stPath.text}/Simple Texts/Score R.txt`, scores[1].getScore().toString());
+    fs.writeFileSync(`${stPath.text}/Simple Texts/bestOf.txt`, 'Best of ' + scores[0].getMode().toString());
+
+    fs.writeFileSync(`${stPath.text}/Simple Texts/Left Winnerslosers.txt`, wl.getLeft());
+    fs.writeFileSync(`${stPath.text}/Simple Texts/Right Winnerslosers.txt`, wl.getRight());
 
     fs.writeFileSync(`${stPath.text}/Simple Texts/Round.txt`, round.getText());
     fs.writeFileSync(`${stPath.text}/Simple Texts/Tournament Name.txt`, tournament.getText());

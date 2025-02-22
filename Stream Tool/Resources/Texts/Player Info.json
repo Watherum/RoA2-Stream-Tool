@@ -46,20 +46,20 @@
     ]
   },
   {
-    "name": "Test",
-    "tag": "One",
-    "pronouns": "Pronouns",
+    "name": "Watherum",
+    "tag": "C2F",
+    "pronouns": "He/Him",
     "socials": {
-      "twitter": "Twitter",
-      "twitch": "Twich",
-      "yt": "Youtube",
-      "bsky": "Bluesky",
-      "masto": "Mastodon",
-      "cohost": "Cohost"
+      "twitter": "@Watherum",
+      "twitch": "watherum",
+      "yt": "TheWatherum",
+      "bsky": "",
+      "masto": "",
+      "cohost": ""
     },
     "characters": [
       {
-        "character": "Absa",
+        "character": "Ranno",
         "skin": "Default"
       },
       {
@@ -67,71 +67,11 @@
         "skin": "Default"
       },
       {
-        "character": "Elliana",
-        "skin": "Default"
-      },
-      {
-        "character": "Etalus",
-        "skin": "Default"
-      },
-      {
-        "character": "Forsburn",
-        "skin": "Default"
-      },
-      {
-        "character": "Hodan",
-        "skin": "Default"
-      },
-      {
         "character": "Kragg",
         "skin": "Default"
       },
       {
-        "character": "Maypul",
-        "skin": "Default"
-      },
-      {
-        "character": "Mollo",
-        "skin": "Default"
-      },
-      {
-        "character": "Olympia",
-        "skin": "Default"
-      },
-      {
-        "character": "Orcane",
-        "skin": "Default"
-      },
-      {
-        "character": "Ori and Sein",
-        "skin": "Default"
-      },
-      {
-        "character": "Pomme",
-        "skin": "Default"
-      },
-      {
-        "character": "Ranno",
-        "skin": "Default"
-      },
-      {
-        "character": "Shovel Knight",
-        "skin": "Default"
-      },
-      {
-        "character": "Sylvanos",
-        "skin": "Default"
-      },
-      {
-        "character": "Wrastor",
-        "skin": "Default"
-      },
-      {
-        "character": "Zetterburn",
-        "skin": "Default"
-      },
-      {
-        "character": "Error",
+        "character": "Random",
         "skin": "Default"
       }
     ]

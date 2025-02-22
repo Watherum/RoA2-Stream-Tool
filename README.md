@@ -1,12 +1,25 @@
 
 <p align="center">
 
-  <img src="https://github.com/Readek/RoA-Stream-Tool/blob/master/preview.png" alt="Preview">
+  <img src="https://github.com/Watherum/RoA2-Stream-Tool/blob/master/preview.png" alt="Preview">
   
 </p>
 
-<h1 align="center">RoA Stream Tool</h1>
+<h1 align="center">RoA2 Stream Tool</h1>
 
+I have changed this tool to be more focused on Rivals 2 and my own use cases.
+
+It steps away from adding every skin (although you could) and instead focuses on using official HD renders of the characters and RoA2 Stock Icons.
+Characters that dont exist in RoA2 yet but were in RoA are not selectable in the drop down. 
+
+This version also outputs all relevant details from a set to files and you can use that to set all the information on a custom overlay image.
+You could still use the original HTML but that will likely need some adjustment for the new artwork.
+
+All features from the original stream tool are still present.
+
+
+
+# Original Readme from Readek
 So you want to do a Rivals of Aether stream, huh? Well, today is your lucky day, because I have done tons of work so you don’t have to! With this tool, you will be able to set up a RoA tournament stream in no time.
 
 *Now with a [Discord Server](https://discord.gg/EX22CTBNrM)!*

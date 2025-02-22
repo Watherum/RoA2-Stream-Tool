@@ -1,0 +1,31 @@
+{
+  "name": "Watherum",
+  "tag": "C2F",
+  "pronouns": "He/Him",
+  "socials": {
+    "twitter": "@Watherum",
+    "twitch": "watherum",
+    "yt": "TheWatherum",
+    "bsky": "",
+    "masto": "",
+    "cohost": ""
+  },
+  "characters": [
+    {
+      "character": "Ranno",
+      "skin": "Default"
+    },
+    {
+      "character": "Clairen",
+      "skin": "Default"
+    },
+    {
+      "character": "Kragg",
+      "skin": "Default"
+    },
+    {
+      "character": "Random",
+      "skin": "Default"
+    }
+  ]
+}

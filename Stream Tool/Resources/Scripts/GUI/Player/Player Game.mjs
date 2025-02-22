@@ -76,7 +76,9 @@ export class PlayerGame extends Player {
     setSocials(socials) {
         this.socials = socials;
     }
-
+    getCharSel() {
+        return this.charSel;
+    }
 
     /**
      * Updates the skin for this player

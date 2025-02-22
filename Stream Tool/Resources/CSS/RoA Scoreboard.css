@@ -21,7 +21,7 @@
     --scoreboardYSingles: 25px;
     --scoreboardYDoubles: 13px;
     --colorL: #14bb89;
-    --colorR: #14bb89;
+    --colorR: #14bb89; 
 }
 
 body {
@@ -202,7 +202,7 @@ body {
     justify-content: center;
     align-items: center;
     width: 100%;
-    transform: translateY(892px);
+    transform: translateY(100px); /*originally 892px 850 is above %s*/
 }
 #roundBorder {
     display: flex;
@@ -213,7 +213,7 @@ body {
     border-width: 19px 43px;
     border-image: url('../Overlay/Scoreboard/Round\ BG.png') 19 43 fill;
     transition: width .5s;
-    height: 36px;
+    height: 36px;  /*originally 36px*/
     min-width: 170px;
     opacity: 0;
 }

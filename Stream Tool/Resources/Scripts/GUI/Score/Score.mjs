@@ -85,6 +85,11 @@ export class Score {
         this.setScore(this.getScore()+value);
     }
 
+    //bestOf.getBo()
+    getMode() {
+        return bestOf.getBo();
+    }
+
     /** Sets the display mode for score inputs */
     showMode(mode) {
     

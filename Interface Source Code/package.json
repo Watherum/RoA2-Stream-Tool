@@ -1,10 +1,10 @@
 {
   "name": "roa-st-gui",
-  "version": "10.0.0",
-  "description": "An electron interface for RoA tournament streams.",
+  "version": "11.0.0",
+  "description": "An electron interface for RoA2 tournament streams.",
   "main": "index.js",
-  "repository": "https://github.com/Readek/RoA-Stream-Tool",
-  "author": "Readek",
+  "repository": "https://github.com/Watherum/RoA2-Stream-Tool",
+  "author": "Readek, Watherum",
   "license": "MIT",
   "devDependencies": {
     "electron": "^28.0.0",
