@@ -181,14 +181,6 @@ export function saveSimpleTexts() {
 
     const fs = require('fs');
 
-    for (let i = 0; i < players.length; i++) {
-        fs.writeFileSync(`${stPath.text}/Simple Texts/Player ${i+1}.txt`, players[i].getName());
-        fs.writeFileSync(`${stPath.text}/Simple Texts/Player ${i+1} Tag.txt`, players[i].getTag());
-        fs.writeFileSync(`${stPath.text}/Simple Texts/Player ${i+1} Pronouns.txt`, players[i].getPronouns());
-        fs.writeFileSync(`${stPath.text}/Simple Texts/Player ${i + 1} Character.txt`, players[i].char);
-        fs.copyFileSync(`${stPath.charBase}/${players[i].char}/icons/Default.png`, `${stPath.text}/Simple Texts/Player ${i + 1} Character Icon/Default.png`);
-    }
-
     fs.writeFileSync(`${stPath.text}/Simple Texts/Team 1.txt`, teams[0].getName());
     fs.writeFileSync(`${stPath.text}/Simple Texts/Team 2.txt`, teams[1].getName());
 
@@ -203,11 +195,21 @@ export function saveSimpleTexts() {
     fs.writeFileSync(`${stPath.text}/Simple Texts/Tournament Name.txt`, tournament.getText());
 
     for (let i = 0; i < casters.length; i++) {
-        fs.writeFileSync(`${stPath.text}/Simple Texts/Caster ${i+1} Name.txt`, casters[i].getName());
+        fs.writeFileSync(`${stPath.text}/Simple Texts/Caster ${i + 1} Name.txt`, casters[i].getName());
         const socials = casters[i].getSocials();
-        fs.writeFileSync(`${stPath.text}/Simple Texts/Caster ${i+1} Twitter.txt`, socials.twitter || "");
-        fs.writeFileSync(`${stPath.text}/Simple Texts/Caster ${i+1} Twitch.txt`, socials.twitch || "");
-        fs.writeFileSync(`${stPath.text}/Simple Texts/Caster ${i+1} Youtube.txt`, socials.yt || "");
+        fs.writeFileSync(`${stPath.text}/Simple Texts/Caster ${i + 1} Twitter.txt`, socials.twitter || "");
+        fs.writeFileSync(`${stPath.text}/Simple Texts/Caster ${i + 1} Twitch.txt`, socials.twitch || "");
+        fs.writeFileSync(`${stPath.text}/Simple Texts/Caster ${i + 1} Youtube.txt`, socials.yt || "");
     }
+
+    for (let i = 0; i < players.length; i++) {
+        fs.writeFileSync(`${stPath.text}/Simple Texts/Player ${i+1}.txt`, players[i].getName());
+        fs.writeFileSync(`${stPath.text}/Simple Texts/Player ${i+1} Tag.txt`, players[i].getTag());
+        fs.writeFileSync(`${stPath.text}/Simple Texts/Player ${i+1} Pronouns.txt`, players[i].getPronouns());
+        fs.writeFileSync(`${stPath.text}/Simple Texts/Player ${i + 1} Character.txt`, players[i].char);
+        fs.copyFileSync(`${stPath.charBase}/${players[i].char}/icons/Default.png`, `${stPath.text}/Simple Texts/Player ${i + 1} Character Icon/Default.png`);
+    }
+
+    
     
 }
