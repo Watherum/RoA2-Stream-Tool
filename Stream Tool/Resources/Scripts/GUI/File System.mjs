@@ -185,7 +185,8 @@ export function saveSimpleTexts() {
         fs.writeFileSync(`${stPath.text}/Simple Texts/Player ${i+1}.txt`, players[i].getName());
         fs.writeFileSync(`${stPath.text}/Simple Texts/Player ${i+1} Tag.txt`, players[i].getTag());
         fs.writeFileSync(`${stPath.text}/Simple Texts/Player ${i+1} Pronouns.txt`, players[i].getPronouns());
-        fs.writeFileSync(`${stPath.text}/Simple Texts/Player ${i+1} Character.txt`, players[i].char);           
+        fs.writeFileSync(`${stPath.text}/Simple Texts/Player ${i + 1} Character.txt`, players[i].char);
+        fs.copyFileSync(`${stPath.charBase}/${players[i].char}/icons/Default.png`, `${stPath.text}/Simple Texts/Player ${i + 1} Character Icon/Default.png`);
     }
 
     fs.writeFileSync(`${stPath.text}/Simple Texts/Team 1.txt`, teams[0].getName());
