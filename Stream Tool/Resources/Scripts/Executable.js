@@ -6,9 +6,10 @@ const http = require('http')
 let resourcesPath, nodePath;
 let httpPort, wsPort, guiWidth, guiHeight, failed;
 let wsServer, sockets = [];
+let appReady = false, serversReady = false;
 
 module.exports = function initExec(rPath, nPath, wSocket) {
-    
+
     // set the resources path
     resourcesPath = rPath;
     nodePath = nPath; // this is the path from within the executable
@@ -26,9 +27,10 @@ module.exports = function initExec(rPath, nPath, wSocket) {
             guiHeight = guiHeight + 30;
         }
 
-        // initialize them servers
-        initHttpServer();
-        initWsServer(wSocket);
+        // initialize them servers, trying next ports if already in use
+        Promise.all([initHttpServer(), initWsServer(wSocket)])
+            .then(() => { serversReady = true; tryCreateWindow(); })
+            .catch(e => { console.log(e); failed = true; serversReady = true; tryCreateWindow(); });
 
     } catch (e) { // if the settings file cant be found
         console.log("GUI Settings.json could not be found!!");
@@ -38,64 +40,104 @@ module.exports = function initExec(rPath, nPath, wSocket) {
         wsPort = 8080;
         guiWidth = 600;
         guiHeight = 300;
+        serversReady = true;
+        tryCreateWindow();
     }
 
 
 }
 
+function tryCreateWindow() {
+    if (appReady && serversReady) createWindow();
+}
+
 
 function initHttpServer() {
-    // start an http server on boot for remote update
-    http.createServer((request, response) => {
-        if (request.method === "GET" || request.method === "HEAD") {
-            let fname;
-            if (request.url == "/") { // main remote update page
-                fname = resourcesPath + "/GUI.html";
-            } else { // every other request will just send the file
-                fname = resourcesPath + request.url;
-            }
-            try {
-                fname = fname.replaceAll("%20", " ");
-                if (request.method === "GET") {
-                    fs.readFile(fname, (err, data) => {
-                        if (err) {
-                            response.writeHead(404);
-                        } else {
-                            if (fname.endsWith(".html")) {
-                                response.writeHead(200, {'Content-Type': 'text/html'});
-                            } else if (fname.endsWith(".js") || fname.endsWith(".mjs")) {
-                                response.writeHead(200, {'Content-Type': 'text/javascript'});
-                            } else if (fname.endsWith(".css")) {
-                                response.writeHead(200, {'Content-Type': 'text/css'});
-                            } else {
-                                response.writeHead(200, {'Content-Type': 'text'});
-                            }
-                            response.write(data);
-                        }
-                        response.end();
-                    });
-                } else if (request.method === "HEAD") {
-                    if (fs.existsSync(fname)) {
-                        response.writeHead(200);
-                    } else {
-                        response.writeHead(404);
+    return new Promise((resolve, reject) => {
+        const tryPort = (port) => {
+            const server = http.createServer((request, response) => {
+                if (request.method === "GET" || request.method === "HEAD") {
+                    let fname;
+                    if (request.url == "/") { // main remote update page
+                        fname = resourcesPath + "/GUI.html";
+                    } else { // every other request will just send the file
+                        fname = resourcesPath + request.url;
                     }
-                    response.end();
+                    try {
+                        fname = fname.replaceAll("%20", " ");
+                        if (request.method === "GET") {
+                            fs.readFile(fname, (err, data) => {
+                                if (err) {
+                                    response.writeHead(404);
+                                } else {
+                                    if (fname.endsWith(".html")) {
+                                        response.writeHead(200, {'Content-Type': 'text/html'});
+                                    } else if (fname.endsWith(".js") || fname.endsWith(".mjs")) {
+                                        response.writeHead(200, {'Content-Type': 'text/javascript'});
+                                    } else if (fname.endsWith(".css")) {
+                                        response.writeHead(200, {'Content-Type': 'text/css'});
+                                    } else {
+                                        response.writeHead(200, {'Content-Type': 'text'});
+                                    }
+                                    response.write(data);
+                                }
+                                response.end();
+                            });
+                        } else if (request.method === "HEAD") {
+                            if (fs.existsSync(fname)) {
+                                response.writeHead(200);
+                            } else {
+                                response.writeHead(404);
+                            }
+                            response.end();
+                        }
+                    } catch (e) {
+                        response.writeHead(404);
+                        response.end();
+                    }
                 }
-            } catch (e) {
-                response.writeHead(404);
-                response.end();
-            }
-        }
-    }).listen(httpPort);
+            });
+            server.on('error', (e) => {
+                if (e.code === 'EADDRINUSE') {
+                    console.log(`HTTP port ${port} already in use, trying ${port + 1}`);
+                    tryPort(port + 1);
+                } else {
+                    reject(e);
+                }
+            });
+            server.listen(port, () => {
+                httpPort = port;
+                resolve();
+            });
+        };
+        tryPort(httpPort);
+    });
 }
 
 /**
- * Starts the web socket server
- * @param {WebSocket} wSocket - Im sorry this is wrong
+ * Starts the web socket server, retrying on the next port if already in use
+ * @param {WebSocket} wSocket
  */
 function initWsServer(wSocket) {
-    wsServer = new wSocket.Server({ port: wsPort });
+    return new Promise((resolve, reject) => {
+        const tryPort = (port) => {
+            const server = new wSocket.Server({ port });
+            server.on('error', (e) => {
+                if (e.code === 'EADDRINUSE') {
+                    console.log(`WebSocket port ${port} already in use, trying ${port + 1}`);
+                    server.close(() => tryPort(port + 1));
+                } else {
+                    reject(e);
+                }
+            });
+            server.on('listening', () => {
+                wsPort = port;
+                wsServer = server;
+                resolve();
+            });
+        };
+        tryPort(wsPort);
+    });
 }
 
 
@@ -210,7 +252,8 @@ function createWindow() {
 
 // create window on startup
 app.whenReady().then(() => {
-    createWindow()
+    appReady = true;
+    tryCreateWindow();
 });
 
 // close electron when all windows close (for Windows and Linux)

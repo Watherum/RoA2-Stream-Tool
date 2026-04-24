@@ -11,7 +11,7 @@
   "invertScore": false,
   "scoreAutoUpdate": true,
   "simpleTexts": true,
-  "alwaysOnTop": false,
+  "alwaysOnTop": true,
   "resizable": true,
   "zoom": 100,
   "remoteUpdatePort": 1111,
