@@ -7,6 +7,11 @@ let updateFucnt;
 
 const errorDiv = document.getElementById('connErrorDiv');
 
+const BASE_PORT = 8080;
+const MAX_PORT_RANGE = 10; // scans 8080–8089
+let portOffset = 0;
+let wasConnected = false;
+
 /**
  * Initializes the connection with the GUI
  * @param {String} id - Browser identifier
@@ -22,15 +27,17 @@ export function initWebsocket(dataType, functToUse) {
 function startWebsocket() {
 
 	// change this to the IP of where the GUI is being used for remote control
-	webSocket = new WebSocket(`ws://localhost:8080?id=${id}`);
+	webSocket = new WebSocket(`ws://localhost:${BASE_PORT + portOffset}?id=${id}`);
 	webSocket.onopen = () => { // if it connects successfully
+
+		wasConnected = true;
 
 		// everytime we get data from the server (the GUI)
 		webSocket.onmessage = function (event) {
-            
+
             // use the function from init
             updateFucnt(JSON.parse(event.data));
-		
+
         }
 
 		// hide error message in case it was up
@@ -42,12 +49,22 @@ function startWebsocket() {
 	webSocket.onclose = () => {errorWebsocket()}
 
 }
+
 function errorWebsocket() {
 
 	// show error message
 	errorDiv.style.display = 'flex';
 	// delete current webSocket
 	webSocket = null;
+
+	if (wasConnected) {
+		// server dropped — retry the same port first
+		wasConnected = false;
+	} else {
+		// connection refused — try the next port
+		portOffset = (portOffset + 1) % MAX_PORT_RANGE;
+	}
+
 	// we will attempt to reconect every 5 seconds
 	setTimeout(() => {
 		startWebsocket();
