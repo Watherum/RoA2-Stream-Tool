@@ -176,6 +176,11 @@ function createWindow() {
     } else {
         win.loadFile(resourcesPath + "/GUI.html");
     }
+
+    // send actual ports to the renderer once the page is ready
+    win.webContents.on('did-finish-load', () => {
+        win.webContents.send('actualPorts', { httpPort, wsPort });
+    });
     
     // keyboard shortcuts!
     win.webContents.on('before-input-event', (event, input) => {

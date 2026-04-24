@@ -25,6 +25,9 @@ class GuiSettings {
     #invertScoreCheck = document.getElementById("invertScore");
     #simpleTextsCheck = document.getElementById("simpleTexts")
 
+    #httpPortDisplay = document.getElementById("displayHttpPort");
+    #wsPortDisplay = document.getElementById("displayWsPort");
+
     #alwaysOnTopCheck = document.getElementById("alwaysOnTop");
     #resizableCheck = document.getElementById("resizableWindow");
     #lessZoomButt = document.getElementById("lessZoomButt");
@@ -72,6 +75,10 @@ class GuiSettings {
 
         // only electron cares about this
         if (inside.electron) {
+            const { ipcRenderer } = require('electron');
+            ipcRenderer.on('actualPorts', (event, { httpPort, wsPort }) => {
+                this.displayPorts(httpPort, wsPort);
+            });
             this.#setAlwaysOnTopListener();
             this.#setResizableListener();
             this.#lessZoomButt.addEventListener("click", () => {this.#lessZoom()})
@@ -374,6 +381,11 @@ class GuiSettings {
         webFrame.setZoomFactor(this.#zoomValue / 100);
         this.#zoomTextValue.innerHTML = `${this.#zoomValue}%`;
         this.save("zoom", this.#zoomValue);
+    }
+
+    displayPorts(http, ws) {
+        this.#httpPortDisplay.textContent = http;
+        this.#wsPortDisplay.textContent = ws;
     }
 
     async #restoreWindowDefaults() {
