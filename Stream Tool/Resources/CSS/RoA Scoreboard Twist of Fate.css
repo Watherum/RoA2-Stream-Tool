@@ -1,0 +1,93 @@
+@font-face {
+    font-family: "Roboto";
+    src: url('../Fonts/Roboto-Bold.ttf');
+}
+
+#canvas {
+    position: relative;
+    width: 1920px;
+    height: 1080px;
+}
+
+#canvas img,
+#canvas > span {
+    position: absolute;
+}
+
+#round {
+    font-size: 20px;
+    top: 135px;
+    left: 900px;
+}
+
+#bestOf {
+    font-size: 20px;
+    top: 163px;
+    left: 950px;
+}
+
+.tag {
+    color: yellow;
+}
+
+#p1name {
+    font-size: 40px;
+    top: 90px;
+    left: 270px;
+    white-space: nowrap;
+}
+
+#char1icon {
+    width: 50px;
+    top: 90px;
+    left: 160px;
+}
+
+#p1pronouns {
+    font-size: 20px;
+    top: 38px;
+    left: 480px;
+}
+
+#p1score {
+    font-size: 80px;
+    top: 49px;
+    left: 680px;
+}
+
+#p1wl {
+    font-size: 25px;
+    top: 37px;
+    left: 190px;
+}
+
+#p2name {
+    font-size: 40px;
+    top: 90px;
+    left: 1360px;
+    white-space: nowrap;
+}
+
+#char2icon {
+    width: 50px;
+    top: 90px;
+    left: 1720px;
+}
+
+#p2pronouns {
+    font-size: 20px;
+    top: 38px;
+    left: 1375px;
+}
+
+#p2score {
+    font-size: 80px;
+    top: 49px;
+    left: 1179px;
+}
+
+#p2wl {
+    font-size: 25px;
+    top: 37px;
+    left: 1715px;
+}

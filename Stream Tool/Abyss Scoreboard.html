@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Abyss Scoreboard</title>
+    <link rel="stylesheet" href="Resources/CSS/RoA Scoreboard.css">
+    <link rel="stylesheet" href="Resources/CSS/RoA Scoreboard Abyss.css">
+</head>
+
+<body>
+
+    <script type="module">
+        import { initWebsocket } from "./Resources/Scripts/Utils/WebSocket.mjs";
+
+        const char1icon = document.getElementById("char1icon");
+        const char2icon = document.getElementById("char2icon");
+
+        const p1name = document.getElementById("p1name");
+        const p2name = document.getElementById("p2name");
+        
+        const p1pronouns = document.getElementById("p1pronouns");
+        const p2pronouns = document.getElementById("p2pronouns");
+
+        const p1score = document.getElementById("p1score");
+        const p2score = document.getElementById("p2score");
+
+        const round = document.getElementById("round");
+        const bestOf = document.getElementById("bestOf");
+
+        const p1wl = document.getElementById("p1wl");
+        const p2wl = document.getElementById("p2wl");
+
+        function fitText(el, maxWidth, maxSize = 40) {
+            el.style.fontSize = maxSize + "px";
+            while (el.scrollWidth > maxWidth && parseFloat(el.style.fontSize) > 8) {
+                el.style.fontSize = (parseFloat(el.style.fontSize) - 1) + "px";
+            }
+        }
+
+        initWebsocket("gameData", (data) => {
+            const p1 = data.player[0];
+            const p2 = data.player[1];
+
+            char1icon.src = `Resources/Characters/${p1.char}/Icons/Default.png`;
+            char2icon.src = `Resources/Characters/${p2.char}/Icons/Default.png`;
+
+            p1name.querySelector(".tag").textContent = p1.tag ? `${p1.tag} | ` : "";
+            p1name.querySelector(".name").textContent = p1.name;
+
+            p2name.querySelector(".tag").textContent = p2.tag ? `${p2.tag} | ` : "";
+            p2name.querySelector(".name").textContent = p2.name;
+
+            fitText(p1name, 300);
+            fitText(p2name, 300);
+
+            p1pronouns.textContent = p1.pronouns;
+            p2pronouns.textContent = p2.pronouns;
+
+            p1score.textContent = data.score[0];
+            p2score.textContent = data.score[1];
+
+            round.textContent = data.round;
+            bestOf.textContent = `Bo${data.bestOf}`;
+
+            p1wl.textContent = data.wl[0];
+            p2wl.textContent = data.wl[1];
+        });
+    </script>
+
+    <div id="canvas">
+      <img src="Resources/Overlay/Scoreboard/Abyss_Stream_Design.png" alt=""/>
+      <img id="char1icon" src="" alt=""/>
+      <img id="char2icon" src="" alt=""/>
+
+      <span id="p1name"><span class="tag"></span><span class="name"></span></span>
+      <span id="p1pronouns"></span>
+      <span id="p1score"></span>
+      <span id="p1wl"></span>
+
+      <span id="p2name"><span class="tag"></span><span class="name"></span></span>
+      <span id="p2pronouns"></span>
+      <span id="p2score"></span>
+      <span id="p2wl"></span>
+
+      <span id="round"></span>
+      <span id="bestOf"></span>
+  </div>
+
+    <div id="connErrorDiv">
+        Can't connect with GUI, attempting to reconnect every 5 seconds...
+    </div>
+
+</body>
+</html>
