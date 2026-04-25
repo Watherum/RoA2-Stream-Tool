@@ -44,7 +44,10 @@ export async function getRecolorImage(shader, char, skin, colorData, imgType, fa
             } else {
                 charImgPath = `${stPath.char}/${char}/${imgType}/Default.png`;
             }
-            const trueColorData = colorData[skin.name] || colorData.Default;
+            const trueColorData = colorData?.[skin.name] || colorData?.Default;
+            if (!trueColorData?.ogColor) {
+                return `${stPath.char}/${char}/${imgType}/Default.png`;
+            }
             const shaderToUse = shader || anonShader;
             return await shaderToUse.getRoARecolor(
                 char,
