@@ -875,6 +875,10 @@ button:hover {
   border-top: solid 3px var(--bg4);
   margin-top: 10px;
 }
+#settingsList .settingsTitle:first-of-type {
+  border-top: none;
+  margin-top: 0;
+}
 
 .settingBox {
   padding: 2px 0px 2px 5px;

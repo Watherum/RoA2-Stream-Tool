@@ -4,6 +4,7 @@ import { getRecolorImage } from "../GetImage.mjs";
 import { customChange, setCurrentPlayer } from "../Custom Skin.mjs";
 import { current, stPath } from "../Globals.mjs";
 import { charFinder } from "./Char Finder.mjs";
+import { scores } from "../Score/Scores.mjs";
 
 class PlayerFinder extends Finder {
 
@@ -141,6 +142,7 @@ class PlayerFinder extends Finder {
                         newDiv.appendChild(charImgBox);
 
                         // before we go, add a click listener
+                        newDiv.addEventListener("mousedown", () => { player.markPresetPending(); });
                         newDiv.addEventListener("click", () => {
                             this.#entryClick(pData, player)
                         });
@@ -199,6 +201,7 @@ class PlayerFinder extends Finder {
                     this.positionCharImg(null, charImg, charJson);
                     charImgBox.appendChild(charImg);
                     newDiv.appendChild(charImgBox);
+                    newDiv.addEventListener("mousedown", () => { player.markPresetPending(); });
                     newDiv.addEventListener("click", () => {
                         this.#entryClick(pData, player)
                     });
@@ -284,6 +287,7 @@ class PlayerFinder extends Finder {
 
         // all them player data
         player.setName(pData.name);
+        scores[(player.pNum - 1) % 2].setScore(0);
         player.setTag(pData.tag);
         // this will exclude bracket players
         if (player.profileType == "player") {

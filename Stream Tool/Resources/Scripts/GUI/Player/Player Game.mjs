@@ -7,6 +7,7 @@ import { settings } from "../Settings.mjs";
 import { profileInfo } from "../Profile Info.mjs";
 import { stPath } from "../Globals.mjs";
 import { gamemode } from "../Gamemode Change.mjs";
+import { scores } from "../Score/Scores.mjs";
 
 export class PlayerGame extends Player {
 
@@ -26,8 +27,10 @@ export class PlayerGame extends Player {
     pInfoDiv;
     cInfoDiv;
 
+    #presetPending = false;
+
     constructor(id, pInfoEl, cInfoEl) {
-        
+
         super(id);
         this.nameInp = pInfoEl.getElementsByClassName("nameInput")[0];
         this.charSel = cInfoEl.getElementsByClassName("charSelector")[0];
@@ -40,6 +43,19 @@ export class PlayerGame extends Player {
         // resize the container if it overflows
         this.nameInp.addEventListener("input", () => {this.resizeInput()});
 
+        // reset score, player info, and character when a new name is committed
+        this.nameInp.addEventListener("change", () => {
+            if (this.#presetPending) {
+                this.#presetPending = false;
+                return;
+            }
+            scores[(this.pNum - 1) % 2].setScore(0);
+            this.setTag("");
+            this.pronouns = "";
+            this.socials = {};
+            this.charChange("Random");
+        });
+
         // open player info menu if clicking on the icon
         pInfoEl.getElementsByClassName("pInfoButt")[0].addEventListener("click", () => {
             profileInfo.show(this);
@@ -48,6 +64,11 @@ export class PlayerGame extends Player {
         this.pInfoDiv = pInfoEl;
         this.cInfoDiv = cInfoEl;
 
+    }
+
+    /** Call on mousedown of a preset entry to prevent the change event from resetting the player */
+    markPresetPending() {
+        this.#presetPending = true;
     }
 
 
