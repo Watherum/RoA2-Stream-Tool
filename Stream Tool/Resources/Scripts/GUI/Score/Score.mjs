@@ -29,23 +29,22 @@ export class Score {
 
     getScore() {
 
-        if (bestOf.getBo() != "X") { // if score ticks are visible
+        const bo = bestOf.getBo();
+
+        if (bo == 5 || bo == 3) { // tick modes — everything else is numeric
 
             let result = 0;
-
-            // if a score tick is checked, add +1 to the result variable
             for (let i = 0; i < this.#scoreEls.length; i++) {
                 if (this.#scoreEls[i].checked) {
                     result++;
-                }            
+                }
             }
-    
             return result;
 
-        } else { // if we are using actual numbers
+        } else { // numeric modes: "X", "ft5", "ft10"
 
             return Number(this.#scoreNumEl.value);
-            
+
         }
 
     }
@@ -54,14 +53,15 @@ export class Score {
 
         let actualScore;
         if (score <= 0) {
-            // just for safety, dont let it drop to negative numbers
             actualScore = 0;
         } else if (bestOf.getBo() == 5 && score > 3) {
-            // best of 5 matches have a score max of 3
             actualScore = 3;
         } else if (bestOf.getBo() == 3 && score > 2) {
-            // best of 3 matches have a score max of 2
             actualScore = 2;
+        } else if (bestOf.getBo() == "ft5" && score > 5) {
+            actualScore = 5;
+        } else if (bestOf.getBo() == "ft10" && score > 10) {
+            actualScore = 10;
         } else {
             actualScore = score;
         }

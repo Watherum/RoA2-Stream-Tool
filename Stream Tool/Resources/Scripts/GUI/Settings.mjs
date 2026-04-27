@@ -25,6 +25,7 @@ class GuiSettings {
     #invertScoreCheck = document.getElementById("invertScore");
     #simpleTextsCheck = document.getElementById("simpleTexts")
 
+    #ipDisplay = document.getElementById("displayLocalIp");
     #httpPortDisplay = document.getElementById("displayHttpPort");
     #wsPortDisplay = document.getElementById("displayWsPort");
 
@@ -79,6 +80,20 @@ class GuiSettings {
             ipcRenderer.on('actualPorts', (event, { httpPort, wsPort }) => {
                 this.displayPorts(httpPort, wsPort);
             });
+
+            // find the first non-internal IPv4 address
+            const os = require('os');
+            const ifaces = os.networkInterfaces();
+            let localIp = '–';
+            outer: for (const name of Object.keys(ifaces)) {
+                for (const iface of ifaces[name]) {
+                    if (iface.family === 'IPv4' && !iface.internal) {
+                        localIp = iface.address;
+                        break outer;
+                    }
+                }
+            }
+            this.#ipDisplay.textContent = localIp;
             this.#setAlwaysOnTopListener();
             this.#setResizableListener();
             this.#lessZoomButt.addEventListener("click", () => {this.#lessZoom()})

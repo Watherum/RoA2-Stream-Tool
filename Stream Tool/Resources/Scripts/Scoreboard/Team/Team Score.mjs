@@ -87,8 +87,8 @@ export class TeamScore {
      */
     updateImg(gm, bo, score) {
 
-        // if using numerical Best Of, just dont bother
-        this.#scoreImg.src = `Resources/Overlay/Scoreboard/Score/${gm}/Bo${bo} ${score}.png`;
+        const effectiveBo = (bo == "ft5" || bo == "ft10" || bo == "ftX") ? "X" : bo;
+        this.#scoreImg.src = `Resources/Overlay/Scoreboard/Score/${gm}/Bo${effectiveBo} ${score}.png`;
 
     }
 
@@ -99,26 +99,28 @@ export class TeamScore {
      */
     updateBo(bo, gm) {
 
+        const effectiveBo = (bo == "ft5" || bo == "ft10" || bo == "ftX") ? "X" : bo;
+
         // update the border images
-        this.#borderImg.src = `Resources/Overlay/Scoreboard/Borders/Border ${gm} Bo${bo}.png`;
-        this.#animImg.src = `Resources/Overlay/Scoreboard/Borders/Border ${gm} Bo${bo}.png`;
+        this.#borderImg.src = `Resources/Overlay/Scoreboard/Borders/Border ${gm} Bo${effectiveBo}.png`;
+        this.#animImg.src = `Resources/Overlay/Scoreboard/Borders/Border ${gm} Bo${effectiveBo}.png`;
 
         // theres a comment about this mess on the css file
         this.removeMaskClass();
-        this.#animMask.classList.add("scoreAnimMask" + gm + bo);
+        this.#animMask.classList.add("scoreAnimMask" + gm + effectiveBo);
 
         // update score image
         this.updateImg(gm, bo, this.#score);
 
         // show or hide number element
-        if (bo == "X") {
+        if (effectiveBo == "X") {
             this.#scoreNum.style.display = "flex";
         } else {
             this.#scoreNum.style.display = "none";
         }
 
         // move images to compensate for new image width
-        if (bo == "X" && gm == 1) {
+        if (effectiveBo == "X" && gm == 1) {
             this.#borderImg.classList.add("borderX");
             this.#animImg.classList.add("borderX");
             this.#animMask.classList.add("borderX");

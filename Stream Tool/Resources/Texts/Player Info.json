@@ -16,6 +16,44 @@
     ]
   },
   {
+    "name": "Average Alex",
+    "tag": "C2F",
+    "pronouns": "He/Him",
+    "socials": {
+      "twitter": "",
+      "twitch": "",
+      "yt": "",
+      "bsky": "",
+      "masto": "",
+      "cohost": ""
+    },
+    "characters": [
+      {
+        "character": "Galvan",
+        "skin": "Default"
+      }
+    ]
+  },
+  {
+    "name": "edtrbf",
+    "tag": "",
+    "pronouns": "",
+    "socials": {
+      "twitter": "",
+      "twitch": "",
+      "yt": "",
+      "bsky": "",
+      "masto": "",
+      "cohost": ""
+    },
+    "characters": [
+      {
+        "character": "Clairen",
+        "skin": "Default"
+      }
+    ]
+  },
+  {
     "name": "Readek",
     "tag": "",
     "pronouns": "",
@@ -46,6 +84,18 @@
     ]
   },
   {
+    "name": "TEST",
+    "tag": "",
+    "pronouns": "",
+    "socials": {},
+    "characters": [
+      {
+        "character": "Slade",
+        "skin": "Default"
+      }
+    ]
+  },
+  {
     "name": "Watherum",
     "tag": "C2F",
     "pronouns": "He/Him",
@@ -70,6 +120,25 @@
         "character": "Kragg",
         "skin": "Default"
       },
+      {
+        "character": "Random",
+        "skin": "Default"
+      }
+    ]
+  },
+  {
+    "name": "yertyret",
+    "tag": "",
+    "pronouns": "",
+    "socials": {
+      "twitter": "",
+      "twitch": "",
+      "yt": "",
+      "bsky": "",
+      "masto": "",
+      "cohost": ""
+    },
+    "characters": [
       {
         "character": "Random",
         "skin": "Default"

@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RoA2 Stream Tool v12.2</title>
+  <title>RoA2 Stream Tool v12.4</title>
   <link rel="stylesheet" href="CSS/GUI.css">
   <link rel="stylesheet" href="CSS/GUI Custom.css">
   <script src="Scripts/GUI/mousetrap.min.js" defer></script>
@@ -33,7 +33,7 @@
 
             <div class="playerInfo">
 
-              <button class="pInfoButt" tabindex="-1">
+              <button class="pInfoButt" tabindex="-1" title="Edit player info">
                 <load-svg src="SVGs/Person.svg" class="pInfoButtIcon"></load-svg>
               </button>
               <button class="pSaveButt" tabindex="-1" title="Quick save preset">
@@ -60,7 +60,7 @@
 
             <div class="charSelects">
               <div class="finderPosition">
-                <div class="selector charSelector" id="p1CharSelector" tabindex="-1" title="Everyone is here!">
+                <div class="selector charSelector" id="p1CharSelector" tabindex="-1" title="Choose your character">
                   <img class="charSelectorIcon" alt="">
                   <div class="charSelectorText"></div>
                 </div>
@@ -76,7 +76,7 @@
 
             <div class="charSelects elGm2">
               <div class="finderPosition">
-                <div class="selector charSelector" id="p3CharSelector" tabindex="-1" title="Everyone is here!">
+                <div class="selector charSelector" id="p3CharSelector" tabindex="-1" title="Choose your character">
                   <img class="charSelectorIcon" id="charSelIcon" alt="">
                   <div class="charSelectorText"></div>
                 </div>
@@ -88,7 +88,7 @@
 
             <div class="playerInfo elGm2">
 
-              <button class="pInfoButt" tabindex="-1">
+              <button class="pInfoButt" tabindex="-1" title="Edit player info">
                 <load-svg src="SVGs/Person.svg" class="pInfoIcon"></load-svg>
               </button>
               <button class="pSaveButt" tabindex="-1" title="Quick save preset">
@@ -143,7 +143,7 @@
             <input type="text" id="teamName2" class="teamName textInput elGm2 mousetrap" tabindex="1" placeholder="Team 2 name" spellcheck="false" contenteditable="true">
 
             <div class="playerInfo">
-              <button class="pInfoButt" tabindex="-1">
+              <button class="pInfoButt" tabindex="-1" title="Edit player info">
                 <load-svg src="SVGs/Person.svg" class="pInfoIcon"></load-svg>
               </button>
               <button class="pSaveButt" tabindex="-1" title="Quick save preset">
@@ -170,7 +170,7 @@
 
             <div class="charSelects">
               <div class="finderPosition">
-                <div class="selector charSelector" id="p2CharSelector" tabindex="-1" title="Everyone is here!">
+                <div class="selector charSelector" id="p2CharSelector" tabindex="-1" title="Choose your character">
                   <img class="charSelectorIcon" id="charSelIcon" alt="">
                   <div class="charSelectorText"></div>
                 </div>
@@ -186,7 +186,7 @@
 
             <div class="charSelects elGm2">
               <div class="finderPosition">
-                <div class="selector charSelector" id="p4CharSelector" tabindex="-1" title="Everyone is here!">
+                <div class="selector charSelector" id="p4CharSelector" tabindex="-1" title="Choose your character">
                   <img class="charSelectorIcon" id="charSelIcon" alt="">
                   <div class="charSelectorText"></div>
                 </div>
@@ -197,7 +197,7 @@
             </div>
 
             <div class="playerInfo elGm2">
-              <button class="pInfoButt" tabindex="-1">
+              <button class="pInfoButt" tabindex="-1" title="Edit player info">
                 <load-svg src="SVGs/Person.svg" class="pInfoIcon"></load-svg>
               </button>
               <button class="pSaveButt" tabindex="-1" title="Quick save preset">
@@ -237,6 +237,7 @@
       <div id="roundInfo">
 
         <div id="bestOf" title="Click to change the scoring to Best of 3">Best of 5</div>
+        <div id="bestOfPrev" title="Click to cycle scoring backwards">◀</div>
 
         <div id="presetBrowserButt" title="Browse all player presets">Presets</div>
 
@@ -342,6 +343,10 @@ They will always appear when typing 'Grand' in the round box.">
         <div id="settingsElectron">
 
           <div class="settingsTitle">Network</div>
+
+          <div class="settingBox">
+            <label class="settingsText">Local IP: <span id="displayLocalIp">–</span></label>
+          </div>
 
           <div class="settingBox">
             <label class="settingsText">Remote port: <span id="displayHttpPort">–</span></label>

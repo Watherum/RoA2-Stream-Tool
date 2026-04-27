@@ -71,8 +71,10 @@ export class TeamTopBar {
      */
     updateBo(bo, gm) {
 
+        const effectiveBo = (bo == "ft5" || bo == "ft10" || bo == "ftX") ? "X" : bo;
+
         // moves top bar to compensate for new border image width
-        if (bo == "X" && gm == 1) {
+        if (effectiveBo == "X" && gm == 1) {
             this.#topBarEl.parentElement.parentElement.classList.add("topBarSinglesNum");
         } else {
             this.#topBarEl.parentElement.parentElement.classList.remove("topBarSinglesNum");

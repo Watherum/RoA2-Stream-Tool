@@ -60,7 +60,8 @@
             p2score.textContent = data.score[1];
 
             round.textContent = data.round;
-            bestOf.textContent = `Best of ${data.bestOf}`;
+            const boLabels = { ft5: "First to 5", ft10: "First to 10", ftX: "First to X" };
+            bestOf.textContent = boLabels[data.bestOf] ?? `Best of ${data.bestOf}`;
 
             p1wl.textContent = data.wl[0];
             p2wl.textContent = data.wl[1];
