@@ -126,6 +126,42 @@ class ProfileInfo {
         
     }
 
+    /**
+     * Saves a preset directly from a player's current state without opening the menu
+     * @param {PlayerGame} player
+     */
+    async quickSave(player) {
+
+        if (!player.getName()) return;
+
+        const preset = {
+            name: player.getName(),
+            tag: player.getTag(),
+            pronouns: player.getPronouns(),
+            socials: player.getSocials(),
+            characters: [{ character: player.char, skin: player.skin.name }]
+        };
+
+        if (player.customImg) {
+            preset.characters[0].hex = player.skin.hex;
+            preset.characters[0].customImg = true;
+        }
+
+        const existingPreset = await getJson(`${stPath.text}/Player Info/${player.getName()}`);
+        if (existingPreset) {
+            for (let i = 0; i < existingPreset.characters.length; i++) {
+                if (existingPreset.characters[i].character != player.char) {
+                    preset.characters.push(existingPreset.characters[i]);
+                }
+            }
+        }
+
+        saveJson(`/Player Info/${player.getName()}`, preset);
+        displayNotif("Player preset has been saved");
+        playerFinder.setPlayerPresets();
+
+    }
+
     async savePreset() {
     
         const preset = {

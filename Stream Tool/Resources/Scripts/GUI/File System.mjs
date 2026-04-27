@@ -176,6 +176,22 @@ export async function saveJson(path, data) {
     
 }
 
+/**
+ * Deletes a player preset file by name
+ * @param {String} name - Name of the preset to delete
+ */
+export function deletePreset(name) {
+
+    if (inside.electron) {
+        const fs = require('fs');
+        const path = `${stPath.text}/Player Info/${name}.json`;
+        if (fs.existsSync(path)) {
+            fs.unlinkSync(path);
+        }
+    }
+
+}
+
 /** Saves simple text files to a folder, to be read by other programs */
 export function saveSimpleTexts() {
 

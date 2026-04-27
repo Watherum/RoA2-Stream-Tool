@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RoA2 Stream Tool v12.1</title>
+  <title>RoA2 Stream Tool v12.2</title>
   <link rel="stylesheet" href="CSS/GUI.css">
   <link rel="stylesheet" href="CSS/GUI Custom.css">
   <script src="Scripts/GUI/mousetrap.min.js" defer></script>
@@ -36,6 +36,11 @@
               <button class="pInfoButt" tabindex="-1">
                 <load-svg src="SVGs/Person.svg" class="pInfoButtIcon"></load-svg>
               </button>
+              <button class="pSaveButt" tabindex="-1" title="Quick save preset">
+                <load-svg src="SVGs/Save.svg" class="pInfoIcon"></load-svg>
+              </button>
+              <input type="text" class="textInput mousetrap tagInput" tabindex="-1" placeholder="Tag" spellcheck="false">
+              <input type="text" class="textInput mousetrap pronounsInput" tabindex="-1" placeholder="Pronouns" spellcheck="false">
               <div class="finderPosition" id="pFinderBox1">
                 <input type="text" id="p1Name" class="textInput mousetrap nameInput" tabindex="2" placeholder="Player 1" title="Insert P1's name here" spellcheck="false">
               </div>
@@ -86,6 +91,11 @@
               <button class="pInfoButt" tabindex="-1">
                 <load-svg src="SVGs/Person.svg" class="pInfoIcon"></load-svg>
               </button>
+              <button class="pSaveButt" tabindex="-1" title="Quick save preset">
+                <load-svg src="SVGs/Save.svg" class="pInfoIcon"></load-svg>
+              </button>
+              <input type="text" class="textInput mousetrap tagInput" tabindex="-1" placeholder="Tag" spellcheck="false">
+              <input type="text" class="textInput mousetrap pronounsInput" tabindex="-1" placeholder="Pronouns" spellcheck="false">
               <div class="finderPosition" id="pFinderBox3">
                 <input type="text" id="p3Name" class="textInput mousetrap nameInput" tabindex="3" placeholder="Player 3" title="Insert P3's name here" spellcheck="false">
               </div>
@@ -136,6 +146,11 @@
               <button class="pInfoButt" tabindex="-1">
                 <load-svg src="SVGs/Person.svg" class="pInfoIcon"></load-svg>
               </button>
+              <button class="pSaveButt" tabindex="-1" title="Quick save preset">
+                <load-svg src="SVGs/Save.svg" class="pInfoIcon"></load-svg>
+              </button>
+              <input type="text" class="textInput mousetrap tagInput" tabindex="-1" placeholder="Tag" spellcheck="false">
+              <input type="text" class="textInput mousetrap pronounsInput" tabindex="-1" placeholder="Pronouns" spellcheck="false">
               <div class="finderPosition" id="pFinderBox2">
                 <input type="text" id="p2Name" class="textInput mousetrap nameInput" tabindex="2" placeholder="Player 2" title="Insert P2's name here." spellcheck="false">
               </div>
@@ -185,6 +200,11 @@
               <button class="pInfoButt" tabindex="-1">
                 <load-svg src="SVGs/Person.svg" class="pInfoIcon"></load-svg>
               </button>
+              <button class="pSaveButt" tabindex="-1" title="Quick save preset">
+                <load-svg src="SVGs/Save.svg" class="pInfoIcon"></load-svg>
+              </button>
+              <input type="text" class="textInput mousetrap tagInput" tabindex="-1" placeholder="Tag" spellcheck="false">
+              <input type="text" class="textInput mousetrap pronounsInput" tabindex="-1" placeholder="Pronouns" spellcheck="false">
               <div class="finderPosition" id="pFinderBox4">
                 <input type="text" id="p4Name" class="textInput mousetrap nameInput" tabindex="3" placeholder="Player 4" title="Insert P4's name here" spellcheck="false">
               </div>
@@ -217,6 +237,8 @@
       <div id="roundInfo">
 
         <div id="bestOf" title="Click to change the scoring to Best of 3">Best of 5</div>
+
+        <div id="presetBrowserButt" title="Browse all player presets">Presets</div>
 
         <input type="text" id="roundName" class="textInput mousetrap" placeholder="Current Round" spellcheck="false" tabindex="4" style="display: none">
         <select id="roundNameSelect" class="textInput" tabindex="4"></select>
@@ -555,8 +577,31 @@ They will always appear when typing 'Grand' in the round box.">
   </div>
 </div>
 
+<div id="presetBrowserDiv">
+
+  <div id="presetBrowserCenter">
+
+    <div class="pInfoTitle">Player Presets</div>
+
+    <input type="text" id="presetBrowserSearch" class="textInput mousetrap" placeholder="Search by name, tag or character..." spellcheck="false" tabindex="-1">
+
+    <div id="presetBrowserList"></div>
+
+    <div class="pInfoRow">
+      <button class="pInfoBotButt" id="presetBrowserClose" tabindex="-1">
+        <div class="pInfoIconCont">
+          <load-svg src="SVGs/Close.svg" class="pInfoIcon"></load-svg>
+        </div>
+        <span>Close</span>
+      </button>
+    </div>
+
+  </div>
+
+</div>
+
 <div id="notifDiv">
-  
+
 </div>
 
 

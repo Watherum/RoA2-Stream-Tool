@@ -33,6 +33,8 @@ export class PlayerGame extends Player {
 
         super(id);
         this.nameInp = pInfoEl.getElementsByClassName("nameInput")[0];
+        this.tagInp = pInfoEl.getElementsByClassName("tagInput")[0];
+        this.pronounsInp = pInfoEl.getElementsByClassName("pronounsInput")[0];
         this.charSel = cInfoEl.getElementsByClassName("charSelector")[0];
         this.skinSel = cInfoEl.getElementsByClassName("skinSelector")[0];
 
@@ -43,6 +45,9 @@ export class PlayerGame extends Player {
         // resize the container if it overflows
         this.nameInp.addEventListener("input", () => {this.resizeInput()});
 
+        this.tagInp.addEventListener("input", () => { this.tag = this.tagInp.value; });
+        this.pronounsInp.addEventListener("input", () => { this.pronouns = this.pronounsInp.value; });
+
         // reset score, player info, and character when a new name is committed
         this.nameInp.addEventListener("change", () => {
             if (this.#presetPending) {
@@ -51,7 +56,7 @@ export class PlayerGame extends Player {
             }
             scores[(this.pNum - 1) % 2].setScore(0);
             this.setTag("");
-            this.pronouns = "";
+            this.setPronouns("");
             this.socials = {};
             this.charChange("Random");
         });
@@ -59,6 +64,11 @@ export class PlayerGame extends Player {
         // open player info menu if clicking on the icon
         pInfoEl.getElementsByClassName("pInfoButt")[0].addEventListener("click", () => {
             profileInfo.show(this);
+        });
+
+        // quick save preset
+        pInfoEl.getElementsByClassName("pSaveButt")[0].addEventListener("click", () => {
+            profileInfo.quickSave(this);
         });
 
         this.pInfoDiv = pInfoEl;
@@ -84,12 +94,14 @@ export class PlayerGame extends Player {
     }
     setPronouns(text) {
         this.pronouns = text;
+        this.pronounsInp.value = text;
     }
     getTag() {
         return this.tag;
     }
     setTag(tag) {
         this.tag = tag;
+        this.tagInp.value = tag;
     }
     getSocials() {
         return this.socials;

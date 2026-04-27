@@ -1,10 +1,10 @@
 {
-  "guiWidth": 687,
-  "guiHeight": 312,
+  "guiWidth": 728,
+  "guiHeight": 321,
   "allowIntro": false,
   "workshop": false,
   "forceAlt": false,
-  "forceHD": true,
+  "forceHD": false,
   "noLoAHD": false,
   "forceWL": false,
   "customRound": true,

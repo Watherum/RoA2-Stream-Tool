@@ -35,7 +35,7 @@ export function clearPlayers() {
         players[i].setName("");
         
         // clear player info
-        players[i].pronouns = "";
+        players[i].setPronouns("");
         players[i].setTag("");
         players[i].socials = {};
 

@@ -14,6 +14,7 @@ import { inside, stPath } from './GUI/Globals.mjs';
 import { Score } from './GUI/Score/Score.mjs';
 import { getPluginList } from './GUI/File System.mjs';
 import { initColors } from './GUI/Colors.mjs';
+import './GUI/Preset Browser.mjs';
 
 // this is a weird way to have file svg's that can be recolored by css
 customElements.define("load-svg", class extends HTMLElement {

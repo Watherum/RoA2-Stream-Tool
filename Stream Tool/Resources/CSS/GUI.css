@@ -175,7 +175,7 @@ button:hover {
   display: flex;
 }
 
-.pInfoButt, .cInfoButt, .cDeleteButt {
+.pInfoButt, .pSaveButt, .cInfoButt, .cDeleteButt {
   width: 30px;
   background-color: var(--bg4);
   border-radius: 3px;
@@ -187,10 +187,10 @@ button:hover {
   justify-content: center;
   align-items: center;
 }
-.pInfoButt:hover, .cInfoButt:hover, .cDeleteButt:hover {
+.pInfoButt:hover, .pSaveButt:hover, .cInfoButt:hover, .cDeleteButt:hover {
   border-color: var(--selected);
 }
-.pInfoButt:focus, .cInfoButt:focus, .cDeleteButt:focus {
+.pInfoButt:focus, .pSaveButt:focus, .cInfoButt:focus, .cDeleteButt:focus {
   border-color: var(--focused);
 }
 .pInfoButtIcon {
@@ -207,6 +207,14 @@ button:hover {
   width: 60px;
   border-top-left-radius: 0px;
   border-bottom-left-radius: 0px;
+}
+
+.tagInput {
+  width: 55px;
+}
+
+.pronounsInput {
+  width: 80px;
 }
 
 .finderPosition {
@@ -600,8 +608,9 @@ button:hover {
 
 .charImg {
   position: absolute;
+  top: 40px;
   max-width: 100%;
-  height: 100%;
+  height: calc(100% - 40px);
   object-fit: contain;
   z-index: -1;
   padding: 3px;
@@ -645,6 +654,30 @@ button:hover {
   cursor: pointer;
 }
 #bestOf:active {
+  background-color: var(--bg2);
+}
+
+
+#presetBrowserButt {
+  background-color: var(--bg4);
+  height: 30px;
+  padding: 0px 8px;
+  box-sizing: border-box;
+  border-radius: 3px;
+  border: 1px solid var(--focused);
+  transition: border-color 100ms;
+  flex-shrink: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--text2);
+  font-family: 'Roboto-Medium';
+  cursor: pointer;
+}
+#presetBrowserButt:hover {
+  border-color: var(--selected);
+}
+#presetBrowserButt:active {
   background-color: var(--bg2);
 }
 
@@ -1156,6 +1189,138 @@ button:hover {
 }
 #customSkinInput:hover {
   border: 1px solid var(--selected);
+}
+
+
+/* Preset browser modal */
+#presetBrowserDiv {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  top: 0px;
+  opacity: 0;
+  transform: scale(1.15);
+  pointer-events: none;
+  transition: opacity 150ms, transform 150ms;
+  z-index: 100;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--bg4);
+}
+
+#presetBrowserCenter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 560px;
+  max-height: 85%;
+  background-color: var(--bg1);
+  border-radius: 5px;
+  padding: 15px;
+  gap: 10px;
+}
+
+#presetBrowserSearch {
+  width: 100%;
+}
+
+#presetBrowserList {
+  width: 100%;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.pbEntry {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--bg2);
+  border-radius: 3px;
+  padding: 6px 10px;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.pbCharImgBox {
+  position: absolute;
+  height: 100%;
+  width: 50%;
+  left: 0;
+  top: 0;
+  transform: scaleX(-1);
+  overflow: hidden;
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+.pbCharImg {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  object-fit: contain;
+  height: 52px;
+}
+
+.pbInfo {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+  flex: 1;
+  min-width: 0;
+}
+
+.pbTag {
+  color: var(--text2);
+  font-size: 12px;
+}
+
+.pbName {
+  font-family: 'Roboto-Medium';
+}
+
+.pbPronouns {
+  color: var(--text2);
+  font-size: 12px;
+}
+
+.pbChars {
+  color: var(--selected);
+  font-size: 12px;
+}
+
+.pbButtons {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  gap: 5px;
+  flex-shrink: 0;
+}
+
+.pbButt {
+  height: 26px;
+  padding: 0 8px;
+  background-color: var(--bg4);
+  border: 1px solid var(--focused);
+  border-radius: 3px;
+  font-size: 12px;
+  transition: border-color 100ms;
+  color: var(--text1);
+}
+
+.pbButt:hover {
+  border-color: var(--selected);
+}
+
+.pbDelButt:hover {
+  border-color: #c44;
 }
 
 
