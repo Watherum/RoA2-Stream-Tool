@@ -2,7 +2,7 @@ import { showScoreMode } from "./Score/Scores.mjs";
 
 class BestOf {
 
-    #currentBestOf = 5;
+    #currentBestOf = 3;
     #bestOfEl = document.getElementById("bestOf");
     #bestOfPrevEl = document.getElementById("bestOfPrev");
 
@@ -26,9 +26,9 @@ class BestOf {
     }
 
     #nextBestOf() {
-        if (this.#currentBestOf == 5) {
-            this.setBo(3);
-        } else if (this.#currentBestOf == 3) {
+        if (this.#currentBestOf == 3) {
+            this.setBo(5);
+        } else if (this.#currentBestOf == 5) {
             this.setBo("X");
         } else if (this.#currentBestOf == "X") {
             this.setBo("ft5");
@@ -37,12 +37,12 @@ class BestOf {
         } else if (this.#currentBestOf == "ft10") {
             this.setBo("ftX");
         } else if (this.#currentBestOf == "ftX") {
-            this.setBo(5);
+            this.setBo(3);
         }
     }
 
     #prevBestOf() {
-        if (this.#currentBestOf == 5) {
+        if (this.#currentBestOf == 3) {
             this.setBo("ftX");
         } else if (this.#currentBestOf == "ftX") {
             this.setBo("ft10");
@@ -51,9 +51,9 @@ class BestOf {
         } else if (this.#currentBestOf == "ft5") {
             this.setBo("X");
         } else if (this.#currentBestOf == "X") {
-            this.setBo(3);
-        } else if (this.#currentBestOf == 3) {
             this.setBo(5);
+        } else if (this.#currentBestOf == 5) {
+            this.setBo(3);
         }
     }
 
@@ -63,7 +63,7 @@ class BestOf {
 
             this.#currentBestOf = 3;
             this.#bestOfEl.innerHTML = "Best of 3";
-            this.#bestOfEl.title = "Click to change the scoring to Best of X";
+            this.#bestOfEl.title = "Click to change the scoring to Best of 5";
             showScoreMode(3);
 
         } else if (value == "X") {
@@ -98,7 +98,7 @@ class BestOf {
 
             this.#currentBestOf = 5;
             this.#bestOfEl.innerHTML = "Best of 5";
-            this.#bestOfEl.title = "Click to change the scoring to Best of 3";
+            this.#bestOfEl.title = "Click to change the scoring to Best of X";
             showScoreMode(5);
 
         }

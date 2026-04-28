@@ -24,9 +24,15 @@ export async function swapPlayers() {
         players[i+1].setName(nameStore);
 
         // player info
-        [players[i].tag, players[i+1].tag] = [players[i+1].tag, players[i].tag];
-        [players[i].pronouns, players[i+1].pronouns] = [players[i+1].pronouns, players[i].pronouns];
-        [players[i].socials, players[i+1].socials] = [players[i+1].socials, players[i].socials];
+        const tempTag = players[i].getTag();
+        const tempPronouns = players[i].getPronouns();
+        const tempSocials = players[i].getSocials();
+        players[i].setTag(players[i+1].getTag());
+        players[i].setPronouns(players[i+1].getPronouns());
+        players[i].setSocials(players[i+1].getSocials());
+        players[i+1].setTag(tempTag);
+        players[i+1].setPronouns(tempPronouns);
+        players[i+1].setSocials(tempSocials);
 
         //characters and skins
         const tempP1Char = players[i].char;

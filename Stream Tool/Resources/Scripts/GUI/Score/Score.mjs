@@ -11,6 +11,8 @@ export class Score {
         this.#scoreEls = el.getElementsByClassName("scoreCheck");
         this.#scoreNumEl = el.getElementsByClassName("scoreCheckN")[0];
 
+        this.showMode(bestOf.getBo());
+
         // set the score whenever we click on a score checkbox
         for (let i = 0; i < this.#scoreEls.length; i++) {
             this.#scoreEls[i].addEventListener("click", () => {
@@ -106,6 +108,7 @@ export class Score {
 
             this.#setChecksDisplay("block");
             this.#scoreEls[2].style.display = "none";
+            this.#scoreNumEl.style.display = "none";
 
             if (this.getScore() > 2) {
                 this.setScore(2);

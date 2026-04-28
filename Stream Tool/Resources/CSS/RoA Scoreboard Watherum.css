@@ -17,13 +17,17 @@
 #round {
     font-size: 20px;
     top: 130px;
-    left: 895px;
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
 }
 
 #bestOf {
     font-size: 20px;
     top: 155px;
-    left: 918px;
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
 }
 
 .tag {
