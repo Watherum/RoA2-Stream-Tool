@@ -36,9 +36,10 @@
 
 #p1name {
     font-size: 40px;
-    top: 90px;
+    top: 113px;
     left: 270px;
     transform: translateX(-50%);
+    transform: translateY(-50%);
     white-space: nowrap;
 }
 
@@ -70,9 +71,10 @@
 
 #p2name {
     font-size: 40px;
-    top: 90px;
+    top: 113px;
     left: 1360px;
     transform: translateX(-50%);
+    transform: translateY(-50%);
     white-space: nowrap;
 }
 
