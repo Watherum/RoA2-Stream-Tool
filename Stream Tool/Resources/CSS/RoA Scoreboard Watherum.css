@@ -38,6 +38,7 @@
     font-size: 40px;
     top: 57px;
     left: 290px;
+    transform: translateX(-50%);
     white-space: nowrap;
 }
 
@@ -56,7 +57,9 @@
 #p1score {
     font-size: 80px;
     top: 30px;
-    left: 722px;
+    left: 749px;
+    transform: translateX(-50%);
+    white-space: nowrap;
 }
 
 #p1wl {
@@ -69,6 +72,7 @@
     font-size: 40px;
     top: 57px;
     left: 1320px;
+    transform: translateX(-50%);
     white-space: nowrap;
 }
 
@@ -87,7 +91,9 @@
 #p2score {
     font-size: 80px;
     top: 30px;
-    left: 1148px;
+    left: 1175px;
+    transform: translateX(-50%);
+    white-space: nowrap;
 }
 
 #p2wl {
