@@ -713,6 +713,7 @@ button:hover {
 #roundNameNumber {
   width: 46px;
   text-align: center;
+  display: none !important;
 }
 
 

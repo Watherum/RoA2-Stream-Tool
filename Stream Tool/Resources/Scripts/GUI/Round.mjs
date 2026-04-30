@@ -167,6 +167,12 @@ class Round {
         }        
     }
 
+    clear() {
+        this.#roundInp.value = "";
+        this.#roundSelect.selectedIndex = 0;
+        this.updateSelect();
+    }
+
     /** Checks if the round text contains "Grands" so it shows/hides W/L buttons */
     checkGrands() {
         if (!settings.isForceWLChecked()) {
