@@ -404,7 +404,7 @@ class GuiSettings {
     }
 
     async #restoreWindowDefaults() {
-        this.#resizableCheck.checked = false;
+        this.#resizableCheck.checked = true;
         this.toggleResizable();
         this.#zoomValue = 100;
         this.#changeZoom();

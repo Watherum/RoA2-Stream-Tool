@@ -173,6 +173,29 @@ button:hover {
 
 .playerInfo {
   display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.playerInfoInputs {
+  display: flex;
+  gap: 5px;
+}
+
+.playerInfoButtons {
+  display: flex;
+  gap: 5px;
+}
+
+.playerInfoButtons .pInfoButt,
+.playerInfoButtons .pSaveButt {
+  border-top-right-radius: 3px;
+  border-bottom-right-radius: 3px;
+}
+
+.playerInfoInputs .nameInput {
+  border-top-left-radius: 3px;
+  border-bottom-left-radius: 3px;
 }
 
 .pInfoButt, .pSaveButt, .cInfoButt, .cDeleteButt {
@@ -205,8 +228,6 @@ button:hover {
   min-width: 60px;
   max-width: 210px;
   width: 60px;
-  border-top-left-radius: 0px;
-  border-bottom-left-radius: 0px;
 }
 
 .tagInput {
@@ -214,7 +235,7 @@ button:hover {
 }
 
 .pronounsInput {
-  width: 80px;
+  width: 75px;
 }
 
 .finderPosition {
@@ -1453,7 +1474,7 @@ button:hover {
   }
 
   .pronounsInput {
-    width: 105px;
+    width: 75px;
   }
 
   /* horizontal separator between the two player panels */
