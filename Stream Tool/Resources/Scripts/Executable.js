@@ -151,7 +151,7 @@ function createWindow() {
 
         backgroundColor: "#383838",
 
-        title: "RoA Stream Tool v12.6.0 [developer build]", // will get overwitten by gui html title
+        title: "RoA Stream Tool v12.6.1 [developer build]", // will get overwitten by gui html title
         icon: path.join(nodePath, 'icon.png'),
 
         webPreferences: {
@@ -201,7 +201,9 @@ function createWindow() {
 
     // window settings
     ipcMain.on('resizable', (event, arg) => {
-        win.setResizable(arg)
+        const bounds = win.getBounds();
+        win.setResizable(arg);
+        win.setBounds(bounds);
     })
 
     // restore default window dimensions

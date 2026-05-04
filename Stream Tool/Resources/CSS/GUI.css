@@ -526,6 +526,28 @@ button:hover {
   padding-left: 3px;
 }
 
+.scoreMobileBtn {
+  display: none;
+  width: 28px;
+  height: 22px;
+  padding: 0;
+  font-size: 16px;
+  line-height: 1;
+  font-family: 'Roboto-Medium';
+  background-color: var(--bg2);
+  color: var(--text1);
+  border: 1px solid var(--bg5);
+  border-radius: 3px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.scoreMobileBtn:hover {
+  background-color: var(--bg5);
+}
+.scoreMobileBtn:active {
+  background-color: var(--selected);
+}
+
 .wlButtons {
   display: none;
   font-size: 13px;
@@ -1511,6 +1533,15 @@ button:hover {
   /* score boxes and w/l buttons stay on their row */
   .charSelects {
     flex: 1;
+  }
+
+  .scoreMobileBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 28px;
+    font-size: 20px;
   }
 
   /* bigger bottom bar */

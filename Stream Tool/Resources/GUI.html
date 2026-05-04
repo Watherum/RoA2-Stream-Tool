@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RoA2 Stream Tool v12.6.0</title>
+  <title>RoA2 Stream Tool v12.6.1</title>
   <link rel="stylesheet" href="CSS/GUI.css">
   <link rel="stylesheet" href="CSS/GUI Custom.css">
   <script src="Scripts/GUI/mousetrap.min.js" defer></script>
@@ -112,11 +112,13 @@
             </div>
 
             <div class="scoreBox" id="scoreBox1" title="Press F1 to increase the score">
+              <button class="scoreMobileBtn scoreMinus" tabindex="-1">−</button>
               <span id="scoreText1">Wins</span>
               <input type="checkbox" class="scoreCheck mousetrap" tabindex="-1">
               <input type="checkbox" class="scoreCheck mousetrap" tabindex="-1">
               <input type="checkbox" class="scoreCheck mousetrap" tabindex="-1">
               <input type="number" class="scoreCheckN mousetrap" tabindex="-1" value="0" min="0">
+              <button class="scoreMobileBtn scorePlus" tabindex="-1">+</button>
             </div>
             
             <div class="wlButtons" id="wlButtons1">
@@ -227,11 +229,13 @@
             </div>
             
             <div class="scoreBox" id="scoreBox2" title="Press F2 to increase the score">
+              <button class="scoreMobileBtn scoreMinus" tabindex="-1">−</button>
               <span id="scoreText2">Wins</span>
               <input type="checkbox" class="scoreCheck mousetrap" tabindex="-1">
               <input type="checkbox" class="scoreCheck mousetrap" tabindex="-1">
               <input type="checkbox" class="scoreCheck mousetrap" tabindex="-1">
               <input type="number" class="scoreCheckN mousetrap" tabindex="-1" value="0" min="0">
+              <button class="scoreMobileBtn scorePlus" tabindex="-1">+</button>
             </div>
 
             <div class="wlButtons" id="wlButtons2">

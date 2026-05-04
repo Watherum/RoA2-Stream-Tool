@@ -374,9 +374,12 @@ class GuiSettings {
         });
     }
     async toggleResizable() {
+        const resizable = this.#resizableCheck.checked;
+        this.#lessZoomButt.disabled = !resizable;
+        this.#moreZoomButt.disabled = !resizable;
         const ipc = await import("./IPC.mjs");
-        ipc.resizable(this.#resizableCheck.checked);
-        this.save("resizable", this.#resizableCheck.checked);
+        ipc.resizable(resizable);
+        this.save("resizable", resizable);
     }
 
     #lessZoom() {
