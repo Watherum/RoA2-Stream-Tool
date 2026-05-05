@@ -36,27 +36,8 @@
         const p1flag = document.getElementById("p1flag");
         const p2flag = document.getElementById("p2flag");
 
-        const COUNTRY_CODES = {
-            "Afghanistan": "af", "Albania": "al", "Algeria": "dz", "Argentina": "ar",
-            "Australia": "au", "Austria": "at", "Belgium": "be", "Bolivia": "bo",
-            "Brazil": "br", "Canada": "ca", "Chile": "cl", "China": "cn",
-            "Colombia": "co", "Costa Rica": "cr", "Croatia": "hr", "Czech Republic": "cz",
-            "Denmark": "dk", "Dominican Republic": "do", "Ecuador": "ec", "Egypt": "eg",
-            "El Salvador": "sv", "Finland": "fi", "France": "fr", "Germany": "de",
-            "Greece": "gr", "Guatemala": "gt", "Honduras": "hn", "Hungary": "hu",
-            "India": "in", "Indonesia": "id", "Ireland": "ie", "Israel": "il",
-            "Italy": "it", "Jamaica": "jm", "Japan": "jp", "Jordan": "jo",
-            "Kenya": "ke", "South Korea": "kr", "Luxembourg": "lu", "Malaysia": "my",
-            "Mexico": "mx", "Netherlands": "nl", "New Zealand": "nz", "Nicaragua": "ni",
-            "Nigeria": "ng", "Norway": "no", "Panama": "pa", "Paraguay": "py",
-            "Peru": "pe", "Philippines": "ph", "Poland": "pl", "Portugal": "pt",
-            "Puerto Rico": "pr", "Romania": "ro", "Russia": "ru", "Saudi Arabia": "sa",
-            "Serbia": "rs", "Singapore": "sg", "Slovakia": "sk", "Slovenia": "si",
-            "South Africa": "za", "Spain": "es", "Sweden": "se", "Switzerland": "ch",
-            "Taiwan": "tw", "Thailand": "th", "Trinidad and Tobago": "tt",
-            "Turkey": "tr", "Ukraine": "ua", "United Kingdom": "gb",
-            "United States": "us", "Uruguay": "uy", "Venezuela": "ve", "Vietnam": "vn"
-        };
+        const _rawCodes = await fetch("Resources/COUNTRY_CODES.json").then(r => r.json()).catch(() => ({}));
+        const COUNTRY_CODES = Object.fromEntries(Object.entries(_rawCodes).map(([code, name]) => [name, code]));
 
         function setFlag(imgEl, countryName) {
             const code = COUNTRY_CODES[countryName];

@@ -2,27 +2,10 @@ import { stPath, inside } from "./Globals.mjs";
 
 const STARTGG_API = "https://api.start.gg/gql/alpha";
 
-const COUNTRY_CODES = {
-    "Afghanistan": "af", "Albania": "al", "Algeria": "dz", "Argentina": "ar",
-    "Australia": "au", "Austria": "at", "Belgium": "be", "Bolivia": "bo",
-    "Brazil": "br", "Canada": "ca", "Chile": "cl", "China": "cn",
-    "Colombia": "co", "Costa Rica": "cr", "Croatia": "hr", "Czech Republic": "cz",
-    "Denmark": "dk", "Dominican Republic": "do", "Ecuador": "ec", "Egypt": "eg",
-    "El Salvador": "sv", "Finland": "fi", "France": "fr", "Germany": "de",
-    "Greece": "gr", "Guatemala": "gt", "Honduras": "hn", "Hungary": "hu",
-    "India": "in", "Indonesia": "id", "Ireland": "ie", "Israel": "il",
-    "Italy": "it", "Jamaica": "jm", "Japan": "jp", "Jordan": "jo",
-    "Kenya": "ke", "South Korea": "kr", "Luxembourg": "lu", "Malaysia": "my",
-    "Mexico": "mx", "Netherlands": "nl", "New Zealand": "nz", "Nicaragua": "ni",
-    "Nigeria": "ng", "Norway": "no", "Panama": "pa", "Paraguay": "py",
-    "Peru": "pe", "Philippines": "ph", "Poland": "pl", "Portugal": "pt",
-    "Puerto Rico": "pr", "Romania": "ro", "Russia": "ru", "Saudi Arabia": "sa",
-    "Serbia": "rs", "Singapore": "sg", "Slovakia": "sk", "Slovenia": "si",
-    "South Africa": "za", "Spain": "es", "Sweden": "se", "Switzerland": "ch",
-    "Taiwan": "tw", "Thailand": "th", "Trinidad and Tobago": "tt",
-    "Turkey": "tr", "Ukraine": "ua", "United Kingdom": "gb",
-    "United States": "us", "Uruguay": "uy", "Venezuela": "ve", "Vietnam": "vn"
-};
+let _rawCodes = {};
+try { if (inside.electron) _rawCodes = JSON.parse(require('fs').readFileSync(__dirname + '/COUNTRY_CODES.json', 'utf8')); } catch (e) {}
+/** Maps country name → ISO 3166-1 alpha-2 code */
+const COUNTRY_CODES = Object.fromEntries(Object.entries(_rawCodes).map(([code, name]) => [name, code]));
 
 const SEEDING_QUERY = `
 query EventSeeding($slug: String!, $page: Int!, $perPage: Int!) {
