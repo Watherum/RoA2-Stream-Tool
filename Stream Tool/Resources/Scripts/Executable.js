@@ -151,7 +151,7 @@ function createWindow() {
 
         backgroundColor: "#383838",
 
-        title: "RoA Stream Tool v13.0.0 [developer build]", // will get overwitten by gui html title
+        title: "RoA Stream Tool v13.1.0 [developer build]", // will get overwitten by gui html title
         icon: path.join(nodePath, 'icon.png'),
 
         webPreferences: {

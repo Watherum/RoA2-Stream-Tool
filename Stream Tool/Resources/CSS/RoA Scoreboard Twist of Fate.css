@@ -51,8 +51,8 @@
 
 #p1pronouns {
     font-size: 20px;
-    top: 2px;
-    left: 480px;
+    top: 110px;
+    left: 165px;
 }
 
 #p1score {
@@ -86,8 +86,8 @@
 
 #p2pronouns {
     font-size: 20px;
-    top: 2px;
-    left: 1375px;
+    top: 110px;
+    left: 1685px;
 }
 
 #p2score {
@@ -102,4 +102,28 @@
     font-size: 25px;
     top: 57px;
     left: 1255px;
+}
+
+#p1seed {
+    font-size: 20px;
+    top: 110px;
+    left: 250px;
+}
+
+#p1flag {
+    height: 20px;
+    top: 114px;
+    left: 350px;
+}
+
+#p2seed {
+    font-size: 20px;
+    top: 110px;
+    left: 1585px;
+}
+
+#p2flag {
+    height: 20px;
+    top: 114px;
+    left: 1520px;
 }

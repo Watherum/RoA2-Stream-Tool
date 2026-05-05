@@ -15,7 +15,8 @@ export const stPath = {
     charWork : realPath + '/Characters/_Workshop',
     overlay: realPath + '/Overlay',
     text : realPath + '/Texts',
-    scripts: realPath + '/Scripts'
+    scripts: realPath + '/Scripts',
+    flags: realPath + '/Flags'
 };
 
 /** Current values for stuff */

@@ -2,6 +2,28 @@ import { stPath, inside } from "./Globals.mjs";
 
 const STARTGG_API = "https://api.start.gg/gql/alpha";
 
+const COUNTRY_CODES = {
+    "Afghanistan": "af", "Albania": "al", "Algeria": "dz", "Argentina": "ar",
+    "Australia": "au", "Austria": "at", "Belgium": "be", "Bolivia": "bo",
+    "Brazil": "br", "Canada": "ca", "Chile": "cl", "China": "cn",
+    "Colombia": "co", "Costa Rica": "cr", "Croatia": "hr", "Czech Republic": "cz",
+    "Denmark": "dk", "Dominican Republic": "do", "Ecuador": "ec", "Egypt": "eg",
+    "El Salvador": "sv", "Finland": "fi", "France": "fr", "Germany": "de",
+    "Greece": "gr", "Guatemala": "gt", "Honduras": "hn", "Hungary": "hu",
+    "India": "in", "Indonesia": "id", "Ireland": "ie", "Israel": "il",
+    "Italy": "it", "Jamaica": "jm", "Japan": "jp", "Jordan": "jo",
+    "Kenya": "ke", "South Korea": "kr", "Luxembourg": "lu", "Malaysia": "my",
+    "Mexico": "mx", "Netherlands": "nl", "New Zealand": "nz", "Nicaragua": "ni",
+    "Nigeria": "ng", "Norway": "no", "Panama": "pa", "Paraguay": "py",
+    "Peru": "pe", "Philippines": "ph", "Poland": "pl", "Portugal": "pt",
+    "Puerto Rico": "pr", "Romania": "ro", "Russia": "ru", "Saudi Arabia": "sa",
+    "Serbia": "rs", "Singapore": "sg", "Slovakia": "sk", "Slovenia": "si",
+    "South Africa": "za", "Spain": "es", "Sweden": "se", "Switzerland": "ch",
+    "Taiwan": "tw", "Thailand": "th", "Trinidad and Tobago": "tt",
+    "Turkey": "tr", "Ukraine": "ua", "United Kingdom": "gb",
+    "United States": "us", "Uruguay": "uy", "Venezuela": "ve", "Vietnam": "vn"
+};
+
 const SEEDING_QUERY = `
 query EventSeeding($slug: String!, $page: Int!, $perPage: Int!) {
   event(slug: $slug) {
@@ -120,19 +142,27 @@ class StartGG {
 
             this.#loaded = true;
 
-            // create presets for players that don't have one yet
+            // create or update presets for all entrants
             let newPresets = 0;
             const newPresetObjects = [];
             if (inside.electron) {
                 const fs = require('fs');
                 for (const entrant of allEntrants) {
                     const filePath = `${stPath.text}/Player Info/${entrant.gamerTag}.json`;
-                    if (!fs.existsSync(filePath)) {
-                        try {
+                    try {
+                        if (fs.existsSync(filePath)) {
+                            // update existing preset with seed, country, and tag
+                            const preset = JSON.parse(fs.readFileSync(filePath));
+                            if (entrant.seed !== "") preset.seed = entrant.seed;
+                            if (entrant.country) preset.country = entrant.country;
+                            if (entrant.tag) preset.tag = entrant.tag;
+                            fs.writeFileSync(filePath, JSON.stringify(preset, null, 2));
+                        } else {
+                            // create a new preset
                             const preset = {
                                 name: entrant.gamerTag,
                                 tag: entrant.tag,
-                                pronouns: entrant.pronouns,
+                                pronouns: "",
                                 seed: entrant.seed,
                                 country: entrant.country,
                                 socials: {},
@@ -141,9 +171,27 @@ class StartGG {
                             fs.writeFileSync(filePath, JSON.stringify(preset, null, 2));
                             newPresetObjects.push(preset);
                             newPresets++;
-                        } catch (e) {
-                            // skip players with filename-unsafe characters in their tag
                         }
+                    } catch (e) {
+                        // skip players with filename-unsafe characters in their tag
+                    }
+                }
+            }
+
+            // download missing flag images
+            if (inside.electron) {
+                const fs = require('fs');
+                const uniqueCodes = new Set(
+                    allEntrants.map(e => COUNTRY_CODES[e.country]).filter(Boolean)
+                );
+                for (const code of uniqueCodes) {
+                    const flagPath = `${stPath.flags}/${code}.png`;
+                    if (!fs.existsSync(flagPath)) {
+                        try {
+                            const res = await fetch(`https://flagcdn.com/w40/${code}.png`);
+                            const buffer = Buffer.from(await res.arrayBuffer());
+                            fs.writeFileSync(flagPath, buffer);
+                        } catch (e) { /* skip on network error */ }
                     }
                 }
             }

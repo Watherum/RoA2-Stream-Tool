@@ -30,6 +30,45 @@
         const p1wl = document.getElementById("p1wl");
         const p2wl = document.getElementById("p2wl");
 
+        const p1seed = document.getElementById("p1seed");
+        const p2seed = document.getElementById("p2seed");
+
+        const p1flag = document.getElementById("p1flag");
+        const p2flag = document.getElementById("p2flag");
+
+        const COUNTRY_CODES = {
+            "Afghanistan": "af", "Albania": "al", "Algeria": "dz", "Argentina": "ar",
+            "Australia": "au", "Austria": "at", "Belgium": "be", "Bolivia": "bo",
+            "Brazil": "br", "Canada": "ca", "Chile": "cl", "China": "cn",
+            "Colombia": "co", "Costa Rica": "cr", "Croatia": "hr", "Czech Republic": "cz",
+            "Denmark": "dk", "Dominican Republic": "do", "Ecuador": "ec", "Egypt": "eg",
+            "El Salvador": "sv", "Finland": "fi", "France": "fr", "Germany": "de",
+            "Greece": "gr", "Guatemala": "gt", "Honduras": "hn", "Hungary": "hu",
+            "India": "in", "Indonesia": "id", "Ireland": "ie", "Israel": "il",
+            "Italy": "it", "Jamaica": "jm", "Japan": "jp", "Jordan": "jo",
+            "Kenya": "ke", "South Korea": "kr", "Luxembourg": "lu", "Malaysia": "my",
+            "Mexico": "mx", "Netherlands": "nl", "New Zealand": "nz", "Nicaragua": "ni",
+            "Nigeria": "ng", "Norway": "no", "Panama": "pa", "Paraguay": "py",
+            "Peru": "pe", "Philippines": "ph", "Poland": "pl", "Portugal": "pt",
+            "Puerto Rico": "pr", "Romania": "ro", "Russia": "ru", "Saudi Arabia": "sa",
+            "Serbia": "rs", "Singapore": "sg", "Slovakia": "sk", "Slovenia": "si",
+            "South Africa": "za", "Spain": "es", "Sweden": "se", "Switzerland": "ch",
+            "Taiwan": "tw", "Thailand": "th", "Trinidad and Tobago": "tt",
+            "Turkey": "tr", "Ukraine": "ua", "United Kingdom": "gb",
+            "United States": "us", "Uruguay": "uy", "Venezuela": "ve", "Vietnam": "vn"
+        };
+
+        function setFlag(imgEl, countryName) {
+            const code = COUNTRY_CODES[countryName];
+            if (code) {
+                imgEl.src = `Resources/Flags/${code}.png`;
+                imgEl.style.display = "";
+            } else {
+                imgEl.src = "";
+                imgEl.style.display = "none";
+            }
+        }
+
         function fitText(el, maxWidth, maxSize = 40) {
             el.style.fontSize = maxSize + "px";
             while (el.scrollWidth > maxWidth && parseFloat(el.style.fontSize) > 8) {
@@ -56,6 +95,12 @@
             p1pronouns.textContent = p1.pronouns;
             p2pronouns.textContent = p2.pronouns;
 
+            p1seed.textContent = p1.seed ? `Seed: ${p1.seed}` : "";
+            p2seed.textContent = p2.seed ? `Seed: ${p2.seed}` : "";
+
+            setFlag(p1flag, p1.country);
+            setFlag(p2flag, p2.country);
+
             p1score.textContent = data.score[0];
             p2score.textContent = data.score[1];
 
@@ -75,11 +120,15 @@
 
       <span id="p1name"><span class="tag"></span><span class="name"></span></span>
       <span id="p1pronouns"></span>
+      <span id="p1seed"></span>
+      <img id="p1flag" src="" alt=""/>
       <span id="p1score"></span>
       <span id="p1wl"></span>
 
       <span id="p2name"><span class="tag"></span><span class="name"></span></span>
       <span id="p2pronouns"></span>
+      <span id="p2seed"></span>
+      <img id="p2flag" src="" alt=""/>
       <span id="p2score"></span>
       <span id="p2wl"></span>
 

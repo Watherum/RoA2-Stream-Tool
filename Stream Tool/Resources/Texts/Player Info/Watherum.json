@@ -27,5 +27,7 @@
       "character": "Random",
       "skin": "Default"
     }
-  ]
+  ],
+  "seed": 2,
+  "country": "United States"
 }

@@ -103,3 +103,27 @@
     top: 140px;
     left: 1083px;
 }
+
+#p1seed {
+    font-size: 20px;
+    top: 115px;
+    left: 415px;
+}
+
+#p1flag {
+    height: 19px;
+    top: 120px;
+    left: 515px;
+}
+
+#p2seed {
+    font-size: 20px;
+    top: 115px;
+    left: 1420px;
+}
+
+#p2flag {
+    height: 19px;
+    top: 120px;
+    left: 1360px;
+}
