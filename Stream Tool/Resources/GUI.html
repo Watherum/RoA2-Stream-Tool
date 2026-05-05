@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RoA2 Stream Tool v12.7.0</title>
+  <title>RoA2 Stream Tool v13.0.0</title>
   <link rel="stylesheet" href="CSS/GUI.css">
   <link rel="stylesheet" href="CSS/GUI Custom.css">
   <script src="Scripts/GUI/mousetrap.min.js" defer></script>
@@ -403,6 +403,24 @@ They will always appear when typing 'Grand' in the round box.">
               Restore default dimensions
             </button>
           </div>
+
+        <div class="settingsTitle">start.gg</div>
+
+        <div class="settingBox">
+          <input type="password" id="startGGToken" class="textInput settingsTextInp mousetrap" placeholder="API Token" spellcheck="false" tabindex="-1">
+        </div>
+
+        <div class="settingBox">
+          <input type="text" id="startGGSlug" class="textInput settingsTextInp mousetrap" placeholder="tournament/slug/event/slug" spellcheck="false" tabindex="-1">
+        </div>
+
+        <div id="settingsButtonSection">
+          <button class="settingsButton" id="startGGFetch" tabindex="-1">Fetch Data</button>
+        </div>
+
+        <div class="settingBox">
+          <span id="startGGStatus" style="display: block; width: 100%; text-align: center;"></span>
+        </div>
 
         </div>
 

@@ -1,5 +1,5 @@
 {
-  "guiWidth": 615,
+  "guiWidth": 692,
   "guiHeight": 346,
   "allowIntro": false,
   "workshop": false,
@@ -15,5 +15,7 @@
   "resizable": true,
   "zoom": 100,
   "remoteUpdatePort": 1111,
-  "webSocketPort": 8080
+  "webSocketPort": 8080,
+  "startGGToken": "",
+  "startGGSlug": ""
 }

@@ -5,6 +5,7 @@ import { customChange, setCurrentPlayer } from "../Custom Skin.mjs";
 import { current, stPath } from "../Globals.mjs";
 import { charFinder } from "./Char Finder.mjs";
 import { scores } from "../Score/Scores.mjs";
+import { startGG } from "../Start GG.mjs";
 
 class PlayerFinder extends Finder {
 
@@ -21,6 +22,15 @@ class PlayerFinder extends Finder {
     /** Sets a new player preset list from the presets folder */
     async setPlayerPresets() {
         this.#playerPresets = await getPresetList("Player Info");
+    }
+
+    /**
+     * Appends new preset objects directly into the live preset list
+     * @param {Object[]} presets - Preset objects to add
+     */
+    appendPresets(presets) {
+        if (!this.#playerPresets) this.#playerPresets = [];
+        this.#playerPresets.push(...presets);
     }
 
     /**
@@ -60,11 +70,11 @@ class PlayerFinder extends Finder {
     async #generatePresetList(player) {
 
         const skinImgs = [];
-        let presetOnList;
 
         for (let i = 0; i < this.#playerPresets.length; i++) {
 
             const preset = this.#playerPresets[i]; // to simplify code
+            let presetOnList = false;
 
             // if the current text matches a file from that folder
             if (preset.name.toLocaleLowerCase().includes(player.getName().toLocaleLowerCase())) {
@@ -292,12 +302,19 @@ class PlayerFinder extends Finder {
         // all them player data
         player.setName(pData.name);
         if (player.profileType == "player") scores[(player.pNum - 1) % 2].setScore(0);
-        player.setTag(pData.tag);
+        const liveTag = startGG.isLoaded() ? startGG.getTag(pData.name) : "";
+        player.setTag(liveTag || pData.tag);
         // this will exclude bracket players
         if (player.profileType == "player") {
             player.setPronouns(pData.pronouns);
-            if (player.setSeed) player.setSeed(pData.seed);
-            if (player.setCountry) player.setCountry(pData.country);
+            if (player.setSeed) {
+                const liveSeed = startGG.isLoaded() ? startGG.getSeed(pData.name) : "";
+                player.setSeed(liveSeed || pData.seed);
+            }
+            if (player.setCountry) {
+                const liveCountry = startGG.isLoaded() ? startGG.getCountry(pData.name) : "";
+                player.setCountry(liveCountry || pData.country);
+            }
             player.setSocials(pData.socials);
         }
 

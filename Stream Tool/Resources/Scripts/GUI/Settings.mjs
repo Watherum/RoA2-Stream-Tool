@@ -8,6 +8,8 @@ import { gamemode } from "./Gamemode Change.mjs";
 import { tournament } from "./Tournament.mjs";
 import { round } from "./Round.mjs";
 import { teams } from "./Team/Teams.mjs";
+import { startGG } from "./Start GG.mjs";
+import { playerFinder } from "./Finder/Player Finder.mjs";
 
 
 class GuiSettings {
@@ -36,6 +38,11 @@ class GuiSettings {
     #zoomTextValue = document.getElementById("zoomTextValue");
     #zoomValue = 100;
     #restoreWindowButt = document.getElementById("restoreWindowButt");
+
+    #startGGToken = document.getElementById("startGGToken");
+    #startGGSlug = document.getElementById("startGGSlug");
+    #startGGFetch = document.getElementById("startGGFetch");
+    #startGGStatus = document.getElementById("startGGStatus");
 
     constructor() {
 
@@ -110,6 +117,29 @@ class GuiSettings {
             viewport.toSettings();
         });
 
+        // start.gg token and slug — save on change
+        this.#startGGToken.addEventListener("change", () => {
+            startGG.setToken(this.#startGGToken.value);
+            this.save("startGGToken", this.#startGGToken.value);
+        });
+        this.#startGGSlug.addEventListener("change", () => {
+            startGG.setSlug(this.#startGGSlug.value);
+        });
+
+        // fetch seeds button
+        this.#startGGFetch.addEventListener("click", async () => {
+            this.#startGGStatus.textContent = "Fetching...";
+            this.#startGGFetch.disabled = true;
+            const result = await startGG.fetchSeeds();
+            this.#startGGFetch.disabled = false;
+            if (result.success) {
+                if (result.newPresets > 0) playerFinder.appendPresets(result.newPresetObjects);
+                this.#startGGStatus.textContent = `${result.count} players seeded, ${result.newPresets} new presets created`;
+            } else {
+                this.#startGGStatus.textContent = `Error: ${result.error}`;
+            }
+        });
+
     }
 
     /** Loads all settings from the "GUI Settings.json" file */
@@ -142,7 +172,34 @@ class GuiSettings {
             this.#zoomValue = guiSettings.zoom;
             this.#changeZoom();
         }
-        
+
+        if (guiSettings.startGGToken) {
+            this.#startGGToken.value = guiSettings.startGGToken;
+            startGG.setToken(guiSettings.startGGToken);
+        }
+
+        // app.properties.txt overrides the saved token if present
+        if (inside.electron) {
+            const fs = require('fs');
+            const propsPath = stPath.text + '/../app.properties.txt';
+            if (fs.existsSync(propsPath)) {
+                const lines = fs.readFileSync(propsPath, 'utf8').split('\n');
+                for (const line of lines) {
+                    const eqIdx = line.indexOf('=');
+                    if (eqIdx === -1) continue;
+                    const key = line.slice(0, eqIdx).trim();
+                    const value = line.slice(eqIdx + 1).trim();
+                    if (key === 'startgg.apiKey' && value) {
+                        this.#startGGToken.value = value;
+                        this.#startGGToken.disabled = true;
+                        startGG.setToken(value);
+                        this.#startGGStatus.textContent = "Token loaded from app.properties.txt";
+                        break;
+                    }
+                }
+            }
+        }
+
     }
 
     /**

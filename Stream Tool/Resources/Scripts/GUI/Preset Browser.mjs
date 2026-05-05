@@ -7,6 +7,7 @@ import { scores } from "./Score/Scores.mjs";
 import { stPath } from "./Globals.mjs";
 import { viewport } from "./Viewport.mjs";
 import { displayNotif } from "./Notifications.mjs";
+import { startGG } from "./Start GG.mjs";
 
 class PresetBrowser {
 
@@ -61,10 +62,14 @@ class PresetBrowser {
             const nameOrTagMatch =
                 preset.name.toLowerCase().includes(query) ||
                 (preset.tag || "").toLowerCase().includes(query);
-            for (const char of preset.characters) {
-                if (nameOrTagMatch || char.character.toLowerCase().includes(query)) {
-                    entries.push({ preset, char });
+            if (preset.characters && preset.characters.length > 0) {
+                for (const char of preset.characters) {
+                    if (nameOrTagMatch || char.character.toLowerCase().includes(query)) {
+                        entries.push({ preset, char });
+                    }
                 }
+            } else if (nameOrTagMatch) {
+                entries.push({ preset, char: { character: "Random", skin: "Default" } });
             }
         }
         this.#renderList(entries);
@@ -81,7 +86,7 @@ class PresetBrowser {
         for (const { preset, char } of entries) {
             const { el, imgData } = this.#makeEntry(preset, char);
             this.#list.appendChild(el);
-            imgQueue.push(imgData);
+            if (imgData) imgQueue.push(imgData);
         }
 
         this.#loadImages(imgQueue, cycle);
@@ -104,10 +109,11 @@ class PresetBrowser {
         const info = document.createElement("div");
         info.className = "pbInfo";
 
-        if (preset.tag) {
+        const displayTag = (startGG.isLoaded() ? startGG.getTag(preset.name) : "") || preset.tag || "";
+        if (displayTag) {
             const tag = document.createElement("span");
             tag.className = "pbTag";
-            tag.textContent = preset.tag;
+            tag.textContent = displayTag;
             info.appendChild(tag);
         }
 
@@ -125,7 +131,7 @@ class PresetBrowser {
 
         const charSpan = document.createElement("span");
         charSpan.className = "pbChars";
-        charSpan.textContent = char.character;
+        charSpan.textContent = char ? char.character : "Random";
         info.appendChild(charSpan);
 
         const buttons = document.createElement("div");
@@ -153,13 +159,13 @@ class PresetBrowser {
         row.appendChild(info);
         row.appendChild(buttons);
 
-        const imgData = {
+        const imgData = char ? {
             el: charImg,
             char: char.character,
             skinName: char.skin,
             hex: char.hex,
             customImg: char.customImg,
-        };
+        } : null;
 
         return { el: row, imgData };
 
@@ -225,16 +231,21 @@ class PresetBrowser {
         player.markPresetPending();
         player.setName(preset.name);
         scores[(player.pNum - 1) % 2].setScore(0);
-        player.setTag(preset.tag || "");
+        const liveTag = startGG.isLoaded() ? startGG.getTag(preset.name) : "";
+        player.setTag(liveTag || preset.tag || "");
         player.setPronouns(preset.pronouns || "");
+        if (player.setSeed) player.setSeed(preset.seed || "");
+        if (player.setCountry) player.setCountry(preset.country || "");
         player.setSocials(preset.socials || {});
 
-        await player.charChange(char.character, true);
-        if (char.customImg) {
-            setCurrentPlayer(player);
-            customChange(char.hex, char.skin);
-        } else {
-            player.skinChange(player.findSkin(char.skin));
+        if (char) {
+            await player.charChange(char.character, true);
+            if (char.customImg) {
+                setCurrentPlayer(player);
+                customChange(char.hex, char.skin);
+            } else {
+                player.skinChange(player.findSkin(char.skin));
+            }
         }
 
         this.hide();

@@ -4,6 +4,7 @@ import { displayNotif } from "./Notifications.mjs";
 import { stPath } from "./Globals.mjs";
 import { playerFinder } from "./Finder/Player Finder.mjs";
 import { commFinder } from "./Finder/Comm Finder.mjs";
+import { startGG } from "./Start GG.mjs";
 
 class ProfileInfo {
 
@@ -63,10 +64,13 @@ class ProfileInfo {
 
         // display the current info for this player
         this.#pronounsInp.value = profile.getPronouns();
-        this.#tagInp.value = profile.getTag();
+        const liveTag = startGG.isLoaded() ? startGG.getTag(profile.getName()) : "";
+        this.#tagInp.value = liveTag || profile.getTag();
         this.#nameInp.value = profile.getName();
-        this.#seedInp.value = profile.getSeed ? profile.getSeed() : "";
-        this.#countryInp.value = profile.getCountry ? profile.getCountry() : "";
+        const liveSeed = startGG.isLoaded() ? startGG.getSeed(profile.getName()) : "";
+        this.#seedInp.value = liveSeed || (profile.getSeed ? profile.getSeed() : "");
+        const liveCountry = startGG.isLoaded() ? startGG.getCountry(profile.getName()) : "";
+        this.#countryInp.value = liveCountry || (profile.getCountry ? profile.getCountry() : "");
         const socials = profile.getSocials() || [];
         this.#twitterInp.value = socials.twitter || "";
         this.#twitchInp.value = socials.twitch || "";
