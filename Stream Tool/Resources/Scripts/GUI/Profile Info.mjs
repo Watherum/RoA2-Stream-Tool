@@ -16,12 +16,14 @@ class ProfileInfo {
     #pronounsInp = document.getElementById("pInfoInputPronouns");
     #tagInp = document.getElementById("pInfoInputTag");
     #nameInp = document.getElementById("pInfoInputName");
+    #seedInp = document.getElementById("pInfoInputSeed");
+    #countryInp = document.getElementById("pInfoInputCountry");
     #twitchInp = document.getElementById("pInfoInputTwitch");
     #ytInp = document.getElementById("pInfoInputYt");
     #twitterInp = document.getElementById("pInfoInputTwitter");
     #bskyInp = document.getElementById("pInfoInputBsky");
-    #mastoInp = document.getElementById("pInfoInputMasto");
-    #cohostInp = document.getElementById("pInfoInputCohost");
+    #instagramInp = document.getElementById("pInfoInputInstagram");
+    #discordInp = document.getElementById("pInfoInputDiscord");
 
     #curProfile;
 
@@ -63,13 +65,15 @@ class ProfileInfo {
         this.#pronounsInp.value = profile.getPronouns();
         this.#tagInp.value = profile.getTag();
         this.#nameInp.value = profile.getName();
+        this.#seedInp.value = profile.getSeed ? profile.getSeed() : "";
+        this.#countryInp.value = profile.getCountry ? profile.getCountry() : "";
         const socials = profile.getSocials() || [];
         this.#twitterInp.value = socials.twitter || "";
         this.#twitchInp.value = socials.twitch || "";
         this.#ytInp.value = socials.yt || "";
         this.#bskyInp.value = socials.bsky || "";
-        this.#mastoInp.value = socials.masto || "";
-        this.#cohostInp.value = socials.cohost || "";
+        this.#instagramInp.value = socials.instagram || "";
+        this.#discordInp.value = socials.discord || "";
 
         // give tab index so we can jump from input to input with the keyboard
         this.#setTabIndex(0);
@@ -109,18 +113,20 @@ class ProfileInfo {
 
     /** Updates player data with values from input fields */
     apply() {
-        
+
         this.#curProfile.pronouns = this.#pronounsInp.value;
         this.#curProfile.setTag(this.#tagInp.value);
         this.#curProfile.setName(this.#nameInp.value);
+        if (this.#curProfile.setSeed) this.#curProfile.setSeed(this.#seedInp.value);
+        if (this.#curProfile.setCountry) this.#curProfile.setCountry(this.#countryInp.value);
 
         const socials = {
             twitter : this.#twitterInp.value,
             twitch : this.#twitchInp.value,
             yt : this.#ytInp.value,
             bsky : this.#bskyInp.value,
-            masto : this.#mastoInp.value,
-            cohost : this.#cohostInp.value,
+            instagram : this.#instagramInp.value,
+            discord : this.#discordInp.value,
         }
         this.#curProfile.setSocials(socials);
         
@@ -138,6 +144,8 @@ class ProfileInfo {
             name: player.getName(),
             tag: player.getTag(),
             pronouns: player.getPronouns(),
+            seed: player.getSeed ? player.getSeed() : "",
+            country: player.getCountry ? player.getCountry() : "",
             socials: player.getSocials(),
             characters: [{ character: player.char, skin: player.skin.name }]
         };
@@ -168,6 +176,8 @@ class ProfileInfo {
             name: this.#curProfile.getName(),
             tag: this.#curProfile.getTag(),
             pronouns: this.#curProfile.getPronouns(),
+            seed: this.#curProfile.getSeed ? this.#curProfile.getSeed() : "",
+            country: this.#curProfile.getCountry ? this.#curProfile.getCountry() : "",
             socials: this.#curProfile.getSocials(),
         }
         if (this.#curProfile.profileType == "player") {

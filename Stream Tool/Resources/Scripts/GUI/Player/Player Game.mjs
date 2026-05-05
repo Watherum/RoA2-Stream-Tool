@@ -15,6 +15,8 @@ export class PlayerGame extends Player {
 
     tag = "";
     pronouns = "";
+    seed = "";
+    country = "";
     socials = {};
 
     vsSkin;
@@ -57,6 +59,8 @@ export class PlayerGame extends Player {
             scores[(this.pNum - 1) % 2].setScore(0);
             this.setTag("");
             this.setPronouns("");
+            this.setSeed("");
+            this.setCountry("");
             this.socials = {};
             this.charChange("Random");
         });
@@ -95,6 +99,18 @@ export class PlayerGame extends Player {
     setPronouns(text) {
         this.pronouns = text;
         this.pronounsInp.value = text;
+    }
+    getSeed() {
+        return this.seed;
+    }
+    setSeed(value) {
+        this.seed = value;
+    }
+    getCountry() {
+        return this.country;
+    }
+    setCountry(value) {
+        this.country = value;
     }
     getTag() {
         return this.tag;

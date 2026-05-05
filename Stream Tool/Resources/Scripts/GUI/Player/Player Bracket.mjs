@@ -2,6 +2,8 @@ import { Player } from "./Player.mjs";
 
 export class PlayerBracket extends Player {
 
+    profileType = "bracket";
+
     tagInp;
     charDiv;
     iconBrowserSrc;

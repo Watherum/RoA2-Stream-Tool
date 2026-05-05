@@ -71,7 +71,7 @@ export async function writeScoreboard() {
         round: round.getText(),
         tournamentName: tournament.getText(),
         caster: [],
-        socialNames: ["twitch", "yt", "twitter", "bsky", "masto", "cohost"],
+        socialNames: ["twitch", "yt", "twitter", "bsky", "instagram", "discord"],
         allowIntro: settings.isIntroChecked(),
         // this is just for remote updating
         altSkin: settings.isAltArtChecked(),
@@ -94,6 +94,8 @@ export async function writeScoreboard() {
             pronouns: players[i].pronouns,
             tag: players[i].tag,
             name: players[i].getName(),
+            seed: players[i].seed,
+            country: players[i].country,
             socials: players[i].getSocials(),
             sc : {
                 charImg: players[i].scBrowserSrc || players[i].scSrc,
