@@ -1,0 +1,10 @@
+<img id="player3flag" src="flag.png">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            setInterval(function() {
+                $("#player3flag").attr("src", "flag.png?" + new Date().getTime());
+            }, 1000);
+        });
+    </script>
