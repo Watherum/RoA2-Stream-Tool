@@ -1,5 +1,14 @@
 [
   {
+    "name": "Arbs",
+    "tag": "",
+    "pronouns": "",
+    "seed": 15,
+    "country": "",
+    "socials": {},
+    "characters": []
+  },
+  {
     "name": "Ateozc",
     "tag": "",
     "pronouns": "He/Him",
@@ -37,6 +46,24 @@
     "country": "United States"
   },
   {
+    "name": "Cy",
+    "tag": "",
+    "pronouns": "",
+    "seed": 8,
+    "country": "United States",
+    "socials": {},
+    "characters": []
+  },
+  {
+    "name": "Drewsephix",
+    "tag": "",
+    "pronouns": "",
+    "seed": 9,
+    "country": "United States",
+    "socials": {},
+    "characters": []
+  },
+  {
     "name": "edtrbf",
     "tag": "Test",
     "pronouns": "AI/BOT",
@@ -54,6 +81,87 @@
         "skin": "Default"
       }
     ]
+  },
+  {
+    "name": "electric",
+    "tag": "ZNDA",
+    "pronouns": "",
+    "seed": 11,
+    "country": "United States",
+    "socials": {},
+    "characters": []
+  },
+  {
+    "name": "Geo",
+    "tag": "",
+    "pronouns": "",
+    "seed": 18,
+    "country": "United States",
+    "socials": {},
+    "characters": []
+  },
+  {
+    "name": "humanlime",
+    "tag": "RBE",
+    "pronouns": "",
+    "seed": 4,
+    "country": "United States",
+    "socials": {},
+    "characters": []
+  },
+  {
+    "name": "Mask",
+    "tag": "-R",
+    "pronouns": "",
+    "seed": 10,
+    "country": "United States",
+    "socials": {},
+    "characters": []
+  },
+  {
+    "name": "MellowTreat",
+    "tag": "",
+    "pronouns": "",
+    "seed": 19,
+    "country": "United States",
+    "socials": {},
+    "characters": []
+  },
+  {
+    "name": "Monocle Gentlesir",
+    "tag": "",
+    "pronouns": "",
+    "seed": 14,
+    "country": "",
+    "socials": {},
+    "characters": []
+  },
+  {
+    "name": "Nothigh",
+    "tag": "ravel",
+    "pronouns": "",
+    "seed": 7,
+    "country": "United States",
+    "socials": {},
+    "characters": []
+  },
+  {
+    "name": "ProZ",
+    "tag": "",
+    "pronouns": "",
+    "seed": 6,
+    "country": "United States",
+    "socials": {},
+    "characters": []
+  },
+  {
+    "name": "RachnerasBoyToy",
+    "tag": "",
+    "pronouns": "",
+    "seed": 16,
+    "country": "United States",
+    "socials": {},
+    "characters": []
   },
   {
     "name": "Readek",
@@ -86,10 +194,46 @@
     ]
   },
   {
+    "name": "SapphireGD",
+    "tag": "AoC",
+    "pronouns": "",
+    "seed": 3,
+    "country": "United States",
+    "socials": {},
+    "characters": []
+  },
+  {
+    "name": "SewpahMario",
+    "tag": "PALO/RFG",
+    "pronouns": "",
+    "seed": 12,
+    "country": "United States",
+    "socials": {},
+    "characters": []
+  },
+  {
     "name": "Sh-Awe",
     "tag": "",
     "pronouns": "",
-    "seed": 4,
+    "seed": 17,
+    "country": "United States",
+    "socials": {},
+    "characters": []
+  },
+  {
+    "name": "Shard",
+    "tag": "",
+    "pronouns": "",
+    "seed": 5,
+    "country": "United States",
+    "socials": {},
+    "characters": []
+  },
+  {
+    "name": "Sophilo",
+    "tag": "Shrug Club",
+    "pronouns": "",
+    "seed": 1,
     "country": "United States",
     "socials": {},
     "characters": []
@@ -105,6 +249,33 @@
         "skin": "Default"
       }
     ]
+  },
+  {
+    "name": "Toiler",
+    "tag": "",
+    "pronouns": "",
+    "seed": 13,
+    "country": "United States",
+    "socials": {},
+    "characters": []
+  },
+  {
+    "name": "Vastfollower",
+    "tag": "",
+    "pronouns": "",
+    "seed": 20,
+    "country": "United States",
+    "socials": {},
+    "characters": []
+  },
+  {
+    "name": "Viviana",
+    "tag": "NS",
+    "pronouns": "",
+    "seed": 2,
+    "country": "Canada",
+    "socials": {},
+    "characters": []
   },
   {
     "name": "Watherum",
