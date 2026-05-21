@@ -230,7 +230,7 @@ class PresetBrowser {
 
         player.markPresetPending();
         player.setName(preset.name);
-        scores[(player.pNum - 1) % 2].setScore(0);
+        scores.forEach(s => s.setScore(0));
         const liveTag = startGG.isLoaded() ? startGG.getTag(preset.name) : "";
         player.setTag(liveTag || preset.tag || "");
         player.setPronouns(preset.pronouns || "");

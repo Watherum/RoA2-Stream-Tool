@@ -56,7 +56,7 @@ export class PlayerGame extends Player {
                 this.#presetPending = false;
                 return;
             }
-            scores[(this.pNum - 1) % 2].setScore(0);
+            scores.forEach(s => s.setScore(0));
             this.setTag("");
             this.setPronouns("");
             this.setSeed("");

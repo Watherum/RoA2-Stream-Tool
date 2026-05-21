@@ -131,7 +131,8 @@ class StartGG {
             if (inside.electron) {
                 const fs = require('fs');
                 for (const entrant of allEntrants) {
-                    const filePath = `${stPath.text}/Player Info/${entrant.gamerTag}.json`;
+                    const safeName = entrant.gamerTag.replace(/[\\/:*?"<>|]/g, '_');
+                    const filePath = `${stPath.text}/Player Info/${safeName}.json`;
                     try {
                         if (fs.existsSync(filePath)) {
                             // update existing preset with seed, country, and tag

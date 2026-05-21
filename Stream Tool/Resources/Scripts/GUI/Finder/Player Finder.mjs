@@ -301,7 +301,7 @@ class PlayerFinder extends Finder {
 
         // all them player data
         player.setName(pData.name);
-        if (player.profileType == "player") scores[(player.pNum - 1) % 2].setScore(0);
+        if (player.profileType == "player") scores.forEach(s => s.setScore(0));
         const liveTag = startGG.isLoaded() ? startGG.getTag(pData.name) : "";
         player.setTag(liveTag || pData.tag);
         // this will exclude bracket players
