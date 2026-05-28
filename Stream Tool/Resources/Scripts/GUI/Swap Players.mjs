@@ -27,12 +27,18 @@ export async function swapPlayers() {
         const tempTag = players[i].getTag();
         const tempPronouns = players[i].getPronouns();
         const tempSocials = players[i].getSocials();
+        const tempSeed = players[i].getSeed();
+        const tempCountry = players[i].getCountry();
         players[i].setTag(players[i+1].getTag());
         players[i].setPronouns(players[i+1].getPronouns());
         players[i].setSocials(players[i+1].getSocials());
+        players[i].setSeed(players[i+1].getSeed());
+        players[i].setCountry(players[i+1].getCountry());
         players[i+1].setTag(tempTag);
         players[i+1].setPronouns(tempPronouns);
         players[i+1].setSocials(tempSocials);
+        players[i+1].setSeed(tempSeed);
+        players[i+1].setCountry(tempCountry);
 
         //characters and skins
         const tempP1Char = players[i].char;
