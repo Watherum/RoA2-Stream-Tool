@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RoA2 Stream Tool v13.6.0</title>
+  <title>RoA2 Stream Tool v13.6.1</title>
   <link rel="stylesheet" href="CSS/GUI.css">
   <link rel="stylesheet" href="CSS/GUI Custom.css">
   <script src="Scripts/GUI/mousetrap.min.js" defer></script>
@@ -330,6 +330,11 @@
         <div class="settingBox" title="Allows for entering a custom Round Name">
           <input type="checkbox" id="customRound" class="settingsCheck" tabindex="-1">
           <label for="customRound" class="settingsText">Use Custom Round</span>
+        </div>
+
+        <div class="settingBox" title="Abbreviates predefined round names: Round → Rd., Quarters → Qrts">
+          <input type="checkbox" id="abbreviateRound" class="settingsCheck" tabindex="-1">
+          <label for="abbreviateRound" class="settingsText">Abbreviate round names</span>
         </div>
         
         <div class="settingBox" title="Forces the [W]/[L] buttons to appear on the interface.

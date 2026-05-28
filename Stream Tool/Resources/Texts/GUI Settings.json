@@ -17,5 +17,6 @@
   "remoteUpdatePort": 1111,
   "webSocketPort": 8080,
   "startGGToken": "",
-  "startGGSlug": ""
+  "startGGSlug": "",
+  "abbreviateRound": true
 }

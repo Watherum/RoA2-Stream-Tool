@@ -69,7 +69,9 @@ class Round {
             if (this.isNumberNeeded()) {
                 roundName += " " + this.#roundNumber.value;
             }
-
+            if (settings.isAbbreviateRoundChecked()) {
+                roundName = roundName.replace(/\bRound\b/g, "Rd").replace(/\bQuarters\b/g, "Qrts");
+            }
         }
 
         return roundName;

@@ -26,6 +26,7 @@ class GuiSettings {
     #scoreAutoCheck = document.getElementById("scoreAutoUpdate");
     #invertScoreCheck = document.getElementById("invertScore");
     #simpleTextsCheck = document.getElementById("simpleTexts")
+    #abbreviateRoundCheck = document.getElementById("abbreviateRound")
 
     #ipDisplay = document.getElementById("displayLocalIp");
     #httpPortDisplay = document.getElementById("displayHttpPort");
@@ -84,6 +85,9 @@ class GuiSettings {
         });
         this.#simpleTextsCheck.addEventListener("click", () => {
             this.save("simpleTexts", this.isSimpleTextsChecked())
+        });
+        this.#abbreviateRoundCheck.addEventListener("click", () => {
+            this.save("abbreviateRound", this.isAbbreviateRoundChecked());
         });
 
         // dont forget about the copy match to clipboard button
@@ -178,7 +182,13 @@ class GuiSettings {
         if (guiSettings.forceWL) this.#forceWLCheck.click();
         this.#scoreAutoCheck.checked = guiSettings.scoreAutoUpdate;
         this.#invertScoreCheck.checked = guiSettings.invertScore;
+        // enforce mutual exclusivity — scoreAutoUpdate wins if both were somehow saved as true
+        if (guiSettings.scoreAutoUpdate && guiSettings.invertScore) {
+            this.#invertScoreCheck.checked = false;
+            this.save("invertScore", false);
+        }
         this.#simpleTextsCheck.checked = guiSettings.simpleTexts;
+        this.#abbreviateRoundCheck.checked = guiSettings.abbreviateRound;
 
         if (inside.electron) {
             this.#alwaysOnTopCheck.checked = guiSettings.alwaysOnTop;
@@ -400,6 +410,10 @@ class GuiSettings {
 
     isSimpleTextsChecked() {
         return this.#simpleTextsCheck.checked;
+    }
+
+    isAbbreviateRoundChecked() {
+        return this.#abbreviateRoundCheck.checked;
     }
 
     /**
