@@ -30,6 +30,8 @@ class GuiSettings {
     #ipDisplay = document.getElementById("displayLocalIp");
     #httpPortDisplay = document.getElementById("displayHttpPort");
     #wsPortDisplay = document.getElementById("displayWsPort");
+    #localIp = '–';
+    #httpPort = null;
 
     #alwaysOnTopCheck = document.getElementById("alwaysOnTop");
     #resizableCheck = document.getElementById("resizableWindow");
@@ -67,10 +69,18 @@ class GuiSettings {
         this.#customRound.addEventListener("click", () => {this.toggleCustomRound()});
         this.#forceWLCheck.addEventListener("click", () => {this.toggleForceWL()});
         this.#scoreAutoCheck.addEventListener("click", () => {
-            this.save("scoreAutoUpdate", this.isScoreAutoChecked())
+            if (this.isScoreAutoChecked()) {
+                this.#invertScoreCheck.checked = false;
+                this.save("invertScore", false);
+            }
+            this.save("scoreAutoUpdate", this.isScoreAutoChecked());
         });
         this.#invertScoreCheck.addEventListener("click", () => {
-            this.save("invertScore", this.isInvertScoreChecked())
+            if (this.isInvertScoreChecked()) {
+                this.#scoreAutoCheck.checked = false;
+                this.save("scoreAutoUpdate", false);
+            }
+            this.save("invertScore", this.isInvertScoreChecked());
         });
         this.#simpleTextsCheck.addEventListener("click", () => {
             this.save("simpleTexts", this.isSimpleTextsChecked())
@@ -86,6 +96,7 @@ class GuiSettings {
             const { ipcRenderer } = require('electron');
             ipcRenderer.on('actualPorts', (event, { httpPort, wsPort }) => {
                 this.displayPorts(httpPort, wsPort);
+                this.#httpPort = httpPort;
             });
 
             // find the first non-internal IPv4 address
@@ -100,7 +111,12 @@ class GuiSettings {
                     }
                 }
             }
+            this.#localIp = localIp;
             this.#ipDisplay.textContent = localIp;
+            document.getElementById("openRemoteEditor").addEventListener("click", () => {
+                const { shell } = require('electron');
+                if (this.#httpPort) shell.openExternal(`http://${this.#localIp}:${this.#httpPort}`);
+            });
             this.#setAlwaysOnTopListener();
             this.#setResizableListener();
             this.#lessZoomButt.addEventListener("click", () => {this.#lessZoom()})

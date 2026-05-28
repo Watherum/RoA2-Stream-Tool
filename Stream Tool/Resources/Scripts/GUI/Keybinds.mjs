@@ -63,12 +63,28 @@ export function loadKeybinds() {
 
     // F1 or F2 to give players a score tick
     Mousetrap.bind('f1', () => {
+        if (!settings.isScoreAutoChecked() && !settings.isInvertScoreChecked()) return;
         scores[0].giveWin();
-        if (settings.isScoreAutoChecked()) {writeScoreboard()};
+        writeScoreboard();
     });
     Mousetrap.bind('f2', () => {
+        if (!settings.isScoreAutoChecked() && !settings.isInvertScoreChecked()) return;
         scores[1].giveWin();
-        if (settings.isScoreAutoChecked()) {writeScoreboard()};
+        writeScoreboard();
+    });
+
+    // Shift+F1 / Shift+F2 — always opposite direction of F1/F2
+    Mousetrap.bind('shift+f1', () => {
+        if (!settings.isScoreAutoChecked() && !settings.isInvertScoreChecked()) return;
+        const value = settings.isInvertScoreChecked() ? 1 : -1;
+        scores[0].setScore(scores[0].getScore() + value);
+        writeScoreboard();
+    });
+    Mousetrap.bind('shift+f2', () => {
+        if (!settings.isScoreAutoChecked() && !settings.isInvertScoreChecked()) return;
+        const value = settings.isInvertScoreChecked() ? 1 : -1;
+        scores[1].setScore(scores[1].getScore() + value);
+        writeScoreboard();
     });
 
     // up/down, to navigate the finders (only when one is shown)

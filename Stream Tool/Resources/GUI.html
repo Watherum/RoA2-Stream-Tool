@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RoA2 Stream Tool v13.4.0</title>
+  <title>RoA2 Stream Tool v13.6.0</title>
   <link rel="stylesheet" href="CSS/GUI.css">
   <link rel="stylesheet" href="CSS/GUI Custom.css">
   <script src="Scripts/GUI/mousetrap.min.js" defer></script>
@@ -338,12 +338,15 @@ They will always appear when typing 'Grand' in the round box.">
           <label for="forceWLToggle" class="settingsText">Force [W] / [L]</span>
         </div>
 
-        <div class="settingBox" title="Scoreboard data will instantly update when pressing a score hotkey (F1/F2).">
+        <div class="settingBox" title="Scoreboard data will instantly update when pressing a score hotkey (F1/F2).
+Cannot be used with Backwards score hotkeys.">
           <input type="checkbox" id="scoreAutoUpdate" class="settingsCheck" tabindex="-1">
-          <label for="scoreAutoUpdate" class="settingsText">Update on score hotkey</span>
+          <label for="scoreAutoUpdate" class="settingsText">Update on score hotkeys</span>
         </div>
 
-        <div class="settingBox" title="Score hotkeys (F1/F2) will remove score ticks instead of adding them.">
+        <div class="settingBox" title="F1/F2 will remove score ticks instead of adding them.
+Shift+F1 / Shift+F2 will add score ticks.
+Cannot be used with Update on score hotkey.">
           <input type="checkbox" id="invertScore" class="settingsCheck" tabindex="-1">
           <label for="invertScore" class="settingsText">Backwards score hotkeys</span>
         </div>
@@ -373,6 +376,10 @@ They will always appear when typing 'Grand' in the round box.">
 
           <div class="settingBox">
             <label class="settingsText">WebSocket port: <span id="displayWsPort">–</span></label>
+          </div>
+
+          <div id="settingsButtonSection">
+            <button class="settingsButton" id="openRemoteEditor" tabindex="-1">Open Remote Editor</button>
           </div>
 
           <div class="settingsTitle">Window Settings</div>
@@ -410,6 +417,7 @@ They will always appear when typing 'Grand' in the round box.">
           <input type="password" id="startGGToken" class="textInput settingsTextInp mousetrap" placeholder="API Token" spellcheck="false" tabindex="-1">
         </div>
 
+        <div style="text-align: center; font-size: 0.75em; opacity: 0.6; padding: 2px 0 0;">tournament/slug/event/slug</div>
         <div class="settingBox">
           <input type="text" id="startGGSlug" class="textInput settingsTextInp mousetrap" placeholder="tournament/slug/event/slug" spellcheck="false" tabindex="-1">
         </div>

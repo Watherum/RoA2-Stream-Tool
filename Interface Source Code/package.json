@@ -1,6 +1,6 @@
 {
   "name": "roa2-st-gui",
-  "version": "13.4.0",
+  "version": "13.6.0",
   "description": "An electron interface for RoA2 tournament streams.",
   "main": "index.js",
   "repository": "https://github.com/Watherum/RoA2-Stream-Tool",
@@ -16,6 +16,7 @@
   },
   "build": {
     "appId": "roa2.st.gui",
+    "productName": "RoA2 Stream Tool",
     "linux": {
       "target": "AppImage"
     },

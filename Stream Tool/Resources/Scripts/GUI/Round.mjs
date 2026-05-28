@@ -51,7 +51,10 @@ class Round {
 
         // function to call when selecting an option
         this.#roundSelect.addEventListener("change", () => {this.updateSelect()});
-        
+
+        // show number input immediately if the default round needs one
+        if (this.isNumberNeeded()) this.showNumberInput();
+
     }
 
     getText() {
