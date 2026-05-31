@@ -148,6 +148,8 @@ class GuiSettings {
 
         // fetch seeds button
         this.#startGGFetch.addEventListener("click", async () => {
+            startGG.setToken(this.#startGGToken.value);
+            startGG.setSlug(this.#startGGSlug.value);
             this.#startGGStatus.textContent = "Fetching...";
             this.#startGGFetch.disabled = true;
             const result = await startGG.fetchSeeds();

@@ -39,7 +39,7 @@ class Round {
         // add in additional custom and none options
         const customOption = document.createElement('option');
         customOption.value = "";
-        customOption.innerHTML = "(custom text)";
+        customOption.innerHTML = "Custom Text";
         customOption.style.backgroundColor = "var(--bg5)";
         this.#roundSelect.appendChild(customOption);
 
