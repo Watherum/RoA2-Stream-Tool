@@ -18,5 +18,6 @@
   "webSocketPort": 8080,
   "startGGToken": "",
   "startGGSlug": "",
-  "abbreviateRound": true
+  "abbreviateRound": true,
+  "startGGTokenFromProps": true
 }

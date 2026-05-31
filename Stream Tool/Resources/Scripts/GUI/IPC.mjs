@@ -4,6 +4,7 @@ import { commFinder } from './Finder/Comm Finder.mjs';
 import { playerFinder } from './Finder/Player Finder.mjs';
 import { updateGUI } from './Remote Update.mjs';
 import { settings } from './Settings.mjs';
+import { startGG } from './Start GG.mjs';
 import { writeScoreboard } from './Write Scoreboard.mjs';
 
 const ipc = require('electron').ipcRenderer;
@@ -130,6 +131,17 @@ ipc.on('remoteGuiData', async (event, data) => {
         // yep you guessed it
         await replaceBracket(jsonData);
         updateBracket(true);
+
+    } else if (jsonData.message == "remoteStartGGFetch") {
+
+        startGG.setSlug(jsonData.slug);
+        const result = await startGG.fetchSeeds();
+        if (result.success && result.newPresets > 0) {
+            await playerFinder.setPlayerPresets();
+            await commFinder.setCasterPresets();
+            ipc.send("sendData", JSON.stringify({id: "remoteGUI", message: "updatePresets"}, null, 2));
+        }
+        ipc.send("sendData", JSON.stringify({id: "remoteGUI", message: "startGGFetchResult", ...result}, null, 2));
 
     }
 

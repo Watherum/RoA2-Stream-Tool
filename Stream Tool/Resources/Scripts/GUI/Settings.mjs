@@ -42,6 +42,7 @@ class GuiSettings {
     #zoomValue = 100;
     #restoreWindowButt = document.getElementById("restoreWindowButt");
 
+    #startGGTokenBox = document.getElementById("startGGTokenBox");
     #startGGToken = document.getElementById("startGGToken");
     #startGGSlug = document.getElementById("startGGSlug");
     #startGGFetch = document.getElementById("startGGFetch");
@@ -130,6 +131,7 @@ class GuiSettings {
             });
         } else {
             document.getElementById("settingsElectron").style.display = "none";
+            this.#startGGTokenBox.style.display = "none";
         }
 
         // clicking the settings button will bring up the menu
@@ -141,6 +143,7 @@ class GuiSettings {
         this.#startGGToken.addEventListener("change", () => {
             startGG.setToken(this.#startGGToken.value);
             this.save("startGGToken", this.#startGGToken.value);
+            this.save("startGGTokenFromProps", false);
         });
         this.#startGGSlug.addEventListener("change", () => {
             startGG.setSlug(this.#startGGSlug.value);
@@ -148,17 +151,17 @@ class GuiSettings {
 
         // fetch seeds button
         this.#startGGFetch.addEventListener("click", async () => {
-            startGG.setToken(this.#startGGToken.value);
-            startGG.setSlug(this.#startGGSlug.value);
             this.#startGGStatus.textContent = "Fetching...";
             this.#startGGFetch.disabled = true;
-            const result = await startGG.fetchSeeds();
-            this.#startGGFetch.disabled = false;
-            if (result.success) {
-                if (result.newPresets > 0) playerFinder.appendPresets(result.newPresetObjects);
-                this.#startGGStatus.textContent = `${result.count} players seeded, ${result.newPresets} new presets created`;
+            if (inside.electron) {
+                startGG.setToken(this.#startGGToken.value);
+                startGG.setSlug(this.#startGGSlug.value);
+                const result = await startGG.fetchSeeds();
+                this.handleStartGGResult(result);
             } else {
-                this.#startGGStatus.textContent = `Error: ${result.error}`;
+                const remote = await import("./Remote Requests.mjs");
+                remote.sendRemoteData({ message: "remoteStartGGFetch", slug: this.#startGGSlug.value });
+                // button re-enabled when startGGFetchResult arrives
             }
         });
 
@@ -201,7 +204,7 @@ class GuiSettings {
             this.#changeZoom();
         }
 
-        if (guiSettings.startGGToken) {
+        if (inside.electron && guiSettings.startGGToken) {
             this.#startGGToken.value = guiSettings.startGGToken;
             startGG.setToken(guiSettings.startGGToken);
         }
@@ -210,6 +213,7 @@ class GuiSettings {
         if (inside.electron) {
             const fs = require('fs');
             const propsPath = stPath.text + '/../app.properties.txt';
+            let fromProps = false;
             if (fs.existsSync(propsPath)) {
                 const lines = fs.readFileSync(propsPath, 'utf8').split('\n');
                 for (const line of lines) {
@@ -222,10 +226,14 @@ class GuiSettings {
                         this.#startGGToken.disabled = true;
                         startGG.setToken(value);
                         this.#startGGStatus.textContent = "Token loaded from app.properties.txt";
+                        fromProps = true;
                         break;
                     }
                 }
             }
+            this.save("startGGTokenFromProps", fromProps);
+        } else if (guiSettings.startGGTokenFromProps) {
+            this.#startGGStatus.textContent = "Token loaded from app.properties.txt";
         }
 
     }
@@ -488,6 +496,16 @@ class GuiSettings {
         webFrame.setZoomFactor(this.#zoomValue / 100);
         this.#zoomTextValue.innerHTML = `${this.#zoomValue}%`;
         this.save("zoom", this.#zoomValue);
+    }
+
+    handleStartGGResult(result) {
+        this.#startGGFetch.disabled = false;
+        if (result.success) {
+            if (result.newPresets > 0) playerFinder.appendPresets(result.newPresetObjects);
+            this.#startGGStatus.textContent = `${result.count} players seeded, ${result.newPresets} new presets created`;
+        } else {
+            this.#startGGStatus.textContent = `Error: ${result.error}`;
+        }
     }
 
     displayPorts(http, ws) {

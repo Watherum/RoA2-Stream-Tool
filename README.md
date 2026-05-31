@@ -7,17 +7,75 @@
 
 <h1 align="center">RoA2 Stream Tool</h1>
 
-I have changed this tool to be more focused on Rivals 2 and my own use cases.
+This is a heavily modified fork of Readek's RoA Stream Tool, refocused on Rivals of Aether 2 and built around competitive tournaments and content creation. 
+Doubles mode is currently not available, caster information is not sent to the scoreboard htmls.
 
-It steps away from adding every skin (although you could) and instead focuses on using official HD renders of the characters and RoA2 Stock Icons.
-Characters that dont exist in RoA2 yet but were in RoA are not selectable in the drop down. 
+---
 
-This version also outputs all relevant details from a set to files and you can use that to set all the information on a custom overlay image.
-You could still use the original HTML but that will likely need some adjustment for the new artwork.
+## What's different in this version
 
-All features from the original stream tool are still present.
+### Rivals 2 focus
+- Uses official HD character renders and RoA2 stock icons throughout
+- Characters from RoA1 that haven't made it into RoA2 are excluded from the character picker
+- Workshop character support is still available and can be toggled in settings
 
+### Custom scoreboards
+Several themed scoreboard overlays are included out of the box:
+- **Default** — clean general-purpose scoreboard
+- **Capital Region** — built for Capital Region events
+- **Watherum** — personal broadcast layout
+- **Twist of Fate** — event-specific overlay
+- **Abyss** — event-specific scoreboard
 
+### start.gg integration
+- Enter your tournament's event slug and fetch all entrant data in one click
+- Automatically populates player **seeds**, **country flags**, and **sponsor tags** into presets
+- New player presets are created automatically; existing ones are updated
+- Country flag images are downloaded locally on fetch so they work offline in OBS
+- API token can be loaded securely from `app.properties.txt` (kept off the GUI entirely)
+
+### Player presets
+- Full preset system with name, sponsor tag, pronouns, seed, country, socials, and character history
+- **Preset Browser** — searchable modal to quickly find and load a player from your preset library
+- Quick-save button to save the current player state as a preset without opening the browser
+- Presets store **Discord**, **Instagram**, **Twitter**, and **Twitch** social handles
+- Selecting a preset fills the player slot; changing the name clears both scores automatically
+
+### Score management
+- **F1 / F2** hotkeys increment Player 1's or Player 2's score and push an update immediately — enable this in settings
+- **Shift+F1 / Shift+F2** decrement the respective score
+- **Invert score** mode flips which player F1 and F2 affect — useful when your layout puts P2 on the left
+- Swapping players correctly carries over tags, pronouns, socials, seed, and country
+- Changing a player name resets both scores to prevent carryover from a previous set
+
+### Round & match settings
+- Full bracket round preset list including Winners Quarters, Losers Top 8, Grand Finals, True Finals, etc.
+- **Custom Text** mode — free-type any round name directly
+- **Abbreviate Round** option — shortens round names on overlays for tighter layouts
+- Best-of selector with cycle button — supported modes: **Bo3**, **Bo5**, **BoX** (custom numeric), **FT5**, **FT10**, **FTX** (custom first-to)
+- Winners/Losers indicator with optional force-display setting
+
+### Simple texts output
+- All player and match info is written to plain text files in real time
+- Allows OBS text sources to display any field on custom overlays without using the HTML scoreboard
+- Includes dedicated files for character icons and country flags as HTML browser sources
+
+### Remote GUI
+- Full GUI accessible from any device on the local network (phone, tablet, second PC)
+- **Open Remote Editor** button in settings launches the remote GUI in your default browser instantly
+- start.gg fetch is proxied securely through the host machine — the API token never leaves the Electron app
+- Operators on the remote GUI can enter a tournament slug and fetch data without ever seeing the token
+
+### Other quality-of-life additions
+- **Match info to clipboard** — copies a formatted match string for YouTube/Twitch titles
+- **Copy local IP** — displayed in settings for quick remote GUI access
+- Window always-on-top and resizable window toggles
+- Zoom controls for high-DPI displays
+
+### Got Feedback? Need to report a bug?
+- Contact me on discord! *[Discord Server](https://discord.gg/6u4hkKtjnX)!*
+
+---
 
 # Original Readme from Readek
 So you want to do a Rivals of Aether stream, huh? Well, today is your lucky day, because I have done tons of work so you don’t have to! With this tool, you will be able to set up a RoA tournament stream in no time.

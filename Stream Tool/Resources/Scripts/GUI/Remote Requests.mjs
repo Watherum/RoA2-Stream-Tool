@@ -63,6 +63,10 @@ async function getData(data) {
 
         settings.toggleWs();
 
+    } else if (data.message == "startGGFetchResult") {
+
+        settings.handleStartGGResult(data);
+
     } else if (data.GrandFinals) { // if this is bracket data
 
         replaceBracket(data);

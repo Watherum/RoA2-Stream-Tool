@@ -57,7 +57,7 @@
 
 #p1score {
     font-size: 70px;
-    top: 22px;
+    top: 21px;
     left: 752px;
     transform: translateX(-50%);
     white-space: nowrap;
@@ -92,7 +92,7 @@
 
 #p2score {
     font-size: 70px;
-    top: 22px;
+    top: 21px;
     left: 1178px;
     transform: translateX(-50%);
     white-space: nowrap;

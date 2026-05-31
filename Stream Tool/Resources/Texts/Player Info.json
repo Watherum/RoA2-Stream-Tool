@@ -1,5 +1,14 @@
 [
   {
+    "name": "Acorn",
+    "tag": "AoC",
+    "pronouns": "",
+    "seed": 6,
+    "country": "United States",
+    "socials": {},
+    "characters": []
+  },
+  {
     "name": "AlphaStone",
     "tag": "",
     "pronouns": "",
@@ -9,10 +18,19 @@
     "characters": []
   },
   {
+    "name": "Animal",
+    "tag": "",
+    "pronouns": "",
+    "seed": 3,
+    "country": "United States",
+    "socials": {},
+    "characters": []
+  },
+  {
     "name": "Ant",
     "tag": "",
     "pronouns": "",
-    "seed": 1,
+    "seed": 2,
     "country": "United States",
     "socials": {},
     "characters": []
@@ -43,6 +61,15 @@
     ]
   },
   {
+    "name": "aubreyclo",
+    "tag": "",
+    "pronouns": "",
+    "seed": 15,
+    "country": "United States",
+    "socials": {},
+    "characters": []
+  },
+  {
     "name": "Average Alex",
     "tag": "C2F",
     "pronouns": "He/Him",
@@ -67,7 +94,7 @@
     "name": "B-Rabbit",
     "tag": "LD",
     "pronouns": "",
-    "seed": 15,
+    "seed": 27,
     "country": "",
     "socials": {},
     "characters": []
@@ -76,7 +103,7 @@
     "name": "BlazeBlast",
     "tag": "",
     "pronouns": "",
-    "seed": 21,
+    "seed": 34,
     "country": "United States",
     "socials": {},
     "characters": []
@@ -94,7 +121,16 @@
     "name": "Bowler",
     "tag": "",
     "pronouns": "",
-    "seed": 8,
+    "seed": 16,
+    "country": "United States",
+    "socials": {},
+    "characters": []
+  },
+  {
+    "name": "CakeAssault",
+    "tag": "",
+    "pronouns": "",
+    "seed": 1,
     "country": "United States",
     "socials": {},
     "characters": []
@@ -118,10 +154,28 @@
     "characters": []
   },
   {
+    "name": "ConfusedToaster",
+    "tag": "Bato",
+    "pronouns": "",
+    "seed": 29,
+    "country": "United States",
+    "socials": {},
+    "characters": []
+  },
+  {
     "name": "Cy",
     "tag": "",
     "pronouns": "",
     "seed": 18,
+    "country": "United States",
+    "socials": {},
+    "characters": []
+  },
+  {
+    "name": "draco m.",
+    "tag": "",
+    "pronouns": "",
+    "seed": 32,
     "country": "United States",
     "socials": {},
     "characters": []
@@ -209,11 +263,29 @@
     "characters": []
   },
   {
+    "name": "Gengu",
+    "tag": "",
+    "pronouns": "",
+    "seed": 31,
+    "country": "United States",
+    "socials": {},
+    "characters": []
+  },
+  {
     "name": "Geo",
     "tag": "",
     "pronouns": "",
     "seed": 17,
     "country": "United States",
+    "socials": {},
+    "characters": []
+  },
+  {
+    "name": "Gordrack",
+    "tag": "",
+    "pronouns": "",
+    "seed": 13,
+    "country": "Canada",
     "socials": {},
     "characters": []
   },
@@ -240,6 +312,15 @@
     "tag": "RBE",
     "pronouns": "",
     "seed": 4,
+    "country": "United States",
+    "socials": {},
+    "characters": []
+  },
+  {
+    "name": "It's Syl!",
+    "tag": "Bizz!",
+    "pronouns": "",
+    "seed": 21,
     "country": "United States",
     "socials": {},
     "characters": []
@@ -272,6 +353,15 @@
     "characters": []
   },
   {
+    "name": "Krysos22",
+    "tag": "DLN",
+    "pronouns": "",
+    "seed": 28,
+    "country": "United States",
+    "socials": {},
+    "characters": []
+  },
+  {
     "name": "LemonCake",
     "tag": "",
     "pronouns": "",
@@ -284,7 +374,7 @@
     "name": "Lucent εχΘ",
     "tag": "Δ&Λ",
     "pronouns": "",
-    "seed": 27,
+    "seed": 20,
     "country": "United States",
     "socials": {},
     "characters": []
@@ -345,6 +435,24 @@
   },
   {
     "name": "Monocle Gentlesir",
+    "tag": "",
+    "pronouns": "",
+    "seed": 17,
+    "country": "",
+    "socials": {},
+    "characters": []
+  },
+  {
+    "name": "Mr. Nice Guy",
+    "tag": "Dansmello",
+    "pronouns": "",
+    "seed": 5,
+    "country": "United States",
+    "socials": {},
+    "characters": []
+  },
+  {
+    "name": "MVShirogane",
     "tag": "",
     "pronouns": "",
     "seed": 23,
@@ -422,7 +530,7 @@
     "name": "RivalsRatGod",
     "tag": "",
     "pronouns": "",
-    "seed": 24,
+    "seed": 25,
     "country": "United States",
     "socials": {},
     "characters": []
@@ -431,7 +539,7 @@
     "name": "SapphireGD",
     "tag": "AoC",
     "pronouns": "",
-    "seed": 2,
+    "seed": 8,
     "country": "United States",
     "socials": {},
     "characters": []
@@ -449,7 +557,7 @@
     "name": "Sh-Awe",
     "tag": "",
     "pronouns": "",
-    "seed": 5,
+    "seed": 30,
     "country": "United States",
     "socials": {},
     "characters": []
@@ -458,16 +566,16 @@
     "name": "Shard",
     "tag": "",
     "pronouns": "",
-    "seed": 6,
+    "seed": 12,
     "country": "United States",
     "socials": {},
     "characters": []
   },
   {
     "name": "Silly goose 87",
-    "tag": "sladelover",
+    "tag": "sladequiter",
     "pronouns": "",
-    "seed": 16,
+    "seed": 22,
     "country": "United States",
     "socials": {},
     "characters": []
@@ -494,7 +602,7 @@
     "name": "Sophilo",
     "tag": "Shrug Club",
     "pronouns": "",
-    "seed": 1,
+    "seed": 4,
     "country": "United States",
     "socials": {},
     "characters": []
@@ -512,7 +620,7 @@
     "name": "Suture",
     "tag": "",
     "pronouns": "",
-    "seed": 19,
+    "seed": 24,
     "country": "United States",
     "socials": {},
     "characters": []
@@ -521,7 +629,7 @@
     "name": "TanK",
     "tag": "",
     "pronouns": "",
-    "seed": 20,
+    "seed": 26,
     "country": "United States",
     "socials": {},
     "characters": []
@@ -548,6 +656,15 @@
     ]
   },
   {
+    "name": "ThatBupGuy",
+    "tag": "Kragg",
+    "pronouns": "",
+    "seed": 18,
+    "country": "United States",
+    "socials": {},
+    "characters": []
+  },
+  {
     "name": "ThrowOut",
     "tag": "",
     "pronouns": "",
@@ -569,7 +686,7 @@
     "name": "Triforce!",
     "tag": ":^)",
     "pronouns": "",
-    "seed": 7,
+    "seed": 11,
     "country": "United States",
     "socials": {},
     "characters": []
@@ -611,6 +728,15 @@
     "characters": []
   },
   {
+    "name": "vibe",
+    "tag": "",
+    "pronouns": "",
+    "seed": 7,
+    "country": "United States",
+    "socials": {},
+    "characters": []
+  },
+  {
     "name": "Viviana",
     "tag": "NS",
     "pronouns": "",
@@ -620,10 +746,19 @@
     "characters": []
   },
   {
+    "name": "vooni",
+    "tag": "",
+    "pronouns": "",
+    "seed": 14,
+    "country": "United States",
+    "socials": {},
+    "characters": []
+  },
+  {
     "name": "waddlespch",
     "tag": "EGG",
     "pronouns": "",
-    "seed": 4,
+    "seed": 10,
     "country": "United States",
     "socials": {},
     "characters": []
@@ -667,8 +802,17 @@
         "skin": "Default"
       }
     ],
-    "seed": 4,
+    "seed": 19,
     "country": "United States"
+  },
+  {
+    "name": "XenoShinX",
+    "tag": "",
+    "pronouns": "",
+    "seed": 33,
+    "country": "",
+    "socials": {},
+    "characters": []
   },
   {
     "name": "ybm",
