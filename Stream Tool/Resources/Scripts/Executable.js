@@ -151,7 +151,7 @@ function createWindow() {
 
         backgroundColor: "#383838",
 
-        title: "RoA Stream Tool v13.10.0 [developer build]", // will get overwitten by gui html title
+        title: "RoA Stream Tool v15.0.0 [developer build]", // will get overwitten by gui html title
         icon: path.join(nodePath, 'icon.png'),
 
         webPreferences: {
@@ -250,11 +250,20 @@ function createWindow() {
     })
 
     win.on("close", () => {
-        // save current window dimensions
-        guiWidth = win.getBounds().width;
-        guiHeight = win.getBounds().height;
+        // save current window dimensions while renderer is still alive and all async saves are done
+        const bounds = win.getBounds();
+        const rawWidth  = process.platform == "win32" ? bounds.width  - 8  : bounds.width;
+        const rawHeight = process.platform == "win32" ? bounds.height - 30 : bounds.height;
+        try {
+            const data = JSON.parse(fs.readFileSync(`${resourcesPath}/Texts/GUI Settings.json`));
+            data.guiWidth  = rawWidth;
+            data.guiHeight = rawHeight;
+            fs.writeFileSync(`${resourcesPath}/Texts/GUI Settings.json`, JSON.stringify(data, null, 2));
+        } catch (e) {
+            console.log("Could not save window dimensions:", e);
+        }
     })
-    
+
 }
 
 // create window on startup
@@ -266,17 +275,6 @@ app.whenReady().then(() => {
 // close electron when all windows close (for Windows and Linux)
 app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') {
-        // save current window dimensions
-        const data = JSON.parse(fs.readFileSync(`${resourcesPath}/Texts/GUI Settings.json`));
-        if (process.platform == "win32") {
-            data.guiWidth = guiWidth - 8;
-            data.guiHeight = guiHeight - 30;
-        } else {
-            data.guiWidth = guiWidth;
-            data.guiHeight = guiHeight;
-        }
-        fs.writeFileSync(`${resourcesPath}/Texts/GUI Settings.json`, JSON.stringify(data, null, 2));
-        // and good bye
         app.quit()
     }
 });

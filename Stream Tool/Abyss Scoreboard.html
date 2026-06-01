@@ -17,7 +17,7 @@
 
         const p1name = document.getElementById("p1name");
         const p2name = document.getElementById("p2name");
-        
+
         const p1pronouns = document.getElementById("p1pronouns");
         const p2pronouns = document.getElementById("p2pronouns");
 
@@ -35,6 +35,25 @@
 
         const p1flag = document.getElementById("p1flag");
         const p2flag = document.getElementById("p2flag");
+
+        const canvas = document.getElementById("canvas");
+        const introEls = [char1icon, char2icon, p1name, p2name, p1pronouns, p2pronouns,
+                          p1score, p2score, p1wl, p2wl, p1seed, p2seed, p1flag, p2flag,
+                          round, bestOf];
+
+        const overlayIntro = document.getElementById("overlayIntro");
+        const introWhiteBarTop = document.getElementById("introWhiteBarTop");
+        const introWhiteBarBot = document.getElementById("introWhiteBarBot");
+        const p1Intro = document.getElementById("p1Intro");
+        const p2Intro = document.getElementById("p2Intro");
+        const midTextIntro = document.getElementById("midTextIntro");
+        const roundIntro = document.getElementById("roundIntro");
+        const tNameIntro = document.getElementById("tNameIntro");
+        const rtIntro = document.getElementById("rtIntro");
+        const superCoolQ = document.getElementById("superCoolInterrogation");
+
+        const introDelay = 0.6;
+        const fadeTime = 0.3;
 
         const _rawCodes = await fetch("Resources/COUNTRY_CODES.json").then(r => r.json()).catch(() => ({}));
         const COUNTRY_CODES = Object.fromEntries(Object.entries(_rawCodes).map(([code, name]) => [name, code]));
@@ -55,6 +74,61 @@
             while (el.scrollWidth > maxWidth && parseFloat(el.style.fontSize) > 8) {
                 el.style.fontSize = (parseFloat(el.style.fontSize) - 1) + "px";
             }
+        }
+
+        function playIntro(data) {
+            // Clear animations and revert opacity to CSS default (0) — element stays in
+            // the document so the offsetWidth reflow below actually works
+            overlayIntro.style.animation = "";
+            overlayIntro.style.opacity = "";
+            introWhiteBarTop.style.animation = "";
+            introWhiteBarBot.style.animation = "";
+            p1Intro.style.animation = "";
+            p2Intro.style.animation = "";
+            p1Intro.textContent = "";
+            p2Intro.textContent = "";
+            midTextIntro.textContent = "VS";
+            superCoolQ.style.animation = "";
+            rtIntro.style.animation = "";
+
+            void overlayIntro.offsetWidth; // force reflow to restart animations
+
+            overlayIntro.style.opacity = "1";
+
+            introWhiteBarTop.style.animation = `introWhiteBarTop .5s ${introDelay}s cubic-bezier(0, 0, .2, 1) both`;
+            introWhiteBarBot.style.animation = `introWhiteBarBot .5s ${introDelay}s cubic-bezier(0, 0, .2, 1) both`;
+
+            if (data.score[0] + data.score[1] === 0) {
+                p1Intro.textContent = data.player[0].name;
+                p2Intro.textContent = data.player[1].name;
+                p1Intro.style.fontSize = "85px";
+                p2Intro.style.fontSize = "85px";
+                while (p1Intro.scrollWidth > 500 && parseFloat(p1Intro.style.fontSize) > 8)
+                    p1Intro.style.fontSize = (parseFloat(p1Intro.style.fontSize) - 1) + "px";
+                while (p2Intro.scrollWidth > 500 && parseFloat(p2Intro.style.fontSize) > 8)
+                    p2Intro.style.fontSize = (parseFloat(p2Intro.style.fontSize) - 1) + "px";
+                p1Intro.style.animation = `moveInLeft ${fadeTime}s ${introDelay}s both, fadeIn ${fadeTime}s ${introDelay}s both`;
+                p2Intro.style.animation = `moveInRight ${fadeTime}s ${introDelay}s both, fadeIn ${fadeTime}s ${introDelay}s both`;
+            } else {
+                const total = data.score[0] + data.score[1];
+                if (total !== 4) {
+                    midTextIntro.textContent = "Game " + (total + 1);
+                } else if (data.round?.toUpperCase() === "TRUE FINALS") {
+                    midTextIntro.textContent = "True Final Game";
+                } else {
+                    midTextIntro.textContent = "Final Game";
+                    if (data.round?.toUpperCase() === "GRAND FINALS" && !(data.wl[0] === "L" && data.wl[1] === "L")) {
+                        superCoolQ.style.animation = `fadeIn 1.5s ${introDelay + 0.5}s both`;
+                    }
+                }
+            }
+
+            roundIntro.textContent = data.round;
+            tNameIntro.textContent = data.tournamentName || "";
+            rtIntro.style.animation = `fadeIn ${fadeTime}s ${introDelay - 0.2}s both`;
+
+            // 'both' fill mode holds opacity:0 after the animation ends — no setTimeout needed
+            overlayIntro.style.animation = `fadeOut ${fadeTime + 0.2}s ${introDelay + 1.2}s both`;
         }
 
         initWebsocket("gameData", (data) => {
@@ -86,11 +160,21 @@
             p2score.textContent = data.score[1];
 
             round.textContent = data.round;
-            const boLabels = { ft5: "First to 5", ft10: "First to 10", ftX: "First to X" };
-            bestOf.textContent = boLabels[data.bestOf] ?? `Best of ${data.bestOf}`;
+            bestOf.textContent = data.bestOfLabel;
 
             p1wl.textContent = data.wl[0];
             p2wl.textContent = data.wl[1];
+
+            if (data.allowIntro) {
+                const fadeEls = data.introImage ? [canvas] : introEls;
+                const clearEls = data.introImage ? introEls : [canvas];
+                for (const el of [...fadeEls, ...clearEls]) el.style.animation = "";
+                void canvas.offsetWidth;
+                for (const el of fadeEls) el.style.animation = `fadeIn ${fadeTime + 0.2}s ${introDelay + 1.2}s both`;
+                playIntro(data);
+            } else {
+                for (const el of [canvas, ...introEls]) el.style.animation = "";
+            }
         });
     </script>
 
@@ -116,6 +200,28 @@
       <span id="round"></span>
       <span id="bestOf"></span>
   </div>
+
+    <div id="overlayIntro">
+        <div id="introBG"></div>
+        <div class="blackBar" id="introTopBar"></div>
+        <div class="blackBar" id="introBotBar"></div>
+        <div id="introWhiteBars">
+            <div id="introWhiteBarsClip">
+                <div class="introWhiteBar" id="introWhiteBarTop"></div>
+                <div class="introWhiteBar" id="introWhiteBarBot"></div>
+            </div>
+        </div>
+        <div id="playersIntro">
+            <span class="pIntro" id="p1Intro"></span>
+            <span class="pIntro" id="p2Intro"></span>
+        </div>
+        <div id="midTextIntro">VS</div>
+        <div id="rtIntro">
+            <span id="roundIntro"></span>
+            <span id="tNameIntro"></span>
+        </div>
+        <span id="superCoolInterrogation">?</span>
+    </div>
 
     <div id="connErrorDiv">
         Can't connect with GUI, attempting to reconnect every 5 seconds...

@@ -28,6 +28,7 @@ export async function updateGUI(data) {
 
     // set the settings
     settings.setIntro(data.allowIntro);
+    settings.setIntroImage(data.introImage);
     if (data.altSkin != settings.isAltArtChecked()) {
         settings.setAltArt(data.altSkin);
         await settings.toggleAltArt();

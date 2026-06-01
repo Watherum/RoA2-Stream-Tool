@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RoA2 Stream Tool v13.10.0</title>
+  <title>RoA2 Stream Tool v15.0.0</title>
   <link rel="stylesheet" href="CSS/GUI.css">
   <link rel="stylesheet" href="CSS/GUI Custom.css">
   <script src="Scripts/GUI/mousetrap.min.js" defer></script>
@@ -255,8 +255,7 @@
 
       <div id="roundInfo">
 
-        <div id="bestOf" title="Click to change the scoring to Best of 5">Best of 3</div>
-        <div id="bestOfPrev" title="Click to cycle scoring backwards">◀</div>
+        <select id="bestOfSelect" class="textInput"></select>
 
         <div id="presetBrowserButt" title="Browse all player presets">Presets</div>
 
@@ -315,7 +314,6 @@
 
       <div id="settingsList">
 
-        <input type="checkbox" id="allowIntro" style="display:none" tabindex="-1">
         <input type="checkbox" id="forceAlt" style="display:none" tabindex="-1">
         <input type="checkbox" id="forceHD" style="display:none" tabindex="-1">
         <input type="checkbox" id="noLoAHD" style="display:none" tabindex="-1">
@@ -359,6 +357,16 @@ Shift+F1 / Shift+F2 will add score ticks.
 Cannot be used with Update on score hotkey.">
           <input type="checkbox" id="invertScore" class="settingsCheck" tabindex="-1">
           <label for="invertScore" class="settingsText">Backwards score hotkeys</span>
+        </div>
+
+        <div class="settingBox" title="Plays a fullscreen intro animation on the overlay when updating.">
+          <input type="checkbox" id="allowIntro" class="settingsCheck" tabindex="-1">
+          <label for="allowIntro" class="settingsText">Allow intro animation</span>
+        </div>
+
+        <div class="settingBox settingBoxSub" id="introImageBox" title="Includes the overlay background image in the intro fade-in." style="display:none">
+          <input type="checkbox" id="introImage" class="settingsCheck" tabindex="-1">
+          <label for="introImage" class="settingsText">Include overlay image</span>
         </div>
 
         <div class="settingBox" title='Saves plain text files at "Resources/Texts/Simple Texts/" to be used by other apps.'>

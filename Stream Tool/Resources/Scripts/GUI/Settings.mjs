@@ -15,6 +15,8 @@ import { playerFinder } from "./Finder/Player Finder.mjs";
 class GuiSettings {
 
     #introCheck = document.getElementById("allowIntro");
+    #introImageCheck = document.getElementById("introImage");
+    #introImageBox = document.getElementById("introImageBox");
     #altArtCheck = document.getElementById("forceAlt");
 
     #HDCheck = document.getElementById('forceHD');
@@ -53,8 +55,19 @@ class GuiSettings {
     constructor() {
 
         // scoreboard listeners
-        this.#introCheck.addEventListener("click", () => {
-            this.save("allowIntro", this.isIntroChecked())
+        this.#introCheck.addEventListener("click", async () => {
+            const checked = this.isIntroChecked();
+            await this.save("allowIntro", checked);
+            if (checked) {
+                this.#introImageBox.style.display = "flex";
+            } else {
+                this.#introImageBox.style.display = "none";
+                this.#introImageCheck.checked = false;
+                await this.save("introImage", false);
+            }
+        });
+        this.#introImageCheck.addEventListener("click", () => {
+            this.save("introImage", this.isIntroImageChecked());
         });
         this.#altArtCheck.addEventListener("click", () => {this.toggleAltArt()});
 
@@ -187,6 +200,8 @@ class GuiSettings {
 
         // and update it all!
         this.#introCheck.checked = guiSettings.allowIntro;
+        this.#introImageCheck.checked = guiSettings.introImage;
+        if (guiSettings.allowIntro) this.#introImageBox.style.display = "flex";
         this.#altArtCheck.checked = guiSettings.forceAlt;
 
         this.#HDCheck.checked = guiSettings.forceHD;
@@ -277,6 +292,13 @@ class GuiSettings {
     }
     isIntroChecked() {
         return this.#introCheck.checked;
+    }
+
+    setIntroImage(value) {
+        this.#introImageCheck.checked = value;
+    }
+    isIntroImageChecked() {
+        return this.#introImageCheck.checked;
     }
 
     setAltArt(value) {

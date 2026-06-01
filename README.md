@@ -52,7 +52,10 @@ Several themed scoreboard overlays are included out of the box:
 - Full bracket round preset list including Winners Quarters, Losers Top 8, Grand Finals, True Finals, etc.
 - **Custom Text** mode — free-type any round name directly
 - **Abbreviate Round** option — shortens round names on overlays for tighter layouts
-- Best-of selector with cycle button — supported modes: **Bo3**, **Bo5**, **BoX** (custom numeric), **FT5**, **FT10**, **FTX** (custom first-to)
+- **Scoring mode dropdown** — data-driven from `Modes.json`; add or rename modes without touching code
+  - Supported modes: **Bo3**, **Bo5**, **BoX**, **FT5**, **FT10**, **FTX**, **Wins/Losses**, **Crew Battle**
+  - Selecting a free-form or non-standard mode automatically clears the round to *(None)*
+  - Wins/Losses mode auto-fills player name slots with Wins / Losses
 - Winners/Losers indicator with optional force-display setting
 
 ### Simple texts output

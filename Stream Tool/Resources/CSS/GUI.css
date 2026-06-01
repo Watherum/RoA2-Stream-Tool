@@ -676,53 +676,6 @@ button:hover {
 }
 
 
-#bestOf {
-  background-color: var(--bg4);
-  width: 80px;
-  height: 30px;
-  padding: 0px 6px;
-  box-sizing: border-box;
-  border-radius: 3px;
-  border: 1px solid var(--focused);
-  transition: border-color 100ms;
-  flex-shrink: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: var(--text2);
-  font-family: 'Roboto-Medium';
-  white-space: nowrap;
-}
-#bestOf:hover {
-  border-color: var(--selected);
-  cursor: pointer;
-}
-#bestOf:active {
-  background-color: var(--bg2);
-}
-#bestOfPrev {
-  background-color: var(--bg4);
-  width: 22px;
-  height: 30px;
-  box-sizing: border-box;
-  border-radius: 3px;
-  border: 1px solid var(--focused);
-  transition: border-color 100ms;
-  flex-shrink: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: var(--text2);
-  font-size: 10px;
-}
-#bestOfPrev:hover {
-  border-color: var(--selected);
-  cursor: pointer;
-}
-#bestOfPrev:active {
-  background-color: var(--bg2);
-}
-
 
 #presetBrowserButt {
   background-color: var(--bg4);
