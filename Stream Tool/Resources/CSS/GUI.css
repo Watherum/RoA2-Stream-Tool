@@ -989,6 +989,9 @@ button:hover {
 .settingBox:hover {
   background-color: var(--bg2);
 }
+.settingBoxSub {
+  padding-left: 18px;
+}
 
 .settingsCheck {
   outline: none;

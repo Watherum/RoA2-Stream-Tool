@@ -19,5 +19,6 @@
   "startGGToken": "",
   "startGGSlug": "",
   "abbreviateRound": true,
+  "abbreviateWL": false,
   "startGGTokenFromProps": true
 }

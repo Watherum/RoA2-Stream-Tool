@@ -1,4 +1,7 @@
 import { showScoreMode } from "./Score/Scores.mjs";
+import { settings } from "./Settings.mjs";
+import { players } from "./Player/Players.mjs";
+import { round } from "./Round.mjs";
 
 class BestOf {
 
@@ -14,6 +17,14 @@ class BestOf {
 
         this.#bestOfPrevEl.addEventListener("click", () => {
             this.#prevBestOf();
+        });
+
+        document.getElementById("abbreviateRound").addEventListener("click", () => {
+            if (this.#currentBestOf == "wl") {
+                const abbr = settings.isAbbreviateRoundChecked();
+                players[0].setName(abbr ? "W" : "Wins");
+                players[1].setName(abbr ? "L" : "Losses");
+            }
         });
 
     }
@@ -37,12 +48,16 @@ class BestOf {
         } else if (this.#currentBestOf == "ft10") {
             this.setBo("ftX");
         } else if (this.#currentBestOf == "ftX") {
+            this.setBo("wl");
+        } else if (this.#currentBestOf == "wl") {
             this.setBo(3);
         }
     }
 
     #prevBestOf() {
         if (this.#currentBestOf == 3) {
+            this.setBo("wl");
+        } else if (this.#currentBestOf == "wl") {
             this.setBo("ftX");
         } else if (this.#currentBestOf == "ftX") {
             this.setBo("ft10");
@@ -58,6 +73,8 @@ class BestOf {
     }
 
     #changeBestOf(value) {
+
+        if (this.#currentBestOf == "wl") this.#clearWlNames();
 
         if (value == 3) {
 
@@ -91,8 +108,19 @@ class BestOf {
 
             this.#currentBestOf = "ftX";
             this.#bestOfEl.innerHTML = "First to X";
-            this.#bestOfEl.title = "Click to change the scoring to Best of 5";
+            this.#bestOfEl.title = "Click to change the scoring to W/L Mode";
             showScoreMode("ftX");
+
+        } else if (value == "wl") {
+
+            this.#currentBestOf = "wl";
+            this.#bestOfEl.innerHTML = "W/L Mode";
+            this.#bestOfEl.title = "Click to change the scoring to Best of 3";
+            showScoreMode("wl");
+            round.setNone();
+            const abbr = settings.isAbbreviateRoundChecked();
+            players[0].setName(abbr ? "W" : "Wins");
+            players[1].setName(abbr ? "L" : "Losses");
 
         } else if (value == 5) {
 
@@ -103,6 +131,12 @@ class BestOf {
 
         }
 
+    }
+
+    #clearWlNames() {
+        players[0].setName("");
+        players[1].setName("");
+        round.setWinnersRound();
     }
 
 }

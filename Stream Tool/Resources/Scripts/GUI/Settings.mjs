@@ -27,6 +27,8 @@ class GuiSettings {
     #invertScoreCheck = document.getElementById("invertScore");
     #simpleTextsCheck = document.getElementById("simpleTexts")
     #abbreviateRoundCheck = document.getElementById("abbreviateRound")
+    #abbreviateWLCheck = document.getElementById("abbreviateWL")
+    #abbreviateWLBox = document.getElementById("abbreviateWLBox")
 
     #ipDisplay = document.getElementById("displayLocalIp");
     #httpPortDisplay = document.getElementById("displayHttpPort");
@@ -89,6 +91,16 @@ class GuiSettings {
         });
         this.#abbreviateRoundCheck.addEventListener("click", () => {
             this.save("abbreviateRound", this.isAbbreviateRoundChecked());
+            if (this.isAbbreviateRoundChecked()) {
+                this.#abbreviateWLBox.style.display = "flex";
+            } else {
+                this.#abbreviateWLBox.style.display = "none";
+                this.#abbreviateWLCheck.checked = false;
+                this.save("abbreviateWL", false);
+            }
+        });
+        this.#abbreviateWLCheck.addEventListener("click", () => {
+            this.save("abbreviateWL", this.isAbbreviateWLChecked());
         });
 
         // dont forget about the copy match to clipboard button
@@ -194,6 +206,8 @@ class GuiSettings {
         }
         this.#simpleTextsCheck.checked = guiSettings.simpleTexts;
         this.#abbreviateRoundCheck.checked = guiSettings.abbreviateRound;
+        this.#abbreviateWLCheck.checked = guiSettings.abbreviateWL;
+        if (guiSettings.abbreviateRound) this.#abbreviateWLBox.style.display = "flex";
 
         if (inside.electron) {
             this.#alwaysOnTopCheck.checked = guiSettings.alwaysOnTop;
@@ -424,6 +438,10 @@ class GuiSettings {
 
     isAbbreviateRoundChecked() {
         return this.#abbreviateRoundCheck.checked;
+    }
+
+    isAbbreviateWLChecked() {
+        return this.#abbreviateWLCheck.checked;
     }
 
     /**

@@ -29,7 +29,7 @@ class BestOf {
                 scoreImg[2].style.opacity = 0;
                 scoreImg[5].style.opacity = 0;
                 scoreBorder.src = "Resources/Overlay/VS Screen/Score Border Bo3.png";
-            } else if (bestOf == "X") {
+            } else if (bestOf == "X" || bestOf == "wl") {
                 scoreTicks.style.display = "none";
                 scoreNumerical.style.display = "flex";
             }

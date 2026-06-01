@@ -71,7 +71,7 @@ export class TeamTopBar {
      */
     updateBo(bo, gm) {
 
-        const effectiveBo = (bo == "ft5" || bo == "ft10" || bo == "ftX") ? "X" : bo;
+        const effectiveBo = (bo == "ft5" || bo == "ft10" || bo == "ftX" || bo == "wl") ? "X" : bo;
 
         // moves top bar to compensate for new border image width
         if (effectiveBo == "X" && gm == 1) {

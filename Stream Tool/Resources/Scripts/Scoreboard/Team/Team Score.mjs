@@ -87,7 +87,7 @@ export class TeamScore {
      */
     updateImg(gm, bo, score) {
 
-        const effectiveBo = (bo == "ft5" || bo == "ft10" || bo == "ftX") ? "X" : bo;
+        const effectiveBo = (bo == "ft5" || bo == "ft10" || bo == "ftX" || bo == "wl") ? "X" : bo;
         this.#scoreImg.src = `Resources/Overlay/Scoreboard/Score/${gm}/Bo${effectiveBo} ${score}.png`;
 
     }
@@ -99,7 +99,7 @@ export class TeamScore {
      */
     updateBo(bo, gm) {
 
-        const effectiveBo = (bo == "ft5" || bo == "ft10" || bo == "ftX") ? "X" : bo;
+        const effectiveBo = (bo == "ft5" || bo == "ft10" || bo == "ftX" || bo == "wl") ? "X" : bo;
 
         // update the border images
         this.#borderImg.src = `Resources/Overlay/Scoreboard/Borders/Border ${gm} Bo${effectiveBo}.png`;

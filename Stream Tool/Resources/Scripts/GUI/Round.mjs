@@ -45,7 +45,7 @@ class Round {
 
         const noneOption = document.createElement('option');
         noneOption.value = "";
-        noneOption.innerHTML = "(none)";
+        noneOption.innerHTML = "(None)";
         noneOption.style.backgroundColor = "var(--bg5)";
         this.#roundSelect.appendChild(noneOption);
 
@@ -71,6 +71,9 @@ class Round {
             }
             if (settings.isAbbreviateRoundChecked()) {
                 roundName = roundName.replace(/\bRound\b/g, "Rd").replace(/\bQuarters\b/g, "Qrts");
+                if (settings.isAbbreviateWLChecked()) {
+                    roundName = roundName.replace(/\bWinners\b/g, "Wnrs").replace(/\bLosers\b/g, "Lsrs");
+                }
             }
         }
 
@@ -175,6 +178,17 @@ class Round {
     clear() {
         this.#roundInp.value = "";
         this.#roundSelect.selectedIndex = 0;
+        this.updateSelect();
+    }
+
+    setNone() {
+        this.#roundSelect.selectedIndex = roundList.length + 1;
+        this.updateSelect();
+    }
+
+    setWinnersRound() {
+        this.#roundSelect.selectedIndex = 0;
+        this.#roundNumber.value = 1;
         this.updateSelect();
     }
 

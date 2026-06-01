@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RoA2 Stream Tool v13.9.0</title>
+  <title>RoA2 Stream Tool v13.10.0</title>
   <link rel="stylesheet" href="CSS/GUI.css">
   <link rel="stylesheet" href="CSS/GUI Custom.css">
   <script src="Scripts/GUI/mousetrap.min.js" defer></script>
@@ -335,6 +335,11 @@
         <div class="settingBox" title="Abbreviates predefined round names: Round → Rd., Quarters → Qrts">
           <input type="checkbox" id="abbreviateRound" class="settingsCheck" tabindex="-1">
           <label for="abbreviateRound" class="settingsText">Abbreviate round names</span>
+        </div>
+
+        <div class="settingBox settingBoxSub" id="abbreviateWLBox" title="Abbreviates Winners/Losers in round names: Winners → Wnrs, Losers → Lsrs" style="display:none">
+          <input type="checkbox" id="abbreviateWL" class="settingsCheck" tabindex="-1">
+          <label for="abbreviateWL" class="settingsText">Abbreviate Winners & Losers</span>
         </div>
         
         <div class="settingBox" title="Forces the [W]/[L] buttons to appear on the interface.
