@@ -40,6 +40,7 @@ Several themed scoreboard overlays are included out of the box:
 - Quick-save button to save the current player state as a preset without opening the browser
 - Presets store **Discord**, **Instagram**, **Twitter**, and **Twitch** social handles
 - Selecting a preset fills the player slot; changing the name clears both scores automatically
+- Each field in the player info editor has an **×** button to clear it individually
 
 ### Score management
 - **F1 / F2** hotkeys increment Player 1's or Player 2's score and push an update immediately — enable this in settings

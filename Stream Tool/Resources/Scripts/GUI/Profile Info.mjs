@@ -30,6 +30,13 @@ class ProfileInfo {
 
     constructor() {
 
+        document.querySelectorAll(".pInfoClearBtn").forEach(btn => {
+            btn.addEventListener("click", () => {
+                btn.closest(".pInfoEl").querySelector(".pInfoInput").value = "";
+                btn.closest(".pInfoEl").querySelector(".pInfoInput").focus();
+            });
+        });
+
         document.getElementById("pInfoBackButt").addEventListener("click", () => {
             this.hide();
         });

@@ -151,7 +151,7 @@ function createWindow() {
 
         backgroundColor: "#383838",
 
-        title: "RoA Stream Tool v15.0.0 [developer build]", // will get overwitten by gui html title
+        title: "RoA Stream Tool v15.1.0 [developer build]", // will get overwitten by gui html title
         icon: path.join(nodePath, 'icon.png'),
 
         webPreferences: {
@@ -196,7 +196,7 @@ function createWindow() {
 
     // always on top toggle from the GUI
     ipcMain.on('alwaysOnTop', (event, arg) => {
-        win.setAlwaysOnTop(arg)
+        win.setAlwaysOnTop(arg, 'screen-saver')
     })
 
     // window settings

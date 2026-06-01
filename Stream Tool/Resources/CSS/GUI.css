@@ -1163,6 +1163,25 @@ button:hover {
   border-radius: 0;
 }
 
+.pInfoClearBtn {
+  width: 22px;
+  min-width: 22px;
+  height: 100%;
+  padding: 0;
+  background: none;
+  border: none;
+  border-right: 1px solid var(--focused);
+  color: var(--iconFill);
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.4;
+  transition: opacity 0.15s;
+}
+.pInfoClearBtn:hover { opacity: 1; }
+
 .pInfoBotButt {
   height: 30px;
   display: flex;

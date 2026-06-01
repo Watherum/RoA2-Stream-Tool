@@ -1,5 +1,5 @@
 {
-  "guiWidth": 692,
+  "guiWidth": 670,
   "guiHeight": 346,
   "allowIntro": false,
   "workshop": false,
@@ -19,7 +19,7 @@
   "startGGToken": "",
   "startGGSlug": "",
   "abbreviateRound": true,
-  "abbreviateWL": true,
+  "abbreviateWL": false,
   "startGGTokenFromProps": true,
   "introImage": false
 }
