@@ -164,7 +164,12 @@ foreach ($rel in $userDataPaths) {
         $dest       = Join-Path $scriptDir $rel
         $destParent = Split-Path $dest -Parent
         if (-not (Test-Path $destParent)) { New-Item -ItemType Directory -Force -Path $destParent | Out-Null }
-        Copy-Item -Recurse -Force -Path $backupPath -Destination $dest
+        if ((Get-Item $backupPath).PSIsContainer) {
+            if (-not (Test-Path $dest)) { New-Item -ItemType Directory -Force -Path $dest | Out-Null }
+            Copy-Item -Recurse -Force -Path (Join-Path $backupPath "*") -Destination $dest
+        } else {
+            Copy-Item -Recurse -Force -Path $backupPath -Destination $dest
+        }
         Write-Host "  Restored: $rel" -ForegroundColor DarkGray
     }
 }

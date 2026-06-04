@@ -110,6 +110,8 @@ export async function getPresetList(folderName) {
         // for each file, add a new entry with its data
         const jsonList = [];
         for (let i = 0; i < files.length; i++) {
+            const filePath = `${folderPath}${files[i]}`;
+            if (fs.statSync(filePath).isDirectory()) continue;
             files[i] = files[i].substring(0, files[i].length - 5); // remove .json
             jsonList.push(await getJson(`${stPath.text}/${folderName}/${files[i]}`));
         }
