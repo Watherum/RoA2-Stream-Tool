@@ -100,10 +100,12 @@ export async function getCharacterList() {
 export async function getPresetList(folderName) {
 
     if (inside.electron) {
-        
+
         // get us the files to look for
         const fs = require('fs');
-        const files = fs.readdirSync(`${stPath.text}/${folderName}/`);
+        const folderPath = `${stPath.text}/${folderName}/`;
+        fs.mkdirSync(folderPath, { recursive: true });
+        const files = fs.readdirSync(folderPath);
 
         // for each file, add a new entry with its data
         const jsonList = [];
