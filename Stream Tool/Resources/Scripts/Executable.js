@@ -151,7 +151,7 @@ function createWindow() {
 
         backgroundColor: "#383838",
 
-        title: "RoA Stream Tool v15.3.0 [developer build]", // will get overwitten by gui html title
+        title: "RoA Stream Tool v15.4.0 [developer build]", // will get overwitten by gui html title
         icon: path.join(nodePath, 'icon.png'),
 
         webPreferences: {
@@ -221,10 +221,14 @@ function createWindow() {
 
         // add this new connection to the array to keep track of them
         sockets.push({ws: socket, id: req.url.substring(5)})
-    
+
+        // mark alive for the ping/pong dead-socket sweep below
+        socket.isAlive = true;
+        socket.on('pong', () => { socket.isAlive = true; });
+
         // when a new client connects, send current data
         win.webContents.send('requestData')
-    
+
         // when a socket closes, or disconnects, remove it from the array.
         socket.on('close', function() {
             sockets = sockets.filter(s => s.ws !== socket)
@@ -234,8 +238,25 @@ function createWindow() {
         socket.on("message", data => {
             win.webContents.send('remoteGuiData', `${data}`)
         })
-    
+
     });
+
+    // application-level heartbeat: lets each overlay's watchdog know the link is
+    // still alive so it can detect a silently dead connection and reconnect fast
+    const HEARTBEAT = JSON.stringify({ heartbeat: true });
+    setInterval(() => {
+        sockets.forEach(socket => {
+            // protocol-level ping doubles as a dead-socket detector
+            if (socket.ws.isAlive === false) {
+                return socket.ws.terminate();
+            }
+            socket.ws.isAlive = false;
+            try {
+                socket.ws.ping();
+                socket.ws.send(HEARTBEAT);
+            } catch (e) { /* socket is gone; the sweep will clean it up */ }
+        });
+    }, 3000);
 
     // when the GUI is ready to send data to browsers
     ipcMain.on('sendData', (event, data) => {

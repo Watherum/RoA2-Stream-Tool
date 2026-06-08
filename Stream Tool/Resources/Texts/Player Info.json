@@ -94,8 +94,17 @@
     "name": "B-Rabbit",
     "tag": "LD",
     "pronouns": "",
-    "seed": 27,
+    "seed": 8,
     "country": "",
+    "socials": {},
+    "characters": []
+  },
+  {
+    "name": "bennychongo",
+    "tag": "DLN",
+    "pronouns": "",
+    "seed": 23,
+    "country": "United States",
     "socials": {},
     "characters": []
   },
@@ -139,6 +148,15 @@
     "name": "Cap Aigis",
     "tag": "",
     "pronouns": "",
+    "seed": 28,
+    "country": "United States",
+    "socials": {},
+    "characters": []
+  },
+  {
+    "name": "CCuppy",
+    "tag": "",
+    "pronouns": "",
     "seed": 14,
     "country": "United States",
     "socials": {},
@@ -148,7 +166,7 @@
     "name": "Cheafffy",
     "tag": "SPR/FOA",
     "pronouns": "",
-    "seed": 18,
+    "seed": 24,
     "country": "",
     "socials": {},
     "characters": []
@@ -167,6 +185,15 @@
     "tag": "",
     "pronouns": "",
     "seed": 18,
+    "country": "United States",
+    "socials": {},
+    "characters": []
+  },
+  {
+    "name": "develdrone",
+    "tag": "",
+    "pronouns": "",
+    "seed": 31,
     "country": "United States",
     "socials": {},
     "characters": []
@@ -194,6 +221,15 @@
     "tag": "",
     "pronouns": "",
     "seed": 3,
+    "country": "United States",
+    "socials": {},
+    "characters": []
+  },
+  {
+    "name": "DunkTastic",
+    "tag": "4SW",
+    "pronouns": "",
+    "seed": 30,
     "country": "United States",
     "socials": {},
     "characters": []
@@ -275,7 +311,7 @@
     "name": "Geo",
     "tag": "",
     "pronouns": "",
-    "seed": 17,
+    "seed": 25,
     "country": "United States",
     "socials": {},
     "characters": []
@@ -317,10 +353,28 @@
     "characters": []
   },
   {
+    "name": "ilike21pancakes",
+    "tag": "",
+    "pronouns": "",
+    "seed": 17,
+    "country": "United States",
+    "socials": {},
+    "characters": []
+  },
+  {
     "name": "It's Syl!",
     "tag": "Bizz!",
     "pronouns": "",
     "seed": 21,
+    "country": "United States",
+    "socials": {},
+    "characters": []
+  },
+  {
+    "name": "JesusBread",
+    "tag": "",
+    "pronouns": "",
+    "seed": 29,
     "country": "United States",
     "socials": {},
     "characters": []
@@ -353,10 +407,28 @@
     "characters": []
   },
   {
+    "name": "Junee BONEPLATING",
+    "tag": "WHET",
+    "pronouns": "",
+    "seed": 16,
+    "country": "United States",
+    "socials": {},
+    "characters": []
+  },
+  {
     "name": "Krysos22",
     "tag": "DLN",
     "pronouns": "",
-    "seed": 28,
+    "seed": 18,
+    "country": "United States",
+    "socials": {},
+    "characters": []
+  },
+  {
+    "name": "Layle",
+    "tag": "",
+    "pronouns": "",
+    "seed": 32,
     "country": "United States",
     "socials": {},
     "characters": []
@@ -401,7 +473,7 @@
     "name": "Mask",
     "tag": "-R",
     "pronouns": "",
-    "seed": 22,
+    "seed": 11,
     "country": "United States",
     "socials": {},
     "characters": []
@@ -416,10 +488,28 @@
     "characters": []
   },
   {
+    "name": "Mecano",
+    "tag": "Ish",
+    "pronouns": "",
+    "seed": 21,
+    "country": "Canada",
+    "socials": {},
+    "characters": []
+  },
+  {
     "name": "MellowTreat",
     "tag": "",
     "pronouns": "",
     "seed": 19,
+    "country": "United States",
+    "socials": {},
+    "characters": []
+  },
+  {
+    "name": "Mimi",
+    "tag": "PTH",
+    "pronouns": "",
+    "seed": 10,
     "country": "United States",
     "socials": {},
     "characters": []
@@ -437,7 +527,7 @@
     "name": "Monocle Gentlesir",
     "tag": "",
     "pronouns": "",
-    "seed": 17,
+    "seed": 22,
     "country": "",
     "socials": {},
     "characters": []
@@ -470,10 +560,19 @@
     "characters": []
   },
   {
+    "name": "Nori",
+    "tag": "",
+    "pronouns": "",
+    "seed": 13,
+    "country": "United States",
+    "socials": {},
+    "characters": []
+  },
+  {
     "name": "Nothigh",
     "tag": "ravel",
     "pronouns": "",
-    "seed": 6,
+    "seed": 7,
     "country": "United States",
     "socials": {},
     "characters": []
@@ -539,7 +638,7 @@
     "name": "SapphireGD",
     "tag": "AoC",
     "pronouns": "",
-    "seed": 8,
+    "seed": 3,
     "country": "United States",
     "socials": {},
     "characters": []
@@ -557,7 +656,7 @@
     "name": "Sh-Awe",
     "tag": "",
     "pronouns": "",
-    "seed": 30,
+    "seed": 20,
     "country": "United States",
     "socials": {},
     "characters": []
@@ -566,7 +665,16 @@
     "name": "Shard",
     "tag": "",
     "pronouns": "",
-    "seed": 12,
+    "seed": 4,
+    "country": "United States",
+    "socials": {},
+    "characters": []
+  },
+  {
+    "name": "Shashterpiece",
+    "tag": "HLD",
+    "pronouns": "",
+    "seed": 26,
     "country": "United States",
     "socials": {},
     "characters": []
@@ -575,7 +683,7 @@
     "name": "Silly goose 87",
     "tag": "sladequiter",
     "pronouns": "",
-    "seed": 22,
+    "seed": 19,
     "country": "United States",
     "socials": {},
     "characters": []
@@ -602,7 +710,7 @@
     "name": "Sophilo",
     "tag": "Shrug Club",
     "pronouns": "",
-    "seed": 4,
+    "seed": 1,
     "country": "United States",
     "socials": {},
     "characters": []
@@ -612,6 +720,15 @@
     "tag": "HVCC",
     "pronouns": "",
     "seed": 38,
+    "country": "United States",
+    "socials": {},
+    "characters": []
+  },
+  {
+    "name": "Steve gonna win",
+    "tag": "None",
+    "pronouns": "",
+    "seed": 27,
     "country": "United States",
     "socials": {},
     "characters": []
@@ -629,7 +746,7 @@
     "name": "TanK",
     "tag": "",
     "pronouns": "",
-    "seed": 26,
+    "seed": 15,
     "country": "United States",
     "socials": {},
     "characters": []
@@ -686,7 +803,7 @@
     "name": "Triforce!",
     "tag": ":^)",
     "pronouns": "",
-    "seed": 11,
+    "seed": 9,
     "country": "United States",
     "socials": {},
     "characters": []
@@ -695,7 +812,7 @@
     "name": "Turnap",
     "tag": "BLZE",
     "pronouns": "",
-    "seed": 9,
+    "seed": 5,
     "country": "Canada",
     "socials": {},
     "characters": []
@@ -719,10 +836,19 @@
     "characters": []
   },
   {
+    "name": "Unleashed",
+    "tag": "FC",
+    "pronouns": "",
+    "seed": 12,
+    "country": "United States",
+    "socials": {},
+    "characters": []
+  },
+  {
     "name": "Vastfollower",
     "tag": "",
     "pronouns": "",
-    "seed": 27,
+    "seed": 33,
     "country": "United States",
     "socials": {},
     "characters": []
@@ -740,7 +866,7 @@
     "name": "Viviana",
     "tag": "NS",
     "pronouns": "",
-    "seed": 3,
+    "seed": 2,
     "country": "Canada",
     "socials": {},
     "characters": []
@@ -818,7 +944,7 @@
     "name": "ybm",
     "tag": "RATS",
     "pronouns": "",
-    "seed": 2,
+    "seed": 6,
     "country": "United States",
     "socials": {},
     "characters": [

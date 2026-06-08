@@ -21,7 +21,9 @@ export function startWebsocket() {
         
         // everything will update everytime we get data from the server (the GUI)
 		webSocket.onmessage = function (event) {
-			getData(JSON.parse(event.data));
+			const data = JSON.parse(event.data);
+			if (data && data.heartbeat) return; // keepalive, nothing to render
+			getData(data);
 		}
 
         // request current data to the GUI

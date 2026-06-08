@@ -148,35 +148,108 @@ function addBracketPlayer(round, times) {
 
 
 
+// connection tuning (mirrors Utils/WebSocket.mjs)
+const BASE_PORT = 8080;
+const MAX_PORT_RANGE = 10;   // scans 8080–8089
+const CONNECT_TIMEOUT = 1500;   // give up on a hung attempt
+const SCAN_INTERVAL = 250;      // hop ports quickly while searching
+const RECONNECT_INTERVAL = 750; // poll the known port while the GUI restarts
+const RELOCK_AFTER = 8000;      // ms of failing the locked port before rescanning
+const HEARTBEAT_TIMEOUT = 8000; // no traffic for this long means a dead link
+
+let portOffset = 0;
+let lockedPort = null;   // offset we last connected on; null while searching
+let lockLostSince = 0;   // timestamp the locked port started failing
+
+let handled = false;     // guards against onclose+onerror double-firing
+let connectTimer = null;
+let watchdogTimer = null;
+let retryTimer = null;
+
 // first we will start by connecting with the GUI with a websocket
 startWebsocket();
 function startWebsocket() {
 
+	clearTimeout(retryTimer);
+	handled = false;
+
 	// change this to the IP of where the GUI is being used for remote control
-	webSocket = new WebSocket("ws://localhost:8080?id=bracket");
+	webSocket = new WebSocket(`ws://localhost:${BASE_PORT + portOffset}?id=bracket`);
+
+	// if the attempt hangs (unreachable host, no refusal), bail and move on
+	connectTimer = setTimeout(() => {
+		if (webSocket && webSocket.readyState !== WebSocket.OPEN) {
+			webSocket.close(); // drives errorWebsocket via onclose
+		}
+	}, CONNECT_TIMEOUT);
+
 	webSocket.onopen = () => { // if it connects successfully
+
+		clearTimeout(connectTimer);
+		lockedPort = portOffset; // remember where the GUI lives
+		lockLostSince = 0;
+		armWatchdog();
+
 		// everything will update everytime we get data from the server (the GUI)
 		webSocket.onmessage = function (event) {
-			updateData(JSON.parse(event.data));
+			armWatchdog(); // any traffic proves the link is alive
+			const data = JSON.parse(event.data);
+			if (data && data.heartbeat) return; // keepalive, nothing to render
+			updateData(data);
 		}
 		// hide error message in case it was up
 		document.getElementById('connErrorDiv').style.display = 'none';
 	}
 
-	// if the connection closes, wait for it to reopen
-	webSocket.onclose = () => {errorWebsocket()}
+	// if the connection closes or errors, retry
+	webSocket.onclose = () => errorWebsocket();
+	webSocket.onerror = () => { if (webSocket) webSocket.close(); };
 
 }
+
+// restarts the no-data watchdog; fires a reconnect if the server goes quiet
+function armWatchdog() {
+	clearTimeout(watchdogTimer);
+	watchdogTimer = setTimeout(() => {
+		if (webSocket) webSocket.close();
+	}, HEARTBEAT_TIMEOUT);
+}
+
 function errorWebsocket() {
+
+	if (handled) return; // onclose and onerror can both fire; only act once
+	handled = true;
+
+	clearTimeout(connectTimer);
+	clearTimeout(watchdogTimer);
 
 	// show error message
 	document.getElementById('connErrorDiv').style.display = 'flex';
 	// delete current webSocket
 	webSocket = null;
-	// we will attempt to reconect every 5 seconds
-	setTimeout(() => {
-		startWebsocket();
-	}, 5000);
+
+	let delay;
+	if (lockedPort !== null) {
+		// we know where the GUI was — keep hammering that port while it restarts
+		if (lockLostSince === 0) lockLostSince = Date.now();
+
+		if (Date.now() - lockLostSince > RELOCK_AFTER) {
+			// locked port stayed dead too long — the GUI must have moved, rescan
+			lockedPort = null;
+			lockLostSince = 0;
+			portOffset = (portOffset + 1) % MAX_PORT_RANGE;
+			delay = SCAN_INTERVAL;
+		} else {
+			portOffset = lockedPort;
+			delay = RECONNECT_INTERVAL;
+		}
+	} else {
+		// never connected (or rescanning) — hop to the next port quickly
+		portOffset = (portOffset + 1) % MAX_PORT_RANGE;
+		delay = SCAN_INTERVAL;
+	}
+
+	retryTimer = setTimeout(startWebsocket, delay);
 
 }
 
