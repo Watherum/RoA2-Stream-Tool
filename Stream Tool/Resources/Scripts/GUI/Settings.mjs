@@ -468,12 +468,12 @@ class GuiSettings {
 
     /**
      * Will copy the current match info to the clipboard
-     * Format: "Tournament Name Round - Player1 (Character1) Vs Player2 (Character2) - Rivals 2"
+     * Format: "Tournament Name - Round - Player1 (Character1) Vs Player2 (Character2) - RoA II"
      */
     copyMatch() {
 
         // initialize the string
-        let copiedText = tournament.getText() + "  " + round.getText() + " - ";
+        let copiedText = tournament.getText() + " - " + round.getText() + " - ";
 
         if (gamemode.getGm() == 1) { // for singles matches
             // check if the player has a tag to add
@@ -484,7 +484,7 @@ class GuiSettings {
             if (players[1].tag) {
                 copiedText += players[1].tag + " | ";
             }
-            copiedText += players[1].getName() + " (" +  players[1].char +")" + " - Rivals 2";
+            copiedText += players[1].getName() + " (" +  players[1].char +")" + " - RoA II";
         } else { // for team matches
             copiedText += teams[0].getName() + " Vs " + teams[1].getName();
         }
