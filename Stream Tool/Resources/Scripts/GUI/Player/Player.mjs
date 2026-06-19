@@ -3,7 +3,7 @@ import { charFinder } from "../Finder/Char Finder.mjs";
 import { playerFinder } from "../Finder/Player Finder.mjs";
 import { skinFinder } from "../Finder/Skin Finder.mjs";
 import { getRecolorImage } from "../GetImage.mjs";
-import { inside, stPath } from "../Globals.mjs";
+import { charDisplayName, inside, stPath } from "../Globals.mjs";
 import { RoaRecolor } from "../RoA WebGL Shader.mjs";
 import { settings } from "../Settings.mjs";
 import { readyToUpdate } from "../Write Scoreboard.mjs";
@@ -59,9 +59,7 @@ export class Player {
 
         // set listeners that will trigger when character or skin changes
         this.charSel.addEventListener("click", () => {
-            charFinder.open(this.charSel);
-            charFinder.setCurrentPlayer(this);
-            charFinder.focusFilter();
+            charFinder.openModal(this);
         });
         this.skinSel.addEventListener("click", () => {
             skinFinder.open(this.skinSel);
@@ -85,7 +83,7 @@ export class Player {
         this.char = character;
 
         // update character selector text
-        this.charSel.children[1].innerHTML = character;
+        this.charSel.children[1].innerHTML = charDisplayName(character);
 
         // set the skin list for this character
         this.charInfo = await getJson(`${stPath.char}/${character}/_Info`);
@@ -238,11 +236,9 @@ export class Player {
     /** Returns a valid src for browser sources */
     async getBrowserSrc(char, skin, extraPath, failPath) {
 
-        let browserCharPath = "Resources/Characters";
-        if (settings.isWsChecked()) {
-            browserCharPath = "Resources/Characters/_Workshop";
-        }
-        
+        // char may be "_Workshop/CharName" — the prefix is already part of the path
+        const browserCharPath = "Resources/Characters";
+
         if (await fileExists(`${stPath.char}/${char}/${extraPath}/${skin.name}.png`) && !skin.force) {
             return browserCharPath + `/${char}/${extraPath}/${skin.name}.png`;
         } else if (await fileExists(`${stPath.char}/${char}/${extraPath}/Default.png`)) {
@@ -252,9 +248,9 @@ export class Player {
                 return browserCharPath + `/${char}/${extraPath}/Default.png`;
             }
         } else {
-            return `Resources/Characters/Random/${failPath}.png`;;
+            return `Resources/Characters/Random/${failPath}.png`;
         }
-        
+
     }
 
     /**

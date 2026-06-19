@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RoA2 Stream Tool v15.5.0</title>
+  <title>RoA2 Stream Tool v16.0.0</title>
   <link rel="stylesheet" href="CSS/GUI.css">
   <link rel="stylesheet" href="CSS/GUI Custom.css">
   <script src="Scripts/GUI/mousetrap.min.js" defer></script>
@@ -320,11 +320,6 @@
 
         <div class="settingsTitle">GUI Settings</div>
 
-        <div class="settingBox" title="Changes the character list to the workshop one." style="display:none">
-          <input type="checkbox" id="workshopToggle" class="settingsCheck" tabindex="-1">
-          <label for="workshopToggle" class="settingsText">Use Workshop characters</span>
-        </div>
-
         <div class="settingBox" title="Allows for entering a custom Round Name">
           <input type="checkbox" id="customRound" class="settingsCheck" tabindex="-1">
           <label for="customRound" class="settingsText">Use custom round</span>
@@ -367,6 +362,11 @@ Cannot be used with Update on score hotkey.">
         <div class="settingBox settingBoxSub" id="introImageBox" title="Includes the overlay background image in the intro fade-in." style="display:none">
           <input type="checkbox" id="introImage" class="settingsCheck" tabindex="-1">
           <label for="introImage" class="settingsText">Include overlay image</span>
+        </div>
+
+        <div class="settingBox" title="Includes characters from the _Workshop folder alongside regular characters in the character select.">
+          <input type="checkbox" id="workshopToggle" class="settingsCheck" tabindex="-1">
+          <label for="workshopToggle" class="settingsText">Include Workshop characters</span>
         </div>
 
         <div class="settingBox" title='Saves plain text files at "Resources/Texts/Simple Texts/" to be used by other apps.'>
@@ -714,6 +714,13 @@ Cannot be used with Update on score hotkey.">
 <div id="characterFinder" class="finder" tabindex="-1">
   <input type="text" class="listSearch mousetrap" placeholder="Type to filter..." spellcheck="false" tabindex="-1">
   <div class="searchList" id="charSearchList"></div>
+</div>
+
+<div id="charSelectModal" class="charModal-overlay">
+  <div class="charModal-container">
+    <input type="text" id="charModalSearch" class="charModal-search mousetrap" placeholder="Search characters..." spellcheck="false" autocomplete="off">
+    <div id="charModalGrid" class="charModal-grid"></div>
+  </div>
 </div>
 
 <div id="skinFinder" class="finder">

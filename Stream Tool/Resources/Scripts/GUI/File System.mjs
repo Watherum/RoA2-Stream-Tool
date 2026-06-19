@@ -1,5 +1,5 @@
 import { casters } from './Caster/Casters.mjs';
-import { inside, stPath } from './Globals.mjs';
+import { charDisplayName, inside, stPath } from './Globals.mjs';
 import { players } from './Player/Players.mjs';
 import { round } from './Round.mjs';
 import { scores } from './Score/Scores.mjs';
@@ -59,23 +59,25 @@ export async function fileExists(filePath) {
 
 /**
  * Generates a character list depending on the folders of the character path
+ * @param {Boolean} includeWorkshop - Whether to include characters from the _Workshop subfolder
  * @returns Character list array
  */
-export async function getCharacterList() {
+export async function getCharacterList(includeWorkshop = false) {
 
     if (inside.electron) {
-        
+
         const fs = require('fs');
         const characterList = fs.readdirSync(stPath.char, { withFileTypes: true })
             .filter(dirent => dirent.isDirectory())
             .map(dirent => dirent.name)
-            .filter((name) => {
-                // if the folder name contains '_Workshop', '_RoA1', or 'Random', exclude it
-                if (name != "_Workshop" && name != "_RoA1" && name != "Random") {
-                    return true;
-                }
-            }
-        )
+            .filter(name => name !== "_Workshop" && name !== "_RoA1" && name !== "Random");
+
+        if (includeWorkshop && fs.existsSync(stPath.charWork)) {
+            const workshopChars = fs.readdirSync(stPath.charWork, { withFileTypes: true })
+                .filter(dirent => dirent.isDirectory())
+                .map(dirent => `_Workshop/${dirent.name}`);
+            characterList.push(...workshopChars);
+        }
 
         // add random to the end of the character list
         characterList.push("Random");
@@ -86,7 +88,7 @@ export async function getCharacterList() {
         return characterList;
 
     } else {
-        
+
         return await getJson(`${stPath.text}/Character List`);
 
     }
@@ -227,7 +229,7 @@ export function saveSimpleTexts() {
         fs.writeFileSync(`${stPath.text}/Simple Texts/Player ${i+1} Tag.txt`, players[i].getTag());
         fs.writeFileSync(`${stPath.text}/Simple Texts/Player ${i+1} Pronouns.txt`, players[i].getPronouns());
         fs.writeFileSync(`${stPath.text}/Simple Texts/Player ${i+1} Seed.txt`, players[i].seed?.toString() || "");
-        fs.writeFileSync(`${stPath.text}/Simple Texts/Player ${i + 1} Character.txt`, players[i].char);
+        fs.writeFileSync(`${stPath.text}/Simple Texts/Player ${i + 1} Character.txt`, charDisplayName(players[i].char));
         fs.copyFileSync(`${stPath.charBase}/${players[i].char}/icons/Default.png`, `${stPath.text}/Simple Texts/Player ${i + 1} Character Icon/Default.png`);
         if (players[i].country) {
             fs.copyFileSync(`${stPath.flags}/${players[i].country}.png`, `${stPath.text}/Simple Texts/Player ${i + 1} Flag/flag.png`);

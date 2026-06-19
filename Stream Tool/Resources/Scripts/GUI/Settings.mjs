@@ -2,7 +2,7 @@ import { viewport } from "./Viewport.mjs";
 import { charFinder } from "./Finder/Char Finder.mjs";
 import { players } from "./Player/Players.mjs";
 import { wl } from "./WinnersLosers.mjs";
-import { inside, stPath } from "./Globals.mjs";
+import { charDisplayName, inside, stPath } from "./Globals.mjs";
 import { getJson, saveJson } from "./File System.mjs";
 import { gamemode } from "./Gamemode Change.mjs";
 import { tournament } from "./Tournament.mjs";
@@ -379,12 +379,9 @@ class GuiSettings {
     }
     async toggleWs() {
 
-        // set a new character path
-        stPath.char = this.isWsChecked() ? stPath.charWork : stPath.charBase;
-
-        // reload character lists
-        await charFinder.loadCharacters();
-        // clear current character lists
+        // reload character list with or without workshop characters
+        await charFinder.loadCharacters(this.isWsChecked());
+        // reset current character selections
         for (let i = 0; i < players.length; i++) {
             await players[i].charChange("Random");
         }
@@ -480,11 +477,11 @@ class GuiSettings {
             if (players[0].tag) {
                 copiedText += players[0].tag + " | ";
             }
-            copiedText += players[0].getName() + " (" + players[0].char +") Vs ";
+            copiedText += players[0].getName() + " (" + charDisplayName(players[0].char) +") Vs ";
             if (players[1].tag) {
                 copiedText += players[1].tag + " | ";
             }
-            copiedText += players[1].getName() + " (" +  players[1].char +")" + " - RoA II";
+            copiedText += players[1].getName() + " (" + charDisplayName(players[1].char) +")" + " - RoA II";
         } else { // for team matches
             copiedText += teams[0].getName() + " Vs " + teams[1].getName();
         }

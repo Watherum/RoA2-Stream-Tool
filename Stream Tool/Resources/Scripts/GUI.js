@@ -39,7 +39,7 @@ async function init() {
     
     // we need to set the current char path
     await settings.load();
-    stPath.char = settings.isWsChecked() ? stPath.charWork : stPath.charBase;
+    stPath.char = stPath.charBase;
 
     // colors need to be up and running before players
     await initColors();
@@ -58,7 +58,7 @@ async function init() {
 
     
     // initialize the character list
-    promises.push(charFinder.loadCharacters());
+    promises.push(charFinder.loadCharacters(settings.isWsChecked()));
 
 
     // initialize that score class

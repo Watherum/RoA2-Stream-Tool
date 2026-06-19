@@ -1,8 +1,8 @@
 {
-  "guiWidth": 670,
-  "guiHeight": 346,
+  "guiWidth": 675,
+  "guiHeight": 375,
   "allowIntro": false,
-  "workshop": false,
+  "workshop": true,
   "forceAlt": false,
   "forceHD": false,
   "noLoAHD": false,

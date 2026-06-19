@@ -38,8 +38,8 @@ module.exports = function initExec(rPath, nPath, wSocket) {
         failed = true;
         httpPort = 7070;
         wsPort = 8080;
-        guiWidth = 600;
-        guiHeight = 300;
+        guiWidth = 960;
+        guiHeight = 484;
         serversReady = true;
         tryCreateWindow();
     }
@@ -151,7 +151,7 @@ function createWindow() {
 
         backgroundColor: "#383838",
 
-        title: "RoA Stream Tool v15.5.0 [developer build]", // will get overwitten by gui html title
+        title: "RoA Stream Tool v16.0.0 [developer build]", // will get overwitten by gui html title
         icon: path.join(nodePath, 'icon.png'),
 
         webPreferences: {
@@ -210,9 +210,9 @@ function createWindow() {
     ipcMain.on('defaultWindow', (event) => {
         // windows includes frame borders on the window dimensions and i hate it
         if (process.platform == "win32") {
-            win.setBounds({width: 608, height: 330});
+            win.setBounds({width: 683, height: 405});
         } else {
-            win.setBounds({width: 600, height: 300});
+            win.setBounds({width: 675, height: 375});
         }
     })
 

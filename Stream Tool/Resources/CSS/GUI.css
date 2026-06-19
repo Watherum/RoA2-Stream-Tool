@@ -1543,6 +1543,89 @@ button:hover {
 }
 
 
+/* ── Character Select Modal ─────────────────────────────── */
+.charModal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.78);
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+}
+
+.charModal-container {
+  background: var(--bg1);
+  border: 1px solid var(--focused);
+  border-radius: 6px;
+  padding: 12px;
+  width: 520px;
+  max-width: 92vw;
+  max-height: 82vh;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+}
+
+.charModal-search {
+  width: 100%;
+  background: var(--bg4);
+  border: 1px solid var(--focused);
+  color: var(--text1);
+  padding: 7px 10px;
+  box-sizing: border-box;
+  border-radius: 3px;
+  font-size: 14px;
+  font-family: 'Roboto-Regular';
+  outline: none;
+  transition: border-color 100ms;
+}
+.charModal-search:focus {
+  border-color: var(--selected);
+}
+
+.charModal-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(82px, 1fr));
+  gap: 6px;
+  overflow-y: auto;
+  padding: 2px;
+}
+
+.charModalCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 10px 6px 7px;
+  border-radius: 4px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  background: var(--bg3);
+  transition: border-color 100ms, background-color 100ms;
+}
+.charModalCard:hover {
+  background: var(--bg2);
+  border-color: var(--selected);
+}
+
+.charModalIcon {
+  width: 54px;
+  height: 54px;
+  object-fit: contain;
+}
+
+.charModalName {
+  font-size: 11px;
+  font-family: 'Roboto-Medium';
+  color: var(--text1);
+  text-align: center;
+  line-height: 1.25;
+  word-break: break-word;
+}
+/* ─────────────────────────────────────────────────────── */
+
 #caster1, #caster2 {
   display: none;
 }

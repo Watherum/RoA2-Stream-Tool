@@ -14,6 +14,13 @@ import { writeScoreboard } from './Write Scoreboard.mjs';
 
 export function loadKeybinds() {
 
+    // allow esc to fire even when an input has focus, but only while the char modal is open
+    const _stopCallback = Mousetrap.prototype.stopCallback;
+    Mousetrap.prototype.stopCallback = function(e, element, combo) {
+        if (combo === 'esc' && charFinder.isModalOpen()) return false;
+        return _stopCallback.call(this, e, element, combo);
+    };
+
     // enter
     Mousetrap.bind('enter', () => {
 
@@ -51,6 +58,8 @@ export function loadKeybinds() {
     Mousetrap.bind('esc', () => {
         if (inside.settings || inside.bracket) {
             viewport.toCenter();
+        } else if (charFinder.isModalOpen()) {
+            charFinder.closeModal();
         } else if (charFinder.isVisible() || skinFinder.isVisible()
         || commFinder.isVisible() || playerFinder.isVisible()) {
             document.activeElement.blur();

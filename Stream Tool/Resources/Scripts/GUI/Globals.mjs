@@ -19,6 +19,11 @@ export const stPath = {
     flags: realPath + '/Flags'
 };
 
+/** Returns the display name for a character, stripping the _Workshop/ prefix if present */
+export function charDisplayName(char) {
+    return char.startsWith("_Workshop/") ? char.slice(10) : char;
+}
+
 /** Current values for stuff */
 export const current = {
     focus : -1
