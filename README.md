@@ -7,8 +7,7 @@
 
 <h1 align="center">RoA2 Stream Tool</h1>
 
-This is a heavily modified fork of Readek's RoA Stream Tool, refocused on Rivals of Aether 2 and built around competitive tournaments and content creation. 
-Doubles mode is currently not available, caster information is not sent to the scoreboard htmls.
+This is a heavily modified fork of Readek's RoA Stream Tool, refocused on Rivals of Aether 2 and built around competitive tournaments and content creation.
 
 ---
 
@@ -27,20 +26,50 @@ Several themed scoreboard overlays are included out of the box:
 - **Twist of Fate** — event-specific overlay
 - **Abyss** — event-specific scoreboard
 
+### Scoring modes
+The scoring mode dropdown is data-driven from `Modes.json` and supports:
+- **Bo3 / Bo5 / BoX** — standard best-of sets
+- **FT5 / FT10 / FTX** — first-to formats
+- **Wins/Losses** — simplified W/L tracking; hides character selects, pronouns, and player info to reduce clutter; clears player data on entry; Player 2's score label reads "Losses"
+- **Crew Battle** — team name + active player displayed per side, with stock counts replacing scores
+- **Doubles (2v2)** — two players per side with individual character icons, team names, and shared seed display
+
+### Character select
+
+<p align="center">
+  <img src="https://github.com/Watherum/RoA2-Stream-Tool/blob/master/Git%20wiki%20images/Character%20Select.png" alt="Character Select">
+</p>
+
+- Icon grid modal for selecting characters — browse all characters at a glance
+- Search bar filters characters in real time
+- Skin picker follows after character selection
+
+### Player presets
+
+<p align="center">
+  <img src="https://github.com/Watherum/RoA2-Stream-Tool/blob/master/Git%20wiki%20images/Preset%20Browser.png" alt="Preset Browser">
+</p>
+
+- Full preset system with name, sponsor tag, pronouns, seed, country, socials, and character history
+- **Preset Browser** — searchable modal to quickly find and load a player from your preset library
+  - Stays open after selecting a preset so you can fill multiple slots without reopening
+  - ESC or clicking outside the modal closes it
+  - In doubles mode, P3 and P4 buttons appear alongside P1 and P2
+- Quick-save button to save the current player state as a preset without opening the browser
+- Presets store **Discord**, **Instagram**, **Twitter**, **Bluesky**, and **Twitch** social handles
+- Selecting a preset fills the player slot; changing the name clears both scores automatically
+- Each field in the player info editor has an **×** button to clear it individually
+
 ### start.gg integration
-- Enter your tournament's event slug and fetch all entrant data in one click
+- Enter your tournament's event slug (or paste a full bracket URL) and fetch all entrant data in one click
 - Automatically populates player **seeds**, **country flags**, and **sponsor tags** into presets
+- **Doubles support** — all teammates in a doubles entrant each receive the team's seed
 - New player presets are created automatically; existing ones are updated
 - Country flag images are downloaded locally on fetch so they work offline in OBS
 - API token can be loaded securely from `app.properties.txt` (kept off the GUI entirely)
-
-### Player presets
-- Full preset system with name, sponsor tag, pronouns, seed, country, socials, and character history
-- **Preset Browser** — searchable modal to quickly find and load a player from your preset library
-- Quick-save button to save the current player state as a preset without opening the browser
-- Presets store **Discord**, **Instagram**, **Twitter**, and **Twitch** social handles
-- Selecting a preset fills the player slot; changing the name clears both scores automatically
-- Each field in the player info editor has an **×** button to clear it individually
+- Operator on the remote GUI can fetch data without ever seeing the token
+- **Seed reset on startup** — saved seeds are cleared from all presets when the app launches so stale seeds from a previous tournament never carry over
+- Optional **"Remember slug between sessions"** setting to persist the event slug across restarts
 
 ### Score management
 - **F1 / F2** hotkeys increment Player 1's or Player 2's score and push an update immediately — enable this in settings
@@ -53,10 +82,6 @@ Several themed scoreboard overlays are included out of the box:
 - Full bracket round preset list including Winners Quarters, Losers Top 8, Grand Finals, True Finals, etc.
 - **Custom Text** mode — free-type any round name directly
 - **Abbreviate Round** option — shortens round names on overlays for tighter layouts
-- **Scoring mode dropdown** — data-driven from `Modes.json`; add or rename modes without touching code
-  - Supported modes: **Bo3**, **Bo5**, **BoX**, **FT5**, **FT10**, **FTX**, **Wins/Losses**, **Crew Battle**
-  - Selecting a free-form or non-standard mode automatically clears the round to *(None)*
-  - Wins/Losses mode auto-fills player name slots with Wins / Losses
 - Winners/Losers indicator with optional force-display setting
 
 ### Simple texts output
@@ -68,7 +93,6 @@ Several themed scoreboard overlays are included out of the box:
 - Full GUI accessible from any device on the local network (phone, tablet, second PC)
 - **Open Remote Editor** button in settings launches the remote GUI in your default browser instantly
 - start.gg fetch is proxied securely through the host machine — the API token never leaves the Electron app
-- Operators on the remote GUI can enter a tournament slug and fetch data without ever seeing the token
 
 ### Other quality-of-life additions
 - **Match info to clipboard** — copies a formatted match string for YouTube/Twitch titles
@@ -82,7 +106,7 @@ Several themed scoreboard overlays are included out of the box:
 ---
 
 # Original Readme from Readek
-So you want to do a Rivals of Aether stream, huh? Well, today is your lucky day, because I have done tons of work so you don’t have to! With this tool, you will be able to set up a RoA tournament stream in no time.
+So you want to do a Rivals of Aether stream, huh? Well, today is your lucky day, because I have done tons of work so you don't have to! With this tool, you will be able to set up a RoA tournament stream in no time.
 
 *Now with a [Discord Server](https://discord.gg/EX22CTBNrM)!*
 
