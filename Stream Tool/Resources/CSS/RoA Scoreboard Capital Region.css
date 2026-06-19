@@ -127,3 +127,195 @@
     top: 30px;
     left: 1520px;
 }
+
+/* ── Mode containers ────────────────────────────────────────────────── */
+#singlesMode,
+#doublesMode {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1920px;
+    height: 1080px;
+}
+
+#doublesMode {
+    display: none;
+}
+
+#singlesMode > span,
+#doublesMode > span {
+    position: absolute;
+}
+
+/* ── Crew Battle mode ───────────────────────────────────────────────── */
+#crewMode {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1920px;
+    height: 1080px;
+    display: none;
+}
+
+#crewMode > span,
+#crewMode > img {
+    position: absolute;
+}
+
+#crew-stocksL {
+    font-size: 60px;
+    top: 45px;
+    left: 758px;
+    transform: translateX(-50%);
+    white-space: nowrap;
+}
+
+#crew-stocksR {
+    font-size: 60px;
+    top: 45px;
+    left: 1161px;
+    transform: translateX(-50%);
+    white-space: nowrap;
+}
+
+#crew-teamNameL {
+    font-size: 35px;
+    top: 49px;
+    left: 480px;
+    transform: translateX(-50%);
+    white-space: nowrap;
+}
+
+#crew-teamNameR {
+    font-size: 35px;
+    top: 49px;
+    left: 1440px;
+    right: auto;
+    transform: translateX(-50%);
+    white-space: nowrap;
+}
+
+#crew-charL {
+    width: 50px;
+    top: 70px;
+    left: 170px;
+}
+
+#crew-charR {
+    width: 50px;
+    top: 70px;
+    left: 1710px;
+}
+
+#crew-playerNameL {
+    font-size: 28px;
+    top: 88px;
+    left: 480px;
+    transform: translateX(-50%);
+    white-space: nowrap;
+}
+
+#crew-playerNameR {
+    font-size: 28px;
+    top: 88px;
+    left: 1440px;
+    transform: translateX(-50%);
+    white-space: nowrap;
+}
+
+/* ── Doubles mode ────────────────────────────────────────────────────── */
+/* score circles at left:758 (L) and left:1161 (R); singles icons at left:170 / left:1710 */
+
+#teamNameL {
+    font-size: 28px;
+    top: 55px;
+    left: 462px;
+    transform: translateX(-50%);
+    white-space: nowrap;
+}
+
+#dbl-char1icon {
+    width: 40px;
+    top: 72px;
+    left: 165px;
+}
+
+#dbl-p1name {
+    font-size: 22px;
+    top: 91px;
+    left: 280px;
+    white-space: nowrap;
+}
+
+#dbl-char3icon {
+    width: 40px;
+    top: 72px;
+    left: 215px;
+}
+
+#dbl-p3name {
+    font-size: 22px;
+    top: 91px;
+    left: 480px;
+    white-space: nowrap;
+}
+
+#dbl-seedL {
+    font-size: 16px;
+    top: 125px;
+    left: 160px;
+}
+
+#dbl-flagL {
+    height: 15px;
+    top: 130px;
+    left: 245px;
+}
+
+#teamNameR {
+    font-size: 28px;
+    top: 55px;
+    left: 1470px;
+    right: auto;
+    transform: translateX(-50%);
+    white-space: nowrap;
+}
+
+#dbl-char2icon {
+    width: 40px;
+    top: 72px;
+    left: 1695px;
+}
+
+#dbl-p2name {
+    font-size: 22px;
+    top: 91px;
+    left: 1290px;
+    white-space: nowrap;
+}
+
+#dbl-char4icon {
+    width: 40px;
+    top: 72px;
+    left: 1745px;
+}
+
+#dbl-p4name {
+    font-size: 22px;
+    top: 91px;
+    left: 1500px;
+    white-space: nowrap;
+}
+
+#dbl-seedR {
+    font-size: 16px;
+    top: 125px;
+    left: 1690px;
+    white-space: nowrap;
+}
+
+#dbl-flagR {
+    height: 15px;
+    top: 130px;
+    left: 1650px;
+}

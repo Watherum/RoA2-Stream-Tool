@@ -192,6 +192,14 @@ class Round {
         this.updateSelect();
     }
 
+    setCrew() {
+        const idx = roundList.findIndex(r => r.name === "Crew Battle");
+        if (idx !== -1) {
+            this.#roundSelect.selectedIndex = idx;
+            this.updateSelect();
+        }
+    }
+
     /** Checks if the round text contains "Grands" so it shows/hides W/L buttons */
     checkGrands() {
         if (!settings.isForceWLChecked()) {

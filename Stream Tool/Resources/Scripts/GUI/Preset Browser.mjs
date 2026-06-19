@@ -8,6 +8,7 @@ import { stPath } from "./Globals.mjs";
 import { viewport } from "./Viewport.mjs";
 import { displayNotif } from "./Notifications.mjs";
 import { startGG } from "./Start GG.mjs";
+import { gamemode } from "./Gamemode Change.mjs";
 
 class PresetBrowser {
 
@@ -27,6 +28,10 @@ class PresetBrowser {
         });
         this.#searchInp.addEventListener("input", () => {
             this.#filterList();
+        });
+        // close when clicking the dark overlay behind the modal
+        this.#div.addEventListener("click", (e) => {
+            if (e.target === this.#div) this.hide();
         });
 
     }
@@ -52,6 +57,10 @@ class PresetBrowser {
         this.#div.style.transform = "scale(1.15)";
         viewport.opacity("1");
 
+    }
+
+    isVisible() {
+        return this.#div.style.opacity === "1";
     }
 
     #filterList() {
@@ -152,8 +161,26 @@ class PresetBrowser {
         delButt.textContent = "Delete";
         delButt.addEventListener("click", () => this.#handleDelete(preset));
 
-        buttons.appendChild(p1Butt);
-        buttons.appendChild(p2Butt);
+        if (gamemode.getGm() == 2) {
+            const p3Butt = document.createElement("button");
+            p3Butt.className = "pbButt";
+            p3Butt.textContent = "P3";
+            p3Butt.addEventListener("click", () => this.#applyPreset(preset, char, players[2]));
+
+            const p4Butt = document.createElement("button");
+            p4Butt.className = "pbButt";
+            p4Butt.textContent = "P4";
+            p4Butt.addEventListener("click", () => this.#applyPreset(preset, char, players[3]));
+
+            buttons.appendChild(p1Butt);
+            buttons.appendChild(p3Butt);
+            buttons.appendChild(p2Butt);
+            buttons.appendChild(p4Butt);
+        } else {
+            buttons.appendChild(p1Butt);
+            buttons.appendChild(p2Butt);
+        }
+
         buttons.appendChild(delButt);
 
         row.appendChild(info);
@@ -247,8 +274,6 @@ class PresetBrowser {
                 player.skinChange(player.findSkin(char.skin));
             }
         }
-
-        this.hide();
 
     }
 

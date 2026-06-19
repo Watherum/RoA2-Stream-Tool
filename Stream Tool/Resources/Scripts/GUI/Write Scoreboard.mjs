@@ -69,6 +69,8 @@ export async function writeScoreboard() {
         bestOf: bestOf.getBo(),
         bestOfLabel: bestOf.getBoLabel(),
         gamemode: gamemode.getGm(),
+        selectMode: gamemode.getSelectValue(),
+        crewStocks: gamemode.getCrewStocks(),
         round: round.getText(),
         tournamentName: tournament.getText(),
         caster: [],
@@ -119,11 +121,10 @@ export async function writeScoreboard() {
 
     }
 
-    // stuff that needs to be done for both sides
+    // fall back to "[Color] Team" when no team name is entered
     for (let i = 0; i < 2; i++) {
-        // if the team inputs dont have anything, display as [Color Team]
         if (!teams[i].getName()) {
-            scoreboardJson.teamName[i] = `${currentColors[i].name} Team`
+            scoreboardJson.teamName[i] = `${currentColors[i].name} Team`;
         }
     }
 

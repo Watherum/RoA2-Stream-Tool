@@ -14,6 +14,25 @@
     position: absolute;
 }
 
+/* mode containers — full-canvas so child coordinates match canvas directly */
+#singlesMode,
+#doublesMode {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1920px;
+    height: 1080px;
+}
+
+#doublesMode {
+    display: none;
+}
+
+#singlesMode > span,
+#doublesMode > span {
+    position: absolute;
+}
+
 #round {
     font-size: 20px;
     top: 135px;
@@ -126,4 +145,188 @@
     height: 19px;
     top: 120px;
     left: 1360px;
+}
+
+
+/* ── Crew Battle mode ───────────────────────────────────────────────── */
+/*
+ * Scores (p1score / p2score) are shared elements and show remaining stocks.
+ * crewMode only provides team name + active player on each side.
+ * Layout mirrors singles: left icon at left:230, right icon at left:1630.
+ */
+
+#crewMode {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1920px;
+    height: 1080px;
+    display: none;
+}
+
+#crewMode > span,
+#crewMode > img {
+    position: absolute;
+}
+
+/* stock counts sit where p1score/p2score normally live */
+#crew-stocksL {
+    font-size: 60px;
+    top: 33px;
+    left: 784px;
+    transform: translateX(-50%);
+    white-space: nowrap;
+}
+
+#crew-stocksR {
+    font-size: 60px;
+    top: 33px;
+    left: 1136px;
+    transform: translateX(-50%);
+    white-space: nowrap;
+}
+
+#crew-teamNameL {
+    font-size: 32px;
+    top: 40px;
+    left: 525px;
+    transform: translateX(-50%);
+    white-space: nowrap;
+}
+
+#crew-charL {
+    width: 50px;
+    top: 55px;
+    left: 230px;
+}
+
+#crew-playerNameL {
+    font-size: 28px;
+    top: 75px;
+    left: 525px;
+    transform: translateX(-50%);
+    white-space: nowrap;
+}
+
+#crew-teamNameR {
+    font-size: 32px;
+    top: 40px;
+    left: 1400px;
+    right: auto;
+    transform: translateX(-50%);
+    white-space: nowrap;
+}
+
+#crew-charR {
+    width: 50px;
+    top: 55px;
+    left: 1630px;
+}
+
+#crew-playerNameR {
+    font-size: 28px;
+    top: 75px;
+    left: 1400px;
+    transform: translateX(-50%);
+    white-space: nowrap;
+}
+
+/* ── Doubles mode ────────────────────────────────────────────────────── */
+/*
+ * Both zones use the same left-anchored [icon][icon] [name] [name] row layout.
+ * Right-side offsets mirror left-side offsets from each bar's starting x (~208 left, ~1197 right).
+ */
+
+#teamNameL {
+    font-size: 28px;
+    top: 42px;
+    left: 515px;
+    transform: translateX(-50%);
+    white-space: nowrap;
+}
+
+#dbl-char1icon {
+    width: 40px;
+    top: 65px;
+    left: 220px;
+}
+
+#dbl-p1name {
+    font-size: 22px;
+    top: 78px;
+    left: 330px;
+    white-space: nowrap;
+}
+
+#dbl-char3icon {
+    width: 40px;
+    top: 65px;
+    left: 270px;
+}
+
+#dbl-p3name {
+    font-size: 22px;
+    top: 78px;
+    left: 530px;
+    white-space: nowrap;
+}
+
+#dbl-seedL {
+    font-size: 16px;
+    top: 113px;
+    left: 320px;
+}
+
+#dbl-flagL {
+    height: 15px;
+    top: 120px;
+    left: 400px;
+}
+
+#teamNameR {
+    font-size: 28px;
+    top: 42px;
+    left: 1410px;
+    right: auto;
+    transform: translateX(-50%);
+    white-space: nowrap;
+}
+
+#dbl-char2icon {
+    width: 40px;
+    top: 65px;
+    left: 1610px;
+}
+
+#dbl-p2name {
+    font-size: 22px;
+    top: 78px;
+    left: 1225px;
+    white-space: nowrap;
+}
+
+#dbl-char4icon {
+    width: 40px;
+    top: 65px;
+    left: 1660px;
+}
+
+#dbl-p4name {
+    font-size: 22px;
+    top: 78px;
+    left: 1435px;
+    white-space: nowrap;
+}
+
+#dbl-seedR {
+    font-size: 16px;
+    top: 113px;
+    left: 1540px;
+    white-space: nowrap;
+}
+
+#dbl-flagR {
+    height: 15px;
+    top: 120px;
+    left: 1495px;
 }

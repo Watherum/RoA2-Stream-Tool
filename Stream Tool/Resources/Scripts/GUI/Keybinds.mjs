@@ -7,6 +7,7 @@ import { skinFinder } from './Finder/Skin Finder.mjs';
 import { current, inside } from './Globals.mjs';
 import { profileInfo } from './Profile Info.mjs';
 import { playersReady } from './Player/Players.mjs';
+import { presetBrowser } from './Preset Browser.mjs';
 import { scores } from './Score/Scores.mjs';
 import { settings } from './Settings.mjs';
 import { viewport } from './Viewport.mjs';
@@ -14,10 +15,10 @@ import { writeScoreboard } from './Write Scoreboard.mjs';
 
 export function loadKeybinds() {
 
-    // allow esc to fire even when an input has focus, but only while the char modal is open
+    // allow esc to fire even when an input has focus while the char modal or preset browser is open
     const _stopCallback = Mousetrap.prototype.stopCallback;
     Mousetrap.prototype.stopCallback = function(e, element, combo) {
-        if (combo === 'esc' && charFinder.isModalOpen()) return false;
+        if (combo === 'esc' && (charFinder.isModalOpen() || presetBrowser.isVisible())) return false;
         return _stopCallback.call(this, e, element, combo);
     };
 
@@ -60,6 +61,8 @@ export function loadKeybinds() {
             viewport.toCenter();
         } else if (charFinder.isModalOpen()) {
             charFinder.closeModal();
+        } else if (presetBrowser.isVisible()) {
+            presetBrowser.hide();
         } else if (charFinder.isVisible() || skinFinder.isVisible()
         || commFinder.isVisible() || playerFinder.isVisible()) {
             document.activeElement.blur();

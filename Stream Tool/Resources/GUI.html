@@ -120,7 +120,14 @@
               <input type="number" class="scoreCheckN mousetrap" tabindex="-1" value="0" min="0">
               <button class="scoreMobileBtn scorePlus" tabindex="-1">+</button>
             </div>
-            
+
+            <div class="scoreBox crewStocksBox" id="crewStocksBox1" style="display:none" title="Team 1 remaining stocks">
+              <button class="scoreMobileBtn crewStocksMinus" tabindex="-1">−</button>
+              <span>Stocks</span>
+              <input type="number" class="crewStocksInput mousetrap" tabindex="-1" value="0" min="0">
+              <button class="scoreMobileBtn crewStocksPlus" tabindex="-1">+</button>
+            </div>
+
             <div class="wlButtons" id="wlButtons1">
               <div id="p1W" class="wlBox">[W]</div>
               <div id="p1L" class="wlBox">[L]</div>
@@ -238,6 +245,13 @@
               <button class="scoreMobileBtn scorePlus" tabindex="-1">+</button>
             </div>
 
+            <div class="scoreBox crewStocksBox" id="crewStocksBox2" style="display:none" title="Team 2 remaining stocks">
+              <button class="scoreMobileBtn crewStocksMinus" tabindex="-1">−</button>
+              <span>Stocks</span>
+              <input type="number" class="crewStocksInput mousetrap" tabindex="-1" value="0" min="0">
+              <button class="scoreMobileBtn crewStocksPlus" tabindex="-1">+</button>
+            </div>
+
             <div class="wlButtons" id="wlButtons2">
               <div id="p2W" class="wlBox">[W]</div>
               <div id="p2L" class="wlBox">[L]</div>
@@ -266,7 +280,12 @@
         <input type="text" id="tournamentName" class="textInput mousetrap" placeholder="Tournament Name" spellcheck="false" tabindex="4">
          
 
-        <div id="gamemode" title="Change the gamemode to Doubles" style="display:none">1v1</div>
+        <select id="gamemodeSelect" title="Change the gamemode">
+          <option value="1v1">1v1</option>
+          <option value="2v2">2v2</option>
+          <option value="wl">Wins/Losses</option>
+          <option value="crew">Crew Battle</option>
+        </select>
 
       </div>
 

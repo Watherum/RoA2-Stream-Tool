@@ -1,10 +1,9 @@
 [
+    { "name": "Best of 1",  "value": 1 },
     { "name": "Best of 3",  "value": 3 },
     { "name": "Best of 5",  "value": 5 },
     { "name": "Best of X",  "value": "X" },
     { "name": "First to 5", "value": "ft5" },
     { "name": "First to 10","value": "ft10" },
-    { "name": "First to X", "value": "ftX" },
-    { "name": "Wins/Losses", "value": "wl" },
-    { "name": "Crew Battle", "value": "crew" }
+    { "name": "First to X", "value": "ftX" }
 ]

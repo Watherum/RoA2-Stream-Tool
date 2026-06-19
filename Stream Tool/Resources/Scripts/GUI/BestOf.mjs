@@ -22,6 +22,10 @@ class BestOf {
             this.#bestOfSelectEl.appendChild(option);
         }
 
+        // default to Bo3
+        const bo3Index = modesList.findIndex(m => m.value == 3);
+        if (bo3Index !== -1) this.#bestOfSelectEl.selectedIndex = bo3Index;
+
         this.#bestOfSelectEl.addEventListener("change", () => {
             const selected = modesList[this.#bestOfSelectEl.selectedIndex];
             this.#changeBestOf(selected.value);
@@ -41,20 +45,34 @@ class BestOf {
         return this.#currentBestOf;
     }
     getBoLabel() {
+        if (this.#currentBestOf === "crew") return "Crew Battle";
+        if (this.#currentBestOf === "wl") return "Wins/Losses";
         return modesList.find(m => m.value == this.#currentBestOf)?.name ?? `Best of ${this.#currentBestOf}`;
     }
-    setBo(value) {
-        this.#changeBestOf(value);
+    setBo(value, updateSelect = true) {
+        this.#changeBestOf(value, updateSelect);
+    }
+    /** Re-applies whatever the bestOf dropdown currently shows. Used when returning from crew/wl gamemode. */
+    resync() {
+        const selected = modesList[this.#bestOfSelectEl.selectedIndex];
+        if (selected) this.#changeBestOf(selected.value);
     }
 
-    #changeBestOf(value) {
+    #changeBestOf(value, updateSelect = true) {
 
         if (this.#currentBestOf == "wl") this.#clearWlNames();
 
-        const idx = modesList.findIndex(m => m.value == value);
-        if (idx !== -1) this.#bestOfSelectEl.selectedIndex = idx;
+        if (updateSelect) {
+            const idx = modesList.findIndex(m => m.value == value);
+            if (idx !== -1) this.#bestOfSelectEl.selectedIndex = idx;
+        }
 
-        if (value == 3) {
+        if (value == 1) {
+
+            this.#currentBestOf = 1;
+            showScoreMode(1);
+
+        } else if (value == 3) {
 
             this.#currentBestOf = 3;
             showScoreMode(3);

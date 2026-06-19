@@ -12,48 +12,81 @@
     <script type="module">
         import { initWebsocket } from "./Resources/Scripts/Utils/WebSocket.mjs";
 
-        const char1icon = document.getElementById("char1icon");
-        const char2icon = document.getElementById("char2icon");
+        // mode containers
+        const singlesMode = document.getElementById("singlesMode");
+        const doublesMode = document.getElementById("doublesMode");
+        const crewMode    = document.getElementById("crewMode");
 
-        const p1name = document.getElementById("p1name");
-        const p2name = document.getElementById("p2name");
-
-        const p1pronouns = document.getElementById("p1pronouns");
-        const p2pronouns = document.getElementById("p2pronouns");
-
+        // shared elements (always visible)
         const p1score = document.getElementById("p1score");
         const p2score = document.getElementById("p2score");
+        const p1wl    = document.getElementById("p1wl");
+        const p2wl    = document.getElementById("p2wl");
+        const round   = document.getElementById("round");
+        const bestOf  = document.getElementById("bestOf");
 
-        const round = document.getElementById("round");
-        const bestOf = document.getElementById("bestOf");
+        // singles elements
+        const char1icon  = document.getElementById("char1icon");
+        const char2icon  = document.getElementById("char2icon");
+        const p1name     = document.getElementById("p1name");
+        const p2name     = document.getElementById("p2name");
+        const p1pronouns = document.getElementById("p1pronouns");
+        const p2pronouns = document.getElementById("p2pronouns");
+        const p1seed     = document.getElementById("p1seed");
+        const p2seed     = document.getElementById("p2seed");
+        const p1flag     = document.getElementById("p1flag");
+        const p2flag     = document.getElementById("p2flag");
 
-        const p1wl = document.getElementById("p1wl");
-        const p2wl = document.getElementById("p2wl");
+        // crew battle elements
+        const crewTeamNameLEl = document.getElementById("crew-teamNameL");
+        const crewTeamNameREl = document.getElementById("crew-teamNameR");
+        const crewCharL       = document.getElementById("crew-charL");
+        const crewCharR       = document.getElementById("crew-charR");
+        const crewPlayerNameL = document.getElementById("crew-playerNameL");
+        const crewPlayerNameR = document.getElementById("crew-playerNameR");
+        const crewStocksLEl   = document.getElementById("crew-stocksL");
+        const crewStocksREl   = document.getElementById("crew-stocksR");
 
-        const p1seed = document.getElementById("p1seed");
-        const p2seed = document.getElementById("p2seed");
-
-        const p1flag = document.getElementById("p1flag");
-        const p2flag = document.getElementById("p2flag");
+        // doubles elements
+        const teamNameLEl  = document.getElementById("teamNameL");
+        const teamNameREl  = document.getElementById("teamNameR");
+        const dblChar1icon = document.getElementById("dbl-char1icon");
+        const dblChar2icon = document.getElementById("dbl-char2icon");
+        const dblChar3icon = document.getElementById("dbl-char3icon");
+        const dblChar4icon = document.getElementById("dbl-char4icon");
+        const dblP1name    = document.getElementById("dbl-p1name");
+        const dblP2name    = document.getElementById("dbl-p2name");
+        const dblP3name    = document.getElementById("dbl-p3name");
+        const dblP4name    = document.getElementById("dbl-p4name");
+        const dblSeedL     = document.getElementById("dbl-seedL");
+        const dblSeedR     = document.getElementById("dbl-seedR");
+        const dblFlagL     = document.getElementById("dbl-flagL");
+        const dblFlagR     = document.getElementById("dbl-flagR");
 
         const canvas = document.getElementById("canvas");
-        const introEls = [char1icon, char2icon, p1name, p2name, p1pronouns, p2pronouns,
-                          p1score, p2score, p1wl, p2wl, p1seed, p2seed, p1flag, p2flag,
-                          round, bestOf];
 
-        const overlayIntro = document.getElementById("overlayIntro");
+        const singlesIntroEls = [char1icon, char2icon, p1name, p2name, p1pronouns, p2pronouns,
+                                  p1score, p2score, p1wl, p2wl, p1seed, p2seed, p1flag, p2flag,
+                                  round, bestOf];
+        const doublesIntroEls = [dblChar1icon, dblChar2icon, dblChar3icon, dblChar4icon,
+                                  dblP1name, dblP2name, dblP3name, dblP4name,
+                                  teamNameLEl, teamNameREl, dblSeedL, dblSeedR,
+                                  dblFlagL, dblFlagR,
+                                  p1score, p2score, p1wl, p2wl, round, bestOf];
+
+        const overlayIntro     = document.getElementById("overlayIntro");
         const introWhiteBarTop = document.getElementById("introWhiteBarTop");
         const introWhiteBarBot = document.getElementById("introWhiteBarBot");
-        const p1Intro = document.getElementById("p1Intro");
-        const p2Intro = document.getElementById("p2Intro");
-        const midTextIntro = document.getElementById("midTextIntro");
-        const roundIntro = document.getElementById("roundIntro");
-        const tNameIntro = document.getElementById("tNameIntro");
-        const rtIntro = document.getElementById("rtIntro");
-        const superCoolQ = document.getElementById("superCoolInterrogation");
+        const p1Intro          = document.getElementById("p1Intro");
+        const p2Intro          = document.getElementById("p2Intro");
+        const midTextIntro     = document.getElementById("midTextIntro");
+        const roundIntro       = document.getElementById("roundIntro");
+        const tNameIntro       = document.getElementById("tNameIntro");
+        const rtIntro          = document.getElementById("rtIntro");
+        const superCoolQ       = document.getElementById("superCoolInterrogation");
 
         const introDelay = 0.6;
-        const fadeTime = 0.3;
+        const fadeTime   = 0.3;
 
         const _rawCodes = await fetch("Resources/COUNTRY_CODES.json").then(r => r.json()).catch(() => ({}));
         const COUNTRY_CODES = Object.fromEntries(Object.entries(_rawCodes).map(([code, name]) => [name, code]));
@@ -78,16 +111,16 @@
 
         function playIntro(data) {
             overlayIntro.style.animation = "";
-            overlayIntro.style.opacity = "";
+            overlayIntro.style.opacity   = "";
             introWhiteBarTop.style.animation = "";
             introWhiteBarBot.style.animation = "";
             p1Intro.style.animation = "";
             p2Intro.style.animation = "";
-            p1Intro.textContent = "";
-            p2Intro.textContent = "";
+            p1Intro.textContent     = "";
+            p2Intro.textContent     = "";
             midTextIntro.textContent = "VS";
             superCoolQ.style.animation = "";
-            rtIntro.style.animation = "";
+            rtIntro.style.animation    = "";
 
             void overlayIntro.offsetWidth;
 
@@ -97,8 +130,13 @@
             introWhiteBarBot.style.animation = `introWhiteBarBot .5s ${introDelay}s cubic-bezier(0, 0, .2, 1) both`;
 
             if (data.score[0] + data.score[1] === 0) {
-                p1Intro.textContent = data.player[0].name;
-                p2Intro.textContent = data.player[1].name;
+                if (data.gamemode === 2) {
+                    p1Intro.textContent = data.teamName[0] || `${data.player[0].name} & ${data.player[2].name}`;
+                    p2Intro.textContent = data.teamName[1] || `${data.player[1].name} & ${data.player[3].name}`;
+                } else {
+                    p1Intro.textContent = data.player[0].name;
+                    p2Intro.textContent = data.player[1].name;
+                }
                 p1Intro.style.fontSize = "85px";
                 p2Intro.style.fontSize = "85px";
                 while (p1Intro.scrollWidth > 500 && parseFloat(p1Intro.style.fontSize) > 8)
@@ -129,47 +167,113 @@
         }
 
         initWebsocket("gameData", (data) => {
-            const p1 = data.player[0];
-            const p2 = data.player[1];
+            const isDoubles    = data.gamemode === 2;
+            const isCrewBattle = data.selectMode === "crew";
 
-            char1icon.src = `Resources/Characters/${p1.char}/Icons/Default.png`;
-            char2icon.src = `Resources/Characters/${p2.char}/Icons/Default.png`;
+            singlesMode.style.display = (!isDoubles && !isCrewBattle) ? "block" : "none";
+            doublesMode.style.display = (isDoubles && !isCrewBattle)  ? "block" : "none";
+            crewMode.style.display    = isCrewBattle                  ? "block" : "none";
 
-            p1name.querySelector(".tag").textContent = p1.tag ? `${p1.tag} | ` : "";
-            p1name.querySelector(".name").textContent = p1.name;
-
-            p2name.querySelector(".tag").textContent = p2.tag ? `${p2.tag} | ` : "";
-            p2name.querySelector(".name").textContent = p2.name;
-
-            fitText(p1name, 300);
-            fitText(p2name, 300);
-
-            p1pronouns.textContent = p1.pronouns;
-            p2pronouns.textContent = p2.pronouns;
-
-            p1seed.textContent = p1.seed ? `Seed: ${p1.seed}` : "";
-            p2seed.textContent = p2.seed ? `Seed: ${p2.seed}` : "";
-
-            setFlag(p1flag, p1.country);
-            setFlag(p2flag, p2.country);
-
+            // shared
+            p1score.style.display = isCrewBattle ? "none" : "";
+            p2score.style.display = isCrewBattle ? "none" : "";
             p1score.textContent = data.score[0];
             p2score.textContent = data.score[1];
+            p1wl.textContent    = data.wl[0];
+            p2wl.textContent    = data.wl[1];
+            round.textContent   = data.round;
+            bestOf.textContent  = data.bestOfLabel;
 
-            round.textContent = data.round;
-            bestOf.textContent = data.bestOfLabel;
+            if (isDoubles) {
+                const [p1, p2, p3, p4] = data.player;
 
-            p1wl.textContent = data.wl[0];
-            p2wl.textContent = data.wl[1];
+                teamNameLEl.textContent = data.teamName[0];
+                teamNameREl.textContent = data.teamName[1];
+                fitText(teamNameLEl, 400, 28);
+                fitText(teamNameREl, 400, 28);
+
+                dblChar1icon.src = `Resources/Characters/${p1.char}/Icons/Default.png`;
+                dblChar2icon.src = `Resources/Characters/${p2.char}/Icons/Default.png`;
+                dblChar3icon.src = `Resources/Characters/${p3.char}/Icons/Default.png`;
+                dblChar4icon.src = `Resources/Characters/${p4.char}/Icons/Default.png`;
+
+                dblP1name.querySelector(".tag").textContent  = p1.tag ? `${p1.tag} | ` : "";
+                dblP1name.querySelector(".name").textContent = p1.name;
+                dblP2name.querySelector(".tag").textContent  = p2.tag ? `${p2.tag} | ` : "";
+                dblP2name.querySelector(".name").textContent = p2.name;
+                dblP3name.querySelector(".tag").textContent  = p3.tag ? `${p3.tag} | ` : "";
+                dblP3name.querySelector(".name").textContent = p3.name;
+                dblP4name.querySelector(".tag").textContent  = p4.tag ? `${p4.tag} | ` : "";
+                dblP4name.querySelector(".name").textContent = p4.name;
+
+                fitText(dblP1name, 175, 22);
+                fitText(dblP2name, 175, 22);
+                fitText(dblP3name, 175, 22);
+                fitText(dblP4name, 175, 22);
+
+                dblSeedL.textContent = p1.seed ? `Seed: ${p1.seed}` : "";
+                dblSeedR.textContent = p2.seed ? `Seed: ${p2.seed}` : "";
+
+                setFlag(dblFlagL, p1.country);
+                setFlag(dblFlagR, p2.country);
+
+            } else if (isCrewBattle) {
+                const p1 = data.player[0];
+                const p2 = data.player[1];
+
+                crewTeamNameLEl.textContent = data.teamName[0];
+                crewTeamNameREl.textContent = data.teamName[1];
+
+                crewCharL.src = `Resources/Characters/${p1.char}/Icons/Default.png`;
+                crewCharR.src = `Resources/Characters/${p2.char}/Icons/Default.png`;
+
+                crewPlayerNameL.querySelector(".tag").textContent  = p1.tag ? `${p1.tag} | ` : "";
+                crewPlayerNameL.querySelector(".name").textContent = p1.name;
+                crewPlayerNameR.querySelector(".tag").textContent  = p2.tag ? `${p2.tag} | ` : "";
+                crewPlayerNameR.querySelector(".name").textContent = p2.name;
+
+                fitText(crewPlayerNameL, 350, 28);
+                fitText(crewPlayerNameR, 350, 28);
+
+                const stocks = data.crewStocks ?? [0, 0];
+                crewStocksLEl.textContent = stocks[0];
+                crewStocksREl.textContent = stocks[1];
+
+            } else {
+                const p1 = data.player[0];
+                const p2 = data.player[1];
+
+                char1icon.src = `Resources/Characters/${p1.char}/Icons/Default.png`;
+                char2icon.src = `Resources/Characters/${p2.char}/Icons/Default.png`;
+
+                p1name.querySelector(".tag").textContent  = p1.tag ? `${p1.tag} | ` : "";
+                p1name.querySelector(".name").textContent = p1.name;
+                p2name.querySelector(".tag").textContent  = p2.tag ? `${p2.tag} | ` : "";
+                p2name.querySelector(".name").textContent = p2.name;
+
+                fitText(p1name, 300);
+                fitText(p2name, 300);
+
+                p1pronouns.textContent = p1.pronouns;
+                p2pronouns.textContent = p2.pronouns;
+
+                p1seed.textContent = p1.seed ? `Seed: ${p1.seed}` : "";
+                p2seed.textContent = p2.seed ? `Seed: ${p2.seed}` : "";
+
+                setFlag(p1flag, p1.country);
+                setFlag(p2flag, p2.country);
+            }
 
             if (data.allowIntro) {
-                const fadeEls = data.introImage ? [canvas] : introEls;
+                const introEls = isDoubles ? doublesIntroEls : singlesIntroEls;
+                const fadeEls  = data.introImage ? [canvas] : introEls;
                 const clearEls = data.introImage ? introEls : [canvas];
                 for (const el of [...fadeEls, ...clearEls]) el.style.animation = "";
                 void canvas.offsetWidth;
                 for (const el of fadeEls) el.style.animation = `fadeIn ${fadeTime + 0.2}s ${introDelay + 1.2}s both`;
                 playIntro(data);
             } else {
+                const introEls = isDoubles ? doublesIntroEls : singlesIntroEls;
                 for (const el of [canvas, ...introEls]) el.style.animation = "";
             }
         });
@@ -177,26 +281,61 @@
 
     <div id="canvas">
       <img src="Resources/Overlay/Scoreboard/Captial_Region_Stream_Design.png" alt=""/>
-      <img id="char1icon" src="" alt=""/>
-      <img id="char2icon" src="" alt=""/>
 
-      <span id="p1name"><span class="tag"></span><span class="name"></span></span>
-      <span id="p1pronouns"></span>
-      <span id="p1seed"></span>
-      <img id="p1flag" src="" alt=""/>
+      <!-- shared: always visible regardless of mode -->
       <span id="p1score"></span>
-      <span id="p1wl"></span>
-
-      <span id="p2name"><span class="tag"></span><span class="name"></span></span>
-      <span id="p2pronouns"></span>
-      <span id="p2seed"></span>
-      <img id="p2flag" src="" alt=""/>
       <span id="p2score"></span>
+      <span id="p1wl"></span>
       <span id="p2wl"></span>
-
       <span id="round"></span>
       <span id="bestOf"></span>
-  </div>
+
+      <!-- singles mode -->
+      <div id="singlesMode">
+          <img id="char1icon" src="" alt=""/>
+          <img id="char2icon" src="" alt=""/>
+          <span id="p1name"><span class="tag"></span><span class="name"></span></span>
+          <span id="p1pronouns"></span>
+          <span id="p1seed"></span>
+          <img id="p1flag" src="" alt=""/>
+          <span id="p2name"><span class="tag"></span><span class="name"></span></span>
+          <span id="p2pronouns"></span>
+          <span id="p2seed"></span>
+          <img id="p2flag" src="" alt=""/>
+      </div>
+
+      <!-- doubles mode -->
+      <div id="doublesMode">
+          <span id="teamNameL"></span>
+          <img id="dbl-char1icon" src="" alt=""/>
+          <span id="dbl-p1name"><span class="tag"></span><span class="name"></span></span>
+          <img id="dbl-char3icon" src="" alt=""/>
+          <span id="dbl-p3name"><span class="tag"></span><span class="name"></span></span>
+          <span id="dbl-seedL"></span>
+          <img id="dbl-flagL" src="" alt=""/>
+
+          <span id="teamNameR"></span>
+          <img id="dbl-char2icon" src="" alt=""/>
+          <span id="dbl-p2name"><span class="tag"></span><span class="name"></span></span>
+          <img id="dbl-char4icon" src="" alt=""/>
+          <span id="dbl-p4name"><span class="tag"></span><span class="name"></span></span>
+          <span id="dbl-seedR"></span>
+          <img id="dbl-flagR" src="" alt=""/>
+      </div>
+
+      <!-- crew battle mode -->
+      <div id="crewMode">
+          <span id="crew-teamNameL"></span>
+          <img id="crew-charL" src="" alt=""/>
+          <span id="crew-playerNameL"><span class="tag"></span><span class="name"></span></span>
+          <span id="crew-stocksL"></span>
+
+          <span id="crew-teamNameR"></span>
+          <img id="crew-charR" src="" alt=""/>
+          <span id="crew-playerNameR"><span class="tag"></span><span class="name"></span></span>
+          <span id="crew-stocksR"></span>
+      </div>
+    </div>
 
     <div id="overlayIntro">
         <div id="introBG"></div>

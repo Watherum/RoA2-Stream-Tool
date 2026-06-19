@@ -40,7 +40,7 @@ export class Score {
 
         const bo = bestOf.getBo();
 
-        if (bo == 5 || bo == 3) { // tick modes — everything else is numeric
+        if (bo == 5 || bo == 3 || bo == 1) { // tick modes — everything else is numeric
 
             let result = 0;
             for (let i = 0; i < this.#scoreEls.length; i++) {
@@ -63,6 +63,8 @@ export class Score {
         let actualScore;
         if (score <= 0) {
             actualScore = 0;
+        } else if (bestOf.getBo() == 1 && score > 1) {
+            actualScore = 1;
         } else if (bestOf.getBo() == 5 && score > 3) {
             actualScore = 3;
         } else if (bestOf.getBo() == 3 && score > 2) {
@@ -119,6 +121,17 @@ export class Score {
 
             if (this.getScore() > 2) {
                 this.setScore(2);
+            }
+
+        } else if (mode == 1) {
+
+            this.#setChecksDisplay("block");
+            this.#scoreEls[1].style.display = "none";
+            this.#scoreEls[2].style.display = "none";
+            this.#scoreNumEl.style.display = "none";
+
+            if (this.getScore() > 1) {
+                this.setScore(1);
             }
 
         } else {

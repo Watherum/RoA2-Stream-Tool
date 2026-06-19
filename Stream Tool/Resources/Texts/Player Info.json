@@ -6,7 +6,12 @@
     "seed": 6,
     "country": "United States",
     "socials": {},
-    "characters": []
+    "characters": [
+      {
+        "character": "Zetterburn",
+        "skin": "Default"
+      }
+    ]
   },
   {
     "name": "AlphaStone",
@@ -15,7 +20,12 @@
     "seed": 17,
     "country": "",
     "socials": {},
-    "characters": []
+    "characters": [
+      {
+        "character": "Fleet",
+        "skin": "Default"
+      }
+    ]
   },
   {
     "name": "Animal",
