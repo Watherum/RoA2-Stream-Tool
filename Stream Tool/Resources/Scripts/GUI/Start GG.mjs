@@ -37,7 +37,11 @@ class StartGG {
     #loaded = false;
 
     setToken(token) { this.#token = token; }
-    setSlug(slug) { this.#slug = slug; }
+    setSlug(slug) {
+        // accept full start.gg URLs — extract "tournament/.../event/..." portion
+        const match = slug.match(/tournament\/[^/]+\/event\/[^/?#]+/);
+        this.#slug = match ? match[0] : slug.trim();
+    }
     isLoaded() { return this.#loaded; }
     getSeedCount() { return this.#seedMap.size; }
 
@@ -103,20 +107,21 @@ class StartGG {
                 totalPages = entrants.pageInfo.totalPages;
 
                 for (const entrant of entrants.nodes) {
-                    const participant = entrant.participants[0];
-                    if (!participant) continue;
-                    const key = participant.gamerTag.toLowerCase();
-                    const country = participant.user?.location?.country || "";
-                    const tag = participant.prefix || "";
-                    if (entrant.initialSeedNum) this.#seedMap.set(key, entrant.initialSeedNum);
-                    if (country) this.#countryMap.set(key, country);
-                    if (tag) this.#tagMap.set(key, tag);
-                    allEntrants.push({
-                        gamerTag: participant.gamerTag,
-                        seed: entrant.initialSeedNum || "",
-                        country,
-                        tag
-                    });
+                    if (!entrant.participants?.length) continue;
+                    for (const participant of entrant.participants) {
+                        const key = participant.gamerTag.toLowerCase();
+                        const country = participant.user?.location?.country || "";
+                        const tag = participant.prefix || "";
+                        if (entrant.initialSeedNum) this.#seedMap.set(key, entrant.initialSeedNum);
+                        if (country) this.#countryMap.set(key, country);
+                        if (tag) this.#tagMap.set(key, tag);
+                        allEntrants.push({
+                            gamerTag: participant.gamerTag,
+                            seed: entrant.initialSeedNum || "",
+                            country,
+                            tag
+                        });
+                    }
                 }
 
                 page++;

@@ -49,6 +49,7 @@ class GuiSettings {
     #startGGTokenBox = document.getElementById("startGGTokenBox");
     #startGGToken = document.getElementById("startGGToken");
     #startGGSlug = document.getElementById("startGGSlug");
+    #startGGSaveSlug = document.getElementById("saveStartGGSlug");
     #startGGFetch = document.getElementById("startGGFetch");
     #startGGStatus = document.getElementById("startGGStatus");
 
@@ -172,6 +173,15 @@ class GuiSettings {
         });
         this.#startGGSlug.addEventListener("change", () => {
             startGG.setSlug(this.#startGGSlug.value);
+            if (this.#startGGSaveSlug.checked) this.save("startGGSlug", this.#startGGSlug.value);
+        });
+        this.#startGGSaveSlug.addEventListener("change", () => {
+            this.save("saveStartGGSlug", this.#startGGSaveSlug.checked);
+            if (this.#startGGSaveSlug.checked) {
+                this.save("startGGSlug", this.#startGGSlug.value);
+            } else {
+                this.save("startGGSlug", "");
+            }
         });
 
         // fetch seeds button
@@ -236,6 +246,33 @@ class GuiSettings {
         if (inside.electron && guiSettings.startGGToken) {
             this.#startGGToken.value = guiSettings.startGGToken;
             startGG.setToken(guiSettings.startGGToken);
+        }
+
+        if (guiSettings.saveStartGGSlug) {
+            this.#startGGSaveSlug.checked = true;
+            if (guiSettings.startGGSlug) {
+                this.#startGGSlug.value = guiSettings.startGGSlug;
+                startGG.setSlug(guiSettings.startGGSlug);
+            }
+        }
+
+        // clear stale seeds from all preset files at startup (seeds are tournament-specific)
+        if (inside.electron) {
+            const fs = require('fs');
+            const presetsDir = `${stPath.text}/Player Info`;
+            try {
+                for (const file of fs.readdirSync(presetsDir)) {
+                    if (!file.endsWith('.json')) continue;
+                    try {
+                        const filePath = `${presetsDir}/${file}`;
+                        const preset = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+                        if (preset.seed) {
+                            preset.seed = "";
+                            fs.writeFileSync(filePath, JSON.stringify(preset, null, 2));
+                        }
+                    } catch (e) {}
+                }
+            } catch (e) {}
         }
 
         // app.properties.txt overrides the saved token if present

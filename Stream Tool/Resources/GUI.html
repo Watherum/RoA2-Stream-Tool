@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RoA2 Stream Tool v16.0.0</title>
+  <title>RoA2 Stream Tool v17.0.0</title>
   <link rel="stylesheet" href="CSS/GUI.css">
   <link rel="stylesheet" href="CSS/GUI Custom.css">
   <script src="Scripts/GUI/mousetrap.min.js" defer></script>
@@ -459,6 +459,11 @@ Cannot be used with Update on score hotkey.">
         <div style="text-align: center; font-size: 0.75em; opacity: 0.6; padding: 2px 0 0;">tournament/slug/event/slug</div>
         <div class="settingBox">
           <input type="text" id="startGGSlug" class="textInput settingsTextInp mousetrap" placeholder="tournament/slug/event/slug" spellcheck="false" tabindex="-1">
+        </div>
+
+        <div class="settingBox" title="Remembers the event slug between sessions">
+          <input type="checkbox" id="saveStartGGSlug" class="settingsCheck" tabindex="-1">
+          <label for="saveStartGGSlug" class="settingsText">Remember slug between sessions</label>
         </div>
 
         <div id="settingsButtonSection">
