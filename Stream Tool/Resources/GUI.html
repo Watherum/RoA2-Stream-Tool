@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RoA2 Stream Tool v17.0.0</title>
+  <title>RoA2 Stream Tool v17.1.0</title>
   <link rel="stylesheet" href="CSS/GUI.css">
   <link rel="stylesheet" href="CSS/GUI Custom.css">
   <script src="Scripts/GUI/mousetrap.min.js" defer></script>
@@ -708,7 +708,10 @@ Cannot be used with Update on score hotkey.">
 
     <div class="pInfoTitle">Player Presets</div>
 
-    <input type="text" id="presetBrowserSearch" class="textInput mousetrap" placeholder="Search by name, tag or character..." spellcheck="false" tabindex="-1">
+    <div id="presetBrowserSearchRow">
+      <input type="text" id="presetBrowserSearch" class="textInput mousetrap" placeholder="Search by name, tag or character..." spellcheck="false" tabindex="-1">
+      <button id="presetBrowserSearchClear" tabindex="-1" title="Clear search">✕</button>
+    </div>
 
     <div id="presetBrowserList"></div>
 
@@ -723,6 +726,18 @@ Cannot be used with Update on score hotkey.">
 
   </div>
 
+</div>
+
+<div id="clearConfirmDiv">
+  <div id="clearConfirmCenter">
+    <div class="pInfoTitle">Clear Set Info</div>
+    <div id="clearConfirmText">Also reset the current round?</div>
+    <div class="pInfoRow">
+      <button class="pInfoBotButt" id="clearConfirmYes" tabindex="-1">Yes</button>
+      <button class="pInfoBotButt" id="clearConfirmNo" tabindex="-1">No</button>
+      <button class="pInfoBotButt" id="clearConfirmCancel" tabindex="-1">Cancel</button>
+    </div>
+  </div>
 </div>
 
 <div id="notifDiv">

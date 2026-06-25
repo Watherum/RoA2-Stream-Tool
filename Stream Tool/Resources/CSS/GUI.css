@@ -1287,8 +1287,47 @@ button:hover {
   gap: 10px;
 }
 
-#presetBrowserSearch {
+#presetBrowserSearchRow {
+  display: flex;
   width: 100%;
+  gap: 5px;
+}
+
+#presetBrowserSearch {
+  flex: 1;
+  min-width: 0;
+}
+
+#presetBrowserSearchClear {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  background-color: var(--bg3);
+  border: 1px solid var(--bg4);
+  border-radius: 3px;
+  color: var(--text);
+  font-size: 12px;
+  cursor: default;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.3;
+  pointer-events: none;
+  transition: opacity 100ms, background-color 100ms;
+}
+
+#presetBrowserSearchClear.visible {
+  opacity: 1;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+#presetBrowserSearchClear.visible:hover {
+  background-color: var(--bg4);
+}
+
+#presetBrowserSearchClear.visible:active {
+  background-color: var(--bg2);
 }
 
 #presetBrowserList {
@@ -1297,6 +1336,44 @@ button:hover {
   display: flex;
   flex-direction: column;
   gap: 5px;
+}
+
+/* Clear confirm modal */
+#clearConfirmDiv {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  top: 0px;
+  opacity: 0;
+  transform: scale(1.15);
+  pointer-events: none;
+  transition: opacity 150ms, transform 150ms;
+  z-index: 100;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--bg4);
+}
+
+#clearConfirmCenter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 320px;
+  background-color: var(--bg1);
+  border-radius: 5px;
+  padding: 15px;
+  gap: 12px;
+}
+
+#clearConfirmText {
+  font-size: 13px;
+  color: var(--text2);
+}
+
+#clearConfirmCenter .pInfoBotButt {
+  justify-content: center;
+  padding: 0 12px;
 }
 
 .pbEntry {

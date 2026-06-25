@@ -14,9 +14,11 @@ class PresetBrowser {
 
     #div = document.getElementById("presetBrowserDiv");
     #searchInp = document.getElementById("presetBrowserSearch");
+    #clearButt = document.getElementById("presetBrowserSearchClear");
     #list = document.getElementById("presetBrowserList");
     #allPresets = [];
     #renderCycle = 0;
+    #mousedownOnBackdrop = false;
 
     constructor() {
 
@@ -27,19 +29,34 @@ class PresetBrowser {
             this.hide();
         });
         this.#searchInp.addEventListener("input", () => {
+            this.#updateClearButton();
             this.#filterList();
         });
-        // close when clicking the dark overlay behind the modal
+        this.#clearButt.addEventListener("click", () => {
+            this.#searchInp.value = "";
+            this.#updateClearButton();
+            this.#filterList();
+            this.#searchInp.focus();
+        });
+        // only close when both mousedown and click land on the backdrop itself
+        this.#div.addEventListener("mousedown", (e) => {
+            this.#mousedownOnBackdrop = e.target === this.#div;
+        });
         this.#div.addEventListener("click", (e) => {
-            if (e.target === this.#div) this.hide();
+            if (this.#mousedownOnBackdrop && e.target === this.#div) this.hide();
         });
 
+    }
+
+    #updateClearButton() {
+        this.#clearButt.classList.toggle("visible", this.#searchInp.value.length > 0);
     }
 
     async show() {
 
         this.#allPresets = await getPresetList("Player Info");
         this.#searchInp.value = "";
+        this.#updateClearButton();
         this.#filterList();
 
         this.#div.style.pointerEvents = "auto";

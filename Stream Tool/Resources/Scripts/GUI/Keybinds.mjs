@@ -1,5 +1,5 @@
 import { updateBracket } from './Bracket.mjs';
-import { clear } from './Clear.mjs';
+import { clear, clearConfirm } from './Clear.mjs';
 import { charFinder } from './Finder/Char Finder.mjs';
 import { commFinder } from './Finder/Comm Finder.mjs';
 import { playerFinder } from './Finder/Player Finder.mjs';
@@ -63,6 +63,8 @@ export function loadKeybinds() {
             charFinder.closeModal();
         } else if (presetBrowser.isVisible()) {
             presetBrowser.hide();
+        } else if (clearConfirm.isVisible()) {
+            clearConfirm.hide();
         } else if (charFinder.isVisible() || skinFinder.isVisible()
         || commFinder.isVisible() || playerFinder.isVisible()) {
             document.activeElement.blur();
