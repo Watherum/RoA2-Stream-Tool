@@ -19,12 +19,13 @@ import { wl } from "./WinnersLosers.mjs";
 export async function updateGUI(data) {
 
     // set the gamemode and scoremode
-    if (data.gamemode != gamemode.getGm) {
-        gamemode.changeGamemode(data.gamemode);
+    if (data.selectMode != gamemode.getSelectValue()) {
+        gamemode.applySelectMode(data.selectMode);
     }
-    if (data.bestOf != bestOf.getBo) {
+    if (data.bestOf != bestOf.getBo()) {
         bestOf.setBo(data.bestOf);
     }
+    gamemode.setCrewStocks(data.crewStocks);
 
     // set the settings
     settings.setIntro(data.allowIntro);

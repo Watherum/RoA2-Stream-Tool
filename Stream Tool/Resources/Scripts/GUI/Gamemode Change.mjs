@@ -34,44 +34,53 @@ class Gamemode {
         }
 
         this.#select.addEventListener("change", () => {
-            const value = this.#select.value;
-            if (value === "1v1") {
-                if (this.#isCrew) this.#exitCrewLayout();
-                if (this.#isWL) this.#exitWLLayout();
-                if (this.#gamemode === 2) this.changeGamemode(1);
-                bestOf.resync();
-                round.setWinnersRound();
-                this.#bestOfSelect.disabled = false;
-            } else if (value === "2v2") {
-                if (this.#isCrew) this.#exitCrewLayout();
-                if (this.#isWL) this.#exitWLLayout();
-                // setLayout(2) → changeDubElsDisplay("flex") restores team name inputs
-                this.changeGamemode(2);
-                bestOf.resync();
-                round.setWinnersRound();
-                this.#bestOfSelect.disabled = false;
-            } else if (value === "wl") {
-                if (this.#isCrew) this.#exitCrewLayout();
-                if (this.#gamemode === 2) this.#setLayout(1);
-                this.#enterWLLayout();
-                bestOf.setBo(value);
-                this.#bestOfSelect.disabled = true;
-            } else if (value === "crew") {
-                if (this.#isWL) this.#exitWLLayout();
-                if (this.#gamemode === 2) this.#setLayout(1);
-                this.#enterCrewLayout();
-                // updateSelect:false keeps the dropdown at its current value (e.g. Bo3)
-                // so resync() works correctly when leaving crew mode
-                this.#savedBoIndex = this.#bestOfSelect.selectedIndex;
-                bestOf.setBo("X"); // shows "Best of X" in dropdown; restored on exit
-                this.#bestOfSelect.disabled = false;
-                round.setCrew();
-            }
+            this.applySelectMode(this.#select.value);
         });
     }
 
     getGm() {
         return this.#gamemode;
+    }
+
+    /**
+     * Applies a select mode (1v1/2v2/wl/crew), driving the same layout
+     * transitions whether triggered by the dropdown or by a remote sync.
+     * @param {String} value
+     */
+    applySelectMode(value) {
+        this.#select.value = value;
+        if (value === "1v1") {
+            if (this.#isCrew) this.#exitCrewLayout();
+            if (this.#isWL) this.#exitWLLayout();
+            if (this.#gamemode === 2) this.changeGamemode(1);
+            bestOf.resync();
+            round.setWinnersRound();
+            this.#bestOfSelect.disabled = false;
+        } else if (value === "2v2") {
+            if (this.#isCrew) this.#exitCrewLayout();
+            if (this.#isWL) this.#exitWLLayout();
+            // setLayout(2) → changeDubElsDisplay("flex") restores team name inputs
+            this.changeGamemode(2);
+            bestOf.resync();
+            round.setWinnersRound();
+            this.#bestOfSelect.disabled = false;
+        } else if (value === "wl") {
+            if (this.#isCrew) this.#exitCrewLayout();
+            if (this.#gamemode === 2) this.#setLayout(1);
+            this.#enterWLLayout();
+            bestOf.setBo(value);
+            this.#bestOfSelect.disabled = true;
+        } else if (value === "crew") {
+            if (this.#isWL) this.#exitWLLayout();
+            if (this.#gamemode === 2) this.#setLayout(1);
+            this.#enterCrewLayout();
+            // updateSelect:false keeps the dropdown at its current value (e.g. Bo3)
+            // so resync() works correctly when leaving crew mode
+            this.#savedBoIndex = this.#bestOfSelect.selectedIndex;
+            bestOf.setBo("X"); // shows "Best of X" in dropdown; restored on exit
+            this.#bestOfSelect.disabled = false;
+            round.setCrew();
+        }
     }
 
     getSelectValue() {
@@ -216,6 +225,12 @@ class Gamemode {
 
     getCrewStocks() {
         return this.#crewStocksBoxes.map(box => Number(box.querySelector(".crewStocksInput").value));
+    }
+
+    setCrewStocks(stocks) {
+        this.#crewStocksBoxes.forEach((box, i) => {
+            box.querySelector(".crewStocksInput").value = stocks[i];
+        });
     }
 
     /** Simply changes the display value for all 2v2 only elements */
