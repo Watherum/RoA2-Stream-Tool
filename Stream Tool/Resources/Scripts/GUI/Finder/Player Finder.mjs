@@ -1,7 +1,6 @@
 import { Finder } from "./Finder.mjs";
 import { getJson, getPresetList } from '../File System.mjs';
 import { getRecolorImage } from "../GetImage.mjs";
-import { customChange, setCurrentPlayer } from "../Custom Skin.mjs";
 import { current, stPath } from "../Globals.mjs";
 import { charFinder } from "./Char Finder.mjs";
 import { scores } from "../Score/Scores.mjs";
@@ -117,10 +116,7 @@ class PlayerFinder extends Finder {
                             seed : preset.seed || "",
                             country : preset.country || "",
                             socials : preset.socials,
-                            char : preset.characters[i].character,
-                            skin : preset.characters[i].skin,
-                            hex : preset.characters[i].hex,
-                            customImg : preset.characters[i].customImg
+                            char : preset.characters[i].character
                         }
 
                         // add them to the div we created before
@@ -141,12 +137,9 @@ class PlayerFinder extends Finder {
                             el : charImg,
                             charJson : charJson,
                             char : preset.characters[i].character,
-                            skin : preset.characters[i].skin,
-                            hex : preset.characters[i].hex,
-                            customImg : preset.characters[i].customImg,
                         });
                         // we have to position it
-                        this.positionCharImg(preset.characters[i].skin, charImg, charJson);
+                        this.positionCharImg("Default", charImg, charJson);
                         // and add it to the mask
                         charImgBox.appendChild(charImg);
 
@@ -195,8 +188,7 @@ class PlayerFinder extends Finder {
                         seed : preset.seed || "",
                         country : preset.country || "",
                         socials : preset.socials,
-                        char : "Random",
-                        skin : {name: "Default"}
+                        char : "Random"
                     }
                     newDiv.appendChild(spanTag);
                     newDiv.appendChild(spanName);
@@ -209,8 +201,7 @@ class PlayerFinder extends Finder {
                     skinImgs.push({
                         el : charImg,
                         charJson : charJson,
-                        char : "Random",
-                        skin : {name: "Random"}
+                        char : "Random"
                     });
                     this.positionCharImg(null, charImg, charJson);
                     charImgBox.appendChild(charImg);
@@ -242,34 +233,14 @@ class PlayerFinder extends Finder {
                 break;
             }
 
+            // always use each character's default skin, since presets no longer track skin
             let skin;
-            if (skinImgs[i].charJson) { // if a character is found
-                for (let j = 0; j < skinImgs[i].charJson.skinList.length; j++) {
-
-                    // cicle through the skin list to find the one
-                    if (skinImgs[i].charJson.skinList[j].name == skinImgs[i].skin) {
-
-                        // clone to not modify original
-                        skin = structuredClone(skinImgs[i].charJson.skinList[j]);
-
-                        // if we got a custom skin
-                        if (skinImgs[i].customImg) {
-
-                            // add in custom data
-                            skin.hex = skinImgs[i].hex;
-                            skin.force = true;
-
-                        }
-
-                        // we dont need to look for more
-                        break;
-
-                    }
-                }
+            if (skinImgs[i].charJson) {
+                skin = skinImgs[i].charJson.skinList[0];
             } else {
-                skin = {name: skinImgs[i].skin}
+                skin = {name: "Random"};
             }
-            
+
             let finalColorData = null;
             if (skinImgs[i].charJson) {
                 finalColorData = skinImgs[i].charJson.colorData;
@@ -318,14 +289,8 @@ class PlayerFinder extends Finder {
             player.setSocials(pData.socials);
         }
 
-        // character change
-        await player.charChange(pData.char, true);
-        if (pData.customImg) {
-            setCurrentPlayer(player);
-            customChange(pData.hex, pData.skin);
-        } else { // search for all skins for name matches
-            player.skinChange(player.findSkin(pData.skin));
-        }
+        // character change, uses the character's default skin since presets no longer track skin
+        await player.charChange(pData.char);
 
         // and hide the finder of course
         this.hide();

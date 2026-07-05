@@ -2,6 +2,8 @@
   "name": "Watherum",
   "tag": "C2F",
   "pronouns": "He/Him",
+  "seed": "",
+  "country": "United States",
   "socials": {
     "twitter": "@Watherum",
     "twitch": "watherum",
@@ -12,22 +14,19 @@
   },
   "characters": [
     {
-      "character": "Ranno",
-      "skin": "Default"
+      "character": "Galvan"
     },
     {
-      "character": "Clairen",
-      "skin": "Default"
+      "character": "Ranno"
     },
     {
-      "character": "Kragg",
-      "skin": "Default"
+      "character": "Clairen"
     },
     {
-      "character": "Random",
-      "skin": "Default"
+      "character": "Kragg"
+    },
+    {
+      "character": "Random"
     }
-  ],
-  "seed": 19,
-  "country": "United States"
+  ]
 }

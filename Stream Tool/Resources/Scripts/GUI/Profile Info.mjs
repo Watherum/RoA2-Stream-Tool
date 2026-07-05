@@ -158,19 +158,14 @@ class ProfileInfo {
             seed: player.getSeed ? player.getSeed() : "",
             country: player.getCountry ? player.getCountry() : "",
             socials: player.getSocials(),
-            characters: [{ character: player.char, skin: player.skin.name }]
+            characters: [{ character: player.char }]
         };
-
-        if (player.customImg) {
-            preset.characters[0].hex = player.skin.hex;
-            preset.characters[0].customImg = true;
-        }
 
         const existingPreset = await getJson(`${stPath.text}/Player Info/${player.getName()}`);
         if (existingPreset) {
             for (let i = 0; i < existingPreset.characters.length; i++) {
                 if (existingPreset.characters[i].character != player.char) {
-                    preset.characters.push(existingPreset.characters[i]);
+                    preset.characters.push({ character: existingPreset.characters[i].character });
                 }
             }
         }
@@ -194,25 +189,20 @@ class ProfileInfo {
         if (this.#curProfile.profileType == "player") {
 
             preset.characters = [{
-                character: this.#curProfile.char,
-                skin: this.#curProfile.skin.name
+                character: this.#curProfile.char
             }];
-            if (this.#curProfile.customImg) {
-                preset.characters[0].hex = this.#curProfile.skin.hex;
-                preset.characters[0].customImg = true;
-            }
 
             // if a player preset for this player exists, add already existing characters
             const existingPreset = await getJson(`${stPath.text}/Player Info/${this.#nameInp.value}`)
             if (existingPreset) {
-                
+
                 // add existing characters to the new json, but not if the character is the same
                 for (let i = 0; i < existingPreset.characters.length; i++) {
                     if (existingPreset.characters[i].character != this.#curProfile.char) {
-                        preset.characters.push(existingPreset.characters[i]);
+                        preset.characters.push({ character: existingPreset.characters[i].character });
                     }
                 }
-        
+
             }
 
         }
