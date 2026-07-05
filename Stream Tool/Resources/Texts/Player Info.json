@@ -87,7 +87,7 @@
     "name": "Average Alex",
     "tag": "C2F",
     "pronouns": "He/Him",
-    "seed": "",
+    "seed": 1,
     "country": "United States",
     "socials": {
       "twitter": "",
@@ -161,7 +161,7 @@
     "name": "Bowler",
     "tag": "",
     "pronouns": "",
-    "seed": "",
+    "seed": 2,
     "country": "United States",
     "socials": {},
     "characters": []
@@ -396,7 +396,7 @@
     "name": "Grunk",
     "tag": "C2F",
     "pronouns": "",
-    "seed": "",
+    "seed": 3,
     "country": "United States",
     "socials": {},
     "characters": []
@@ -837,6 +837,15 @@
     "characters": []
   },
   {
+    "name": "Sourkroutt",
+    "tag": "",
+    "pronouns": "",
+    "seed": 6,
+    "country": "United States",
+    "socials": {},
+    "characters": []
+  },
+  {
     "name": "sqibbo",
     "tag": "HVCC",
     "pronouns": "",
@@ -1002,6 +1011,15 @@
     "characters": []
   },
   {
+    "name": "Virgo",
+    "tag": "GRNT",
+    "pronouns": "",
+    "seed": 7,
+    "country": "",
+    "socials": {},
+    "characters": []
+  },
+  {
     "name": "Viviana",
     "tag": "NS",
     "pronouns": "",
@@ -1041,7 +1059,7 @@
     "name": "Watherum",
     "tag": "C2F",
     "pronouns": "He/Him",
-    "seed": "",
+    "seed": 5,
     "country": "United States",
     "socials": {
       "twitter": "@Watherum",
@@ -1081,14 +1099,13 @@
   {
     "name": "ybm",
     "tag": "RATS",
-    "pronouns": "",
-    "seed": "",
+    "pronouns": "He/Him",
+    "seed": 4,
     "country": "United States",
     "socials": {},
     "characters": [
       {
-        "character": "Wrastor",
-        "skin": "Default"
+        "character": "Wrastor"
       }
     ]
   },
