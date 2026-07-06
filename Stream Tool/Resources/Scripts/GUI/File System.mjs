@@ -96,6 +96,49 @@ export async function getCharacterList(includeWorkshop = false) {
 }
 
 /**
+ * In-memory cache of preset folders, keyed by folder name (e.g. "Player Info")
+ * to a Map of preset name -> preset data. Avoids re-reading every preset file
+ * from disk on every list/save/delete once a folder has been scanned once.
+ * @type {Map<string, Map<string, Object>>}
+ */
+const presetCaches = new Map();
+
+/**
+ * Loads (once) and returns the in-memory cache for a preset folder.
+ * Subsequent calls return the same Map without rescanning the disk.
+ * @param {String} folderName
+ * @returns {Map<string, Object>}
+ */
+function loadPresetCache(folderName) {
+
+    if (presetCaches.has(folderName)) return presetCaches.get(folderName);
+
+    const fs = require('fs');
+    const folderPath = `${stPath.text}/${folderName}/`;
+    fs.mkdirSync(folderPath, { recursive: true });
+
+    const cache = new Map();
+    for (const file of fs.readdirSync(folderPath)) {
+        const filePath = `${folderPath}${file}`;
+        if (fs.statSync(filePath).isDirectory() || !file.endsWith('.json')) continue;
+        const name = file.substring(0, file.length - 5);
+        try {
+            cache.set(name, JSON.parse(fs.readFileSync(filePath)));
+        } catch (e) { /* skip unreadable preset files */ }
+    }
+
+    presetCaches.set(folderName, cache);
+    return cache;
+
+}
+
+/** Rewrites the combined preset list file from the in-memory cache (for the remote GUI) */
+async function flushPresetCache(folderName) {
+    const cache = loadPresetCache(folderName);
+    await saveJson(`/${folderName}`, [...cache.values()]);
+}
+
+/**
  * Generates a json with each of the files on a presets folder
  * @returns Array of preset jsons
  */
@@ -103,32 +146,87 @@ export async function getPresetList(folderName) {
 
     if (inside.electron) {
 
-        // get us the files to look for
-        const fs = require('fs');
-        const folderPath = `${stPath.text}/${folderName}/`;
-        fs.mkdirSync(folderPath, { recursive: true });
-        const files = fs.readdirSync(folderPath);
-
-        // for each file, add a new entry with its data
-        const jsonList = [];
-        for (let i = 0; i < files.length; i++) {
-            const filePath = `${folderPath}${files[i]}`;
-            if (fs.statSync(filePath).isDirectory()) continue;
-            files[i] = files[i].substring(0, files[i].length - 5); // remove .json
-            jsonList.push(await getJson(`${stPath.text}/${folderName}/${files[i]}`));
-        }
-
-        // save for remote gui
-        saveJson(`/${folderName}`, jsonList);
-
-        return jsonList;
+        return [...loadPresetCache(folderName).values()];
 
     } else {
 
         return await getJson(`${stPath.text}/${folderName}`);
-        
+
     }
-    
+
+}
+
+/**
+ * Returns a single cached preset by name, or undefined if not found
+ * @param {String} folderName
+ * @param {String} name
+ */
+export function getPreset(folderName, name) {
+    return loadPresetCache(folderName).get(name);
+}
+
+/**
+ * Saves a single preset: updates the in-memory cache, writes its file,
+ * and refreshes the combined list file used by the remote GUI
+ * @param {String} folderName - "Player Info" or "Commentator Info"
+ * @param {String} name - Preset name (used as the filename)
+ * @param {Object} data - Preset data
+ */
+export async function savePreset(folderName, name, data) {
+
+    if (inside.electron) {
+
+        const cache = loadPresetCache(folderName);
+        cache.set(name, data);
+
+        const fs = require('fs');
+        fs.writeFileSync(`${stPath.text}/${folderName}/${name}.json`, JSON.stringify(data, null, 2));
+
+        await flushPresetCache(folderName);
+
+    } else {
+
+        const remote = await import("./Remote Requests.mjs");
+        remote.sendRemoteData({ ...data, message: "RemoteSaveJson", path: `/${folderName}/${name}` });
+
+    }
+
+}
+
+/**
+ * Saves several presets at once (e.g. a bulk start.gg import), writing each
+ * preset's file but only refreshing the combined list once at the end
+ * @param {String} folderName
+ * @param {{name: String, data: Object}[]} entries
+ */
+export async function saveManyPresets(folderName, entries) {
+
+    if (!inside.electron || !entries.length) return;
+
+    const cache = loadPresetCache(folderName);
+    const fs = require('fs');
+
+    for (const { name, data } of entries) {
+        try {
+            fs.writeFileSync(`${stPath.text}/${folderName}/${name}.json`, JSON.stringify(data, null, 2));
+            cache.set(name, data);
+        } catch (e) {
+            // skip entries with filename-unsafe names
+        }
+    }
+
+    await flushPresetCache(folderName);
+
+}
+
+/**
+ * Forces a full rescan of a preset folder from disk, discarding the in-memory
+ * cache. Useful if preset files were added/edited outside the app.
+ * @param {String} folderName
+ */
+export async function rescanPresetCache(folderName) {
+    presetCaches.delete(folderName);
+    await flushPresetCache(folderName);
 }
 
 /**
@@ -186,14 +284,20 @@ export async function saveJson(path, data) {
  * Deletes a player preset file by name
  * @param {String} name - Name of the preset to delete
  */
-export function deletePreset(name) {
+export async function deletePreset(name) {
 
     if (inside.electron) {
+
+        loadPresetCache("Player Info").delete(name);
+
         const fs = require('fs');
         const path = `${stPath.text}/Player Info/${name}.json`;
         if (fs.existsSync(path)) {
             fs.unlinkSync(path);
         }
+
+        await flushPresetCache("Player Info");
+
     }
 
 }

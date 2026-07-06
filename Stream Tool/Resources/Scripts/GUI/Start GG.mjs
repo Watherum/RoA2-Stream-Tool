@@ -1,4 +1,5 @@
 import { stPath, inside } from "./Globals.mjs";
+import { getPreset, saveManyPresets } from "./File System.mjs";
 
 const STARTGG_API = "https://api.start.gg/gql/alpha";
 
@@ -148,38 +149,34 @@ class StartGG {
             let newPresets = 0;
             const newPresetObjects = [];
             if (inside.electron) {
-                const fs = require('fs');
+                const entries = [];
                 for (const entrant of allEntrants) {
                     const safeName = entrant.gamerTag.replace(/[\\/:*?"<>|]/g, '_');
-                    const filePath = `${stPath.text}/Player Info/${safeName}.json`;
-                    try {
-                        if (fs.existsSync(filePath)) {
-                            // update existing preset with seed, country, and tag
-                            const preset = JSON.parse(fs.readFileSync(filePath));
-                            if (entrant.seed !== "") preset.seed = entrant.seed;
-                            if (entrant.country) preset.country = entrant.country;
-                            if (entrant.tag) preset.tag = entrant.tag;
-                            if (entrant.pronouns) preset.pronouns = entrant.pronouns;
-                            fs.writeFileSync(filePath, JSON.stringify(preset, null, 2));
-                        } else {
-                            // create a new preset
-                            const preset = {
-                                name: entrant.gamerTag,
-                                tag: entrant.tag,
-                                pronouns: entrant.pronouns || "",
-                                seed: entrant.seed,
-                                country: entrant.country,
-                                socials: {},
-                                characters: []
-                            };
-                            fs.writeFileSync(filePath, JSON.stringify(preset, null, 2));
-                            newPresetObjects.push(preset);
-                            newPresets++;
-                        }
-                    } catch (e) {
-                        // skip players with filename-unsafe characters in their tag
+                    const existing = getPreset("Player Info", safeName);
+                    if (existing) {
+                        // update existing preset with seed, country, tag, and pronouns
+                        if (entrant.seed !== "") existing.seed = entrant.seed;
+                        if (entrant.country) existing.country = entrant.country;
+                        if (entrant.tag) existing.tag = entrant.tag;
+                        if (entrant.pronouns) existing.pronouns = entrant.pronouns;
+                        entries.push({ name: safeName, data: existing });
+                    } else {
+                        // create a new preset
+                        const preset = {
+                            name: entrant.gamerTag,
+                            tag: entrant.tag,
+                            pronouns: entrant.pronouns || "",
+                            seed: entrant.seed,
+                            country: entrant.country,
+                            socials: {},
+                            characters: []
+                        };
+                        entries.push({ name: safeName, data: preset });
+                        newPresetObjects.push(preset);
+                        newPresets++;
                     }
                 }
+                await saveManyPresets("Player Info", entries);
             }
 
             // download missing flag images

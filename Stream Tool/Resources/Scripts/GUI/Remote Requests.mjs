@@ -69,6 +69,10 @@ async function getData(data) {
 
         settings.handleStartGGResult(data);
 
+    } else if (data.message == "rescanPresetsResult") {
+
+        settings.handleRescanPresetsResult();
+
     } else if (data.GrandFinals) { // if this is bracket data
 
         replaceBracket(data);

@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RoA2 Stream Tool v17.4.0</title>
+  <title>RoA2 Stream Tool v18.0.0</title>
   <link rel="stylesheet" href="CSS/GUI.css">
   <link rel="stylesheet" href="CSS/GUI Custom.css">
   <script src="Scripts/GUI/mousetrap.min.js" defer></script>
@@ -474,6 +474,17 @@ Cannot be used with Update on score hotkey.">
 
         <div class="settingBox">
           <span id="startGGStatus" style="display: block; width: 100%; text-align: center;"></span>
+        </div>
+
+        <div class="settingsTitle">Misc</div>
+
+        <div style="text-align: center; font-size: 0.75em; opacity: 0.6; padding: 2px 0 0;">Only needed if you manually add/edit preset files yourself — not necessary after a start.gg import</div>
+        <div id="settingsButtonSection">
+          <button class="settingsButton" id="rescanPresetsButt" tabindex="-1" title="Rescans the Player Info preset folder from disk, useful if presets were edited or added outside the app">Rescan Player Presets</button>
+        </div>
+
+        <div class="settingBox">
+          <span id="rescanPresetsStatus" style="display: block; width: 100%; text-align: center;"></span>
         </div>
 
       </div>

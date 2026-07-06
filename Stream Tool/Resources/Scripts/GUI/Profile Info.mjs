@@ -1,4 +1,4 @@
-import { getJson, saveJson } from "./File System.mjs";
+import { getJson, savePreset } from "./File System.mjs";
 import { viewport } from "./Viewport.mjs";
 import { displayNotif } from "./Notifications.mjs";
 import { stPath } from "./Globals.mjs";
@@ -171,7 +171,7 @@ class ProfileInfo {
             }
         }
 
-        saveJson(`/Player Info/${player.getName()}`, preset);
+        await savePreset("Player Info", player.getName(), preset);
         displayNotif("Player preset has been saved");
         playerFinder.setPlayerPresets();
 
@@ -210,11 +210,11 @@ class ProfileInfo {
     
         
         if (this.#curProfile.profileType == "player") {
-            saveJson(`/Player Info/${this.#nameInp.value}`, preset);
+            await savePreset("Player Info", this.#nameInp.value, preset);
             displayNotif("Player preset has been saved");
             playerFinder.setPlayerPresets();
         } else {
-            saveJson(`/Commentator Info/${this.#nameInp.value}`, preset);
+            await savePreset("Commentator Info", this.#nameInp.value, preset);
             displayNotif("Commentator preset has been saved");
             commFinder.setCasterPresets();
         }

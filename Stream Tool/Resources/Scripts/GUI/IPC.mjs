@@ -1,5 +1,5 @@
 import { replaceBracket, updateBracket } from './Bracket.mjs';
-import { saveJson } from './File System.mjs';
+import { rescanPresetCache, savePreset } from './File System.mjs';
 import { commFinder } from './Finder/Comm Finder.mjs';
 import { playerFinder } from './Finder/Player Finder.mjs';
 import { updateGUI } from './Remote Update.mjs';
@@ -107,18 +107,18 @@ ipc.on('remoteGuiData', async (event, data) => {
         
     } else if (jsonData.message == "RemoteSaveJson") {
 
-        // when remote GUIs request a file save
+        // when remote GUIs request a preset save, path looks like "/<folder>/<name>"
         const filePath = jsonData.path;
         delete jsonData.path;
         delete jsonData.message;
 
-        // save locally
-        saveJson(filePath, jsonData);
+        const [, folderName, name] = filePath.match(/^\/(.+)\/([^/]+)$/);
+        await savePreset(folderName, name, jsonData);
 
         // update current presets
         await playerFinder.setPlayerPresets();
         await commFinder.setCasterPresets();
-        
+
     } else if (jsonData.message == "toggleWs") {
 
         // when a remote GUI clicks on the workshop toggle
@@ -136,12 +136,20 @@ ipc.on('remoteGuiData', async (event, data) => {
 
         startGG.setSlug(jsonData.slug);
         const result = await startGG.fetchSeeds();
-        if (result.success && result.newPresets > 0) {
+        if (result.success) {
             await playerFinder.setPlayerPresets();
             await commFinder.setCasterPresets();
             ipc.send("sendData", JSON.stringify({id: "remoteGUI", message: "updatePresets"}, null, 2));
         }
         ipc.send("sendData", JSON.stringify({id: "remoteGUI", message: "startGGFetchResult", ...result}, null, 2));
+
+    } else if (jsonData.message == "remoteRescanPresets") {
+
+        await rescanPresetCache("Player Info");
+        await playerFinder.setPlayerPresets();
+        await commFinder.setCasterPresets();
+        ipc.send("sendData", JSON.stringify({id: "remoteGUI", message: "updatePresets"}, null, 2));
+        ipc.send("sendData", JSON.stringify({id: "remoteGUI", message: "rescanPresetsResult"}, null, 2));
 
     }
 

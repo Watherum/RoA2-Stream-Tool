@@ -24,15 +24,6 @@ class PlayerFinder extends Finder {
     }
 
     /**
-     * Appends new preset objects directly into the live preset list
-     * @param {Object[]} presets - Preset objects to add
-     */
-    appendPresets(presets) {
-        if (!this.#playerPresets) this.#playerPresets = [];
-        this.#playerPresets.push(...presets);
-    }
-
-    /**
      * Fills the player preset finder depending on current player name
      * @param {Player} player - Player to find presets for
      */

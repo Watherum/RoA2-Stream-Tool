@@ -53,6 +53,12 @@ class GuiSettings {
     #startGGFetch = document.getElementById("startGGFetch");
     #startGGStatus = document.getElementById("startGGStatus");
 
+    #scoreBox1 = document.getElementById("scoreBox1");
+    #scoreBox2 = document.getElementById("scoreBox2");
+
+    #rescanPresetsButt = document.getElementById("rescanPresetsButt");
+    #rescanPresetsStatus = document.getElementById("rescanPresetsStatus");
+
     constructor() {
 
         // scoreboard listeners
@@ -90,6 +96,7 @@ class GuiSettings {
             if (this.isScoreAutoChecked()) {
                 this.#invertScoreCheck.checked = false;
                 this.save("invertScore", false);
+                this.#updateScoreTooltips();
             }
             this.save("scoreAutoUpdate", this.isScoreAutoChecked());
         });
@@ -99,6 +106,7 @@ class GuiSettings {
                 this.save("scoreAutoUpdate", false);
             }
             this.save("invertScore", this.isInvertScoreChecked());
+            this.#updateScoreTooltips();
         });
         this.#simpleTextsCheck.addEventListener("click", () => {
             this.save("simpleTexts", this.isSimpleTextsChecked())
@@ -192,11 +200,27 @@ class GuiSettings {
                 startGG.setToken(this.#startGGToken.value);
                 startGG.setSlug(this.#startGGSlug.value);
                 const result = await startGG.fetchSeeds();
-                this.handleStartGGResult(result);
+                await this.handleStartGGResult(result);
             } else {
                 const remote = await import("./Remote Requests.mjs");
                 remote.sendRemoteData({ message: "remoteStartGGFetch", slug: this.#startGGSlug.value });
                 // button re-enabled when startGGFetchResult arrives
+            }
+        });
+
+        // rescan player preset cache button
+        this.#rescanPresetsButt.addEventListener("click", async () => {
+            this.#rescanPresetsStatus.textContent = "Rescanning...";
+            this.#rescanPresetsButt.disabled = true;
+            if (inside.electron) {
+                const { rescanPresetCache } = await import("./File System.mjs");
+                await rescanPresetCache("Player Info");
+                await playerFinder.setPlayerPresets();
+                this.handleRescanPresetsResult();
+            } else {
+                const remote = await import("./Remote Requests.mjs");
+                remote.sendRemoteData({ message: "remoteRescanPresets" });
+                // button re-enabled when rescanPresetsResult arrives
             }
         });
 
@@ -229,6 +253,7 @@ class GuiSettings {
             this.#invertScoreCheck.checked = false;
             this.save("invertScore", false);
         }
+        this.#updateScoreTooltips();
         this.#simpleTextsCheck.checked = guiSettings.simpleTexts;
         this.#abbreviateRoundCheck.checked = guiSettings.abbreviateRound;
         this.#abbreviateWLCheck.checked = guiSettings.abbreviateWL;
@@ -488,6 +513,13 @@ class GuiSettings {
         return this.#invertScoreCheck.checked;
     }
 
+    /** Updates the F1/F2 score button tooltips to reflect the current score direction */
+    #updateScoreTooltips() {
+        const dir = this.isInvertScoreChecked() ? "decrease" : "increase";
+        this.#scoreBox1.title = `Press F1 to ${dir} the score`;
+        this.#scoreBox2.title = `Press F2 to ${dir} the score`;
+    }
+
     isSimpleTextsChecked() {
         return this.#simpleTextsCheck.checked;
     }
@@ -572,14 +604,19 @@ class GuiSettings {
         this.save("zoom", this.#zoomValue);
     }
 
-    handleStartGGResult(result) {
+    async handleStartGGResult(result) {
         this.#startGGFetch.disabled = false;
         if (result.success) {
-            if (result.newPresets > 0) playerFinder.appendPresets(result.newPresetObjects);
+            await playerFinder.setPlayerPresets();
             this.#startGGStatus.textContent = `${result.count} players seeded, ${result.newPresets} new presets created`;
         } else {
             this.#startGGStatus.textContent = `Error: ${result.error}`;
         }
+    }
+
+    handleRescanPresetsResult() {
+        this.#rescanPresetsButt.disabled = false;
+        this.#rescanPresetsStatus.textContent = "Player preset cache rescanned";
     }
 
     displayPorts(http, ws) {
