@@ -43,6 +43,7 @@ The scoring mode dropdown is data-driven from `Modes.json` and supports:
 - Icon grid modal for selecting characters — browse all characters at a glance
 - Search bar filters characters in real time
 - Skin picker follows after character selection
+- The modal's position stays fixed while you type — it no longer shrinks and re-centers as filtered results narrow down, making it easier to use on mobile or smaller viewports
 
 ### Player presets
 
@@ -55,14 +56,18 @@ The scoring mode dropdown is data-driven from `Modes.json` and supports:
   - Stays open after selecting a preset so you can fill multiple slots without reopening
   - ESC or clicking outside the modal closes it
   - In doubles mode, P3 and P4 buttons appear alongside P1 and P2
+  - The modal's position stays fixed while you search — it no longer shrinks and re-centers as the filtered list narrows down
 - Quick-save button to save the current player state as a preset without opening the browser
 - Presets store **Discord**, **Instagram**, **Twitter**, **Bluesky**, and **Twitch** social handles
 - Selecting a preset fills the player slot; changing the name clears both scores automatically
 - Each field in the player info editor has an **×** button to clear it individually
+- Preset data is cached in memory for fast loading even with a large player roster
+- **Rescan Player Presets** button in settings — manually refreshes the cache from disk if you add or edit preset files by hand (not needed after a start.gg import, that already keeps itself in sync)
 
 ### start.gg integration
 - Enter your tournament's event slug (or paste a full bracket URL) and fetch all entrant data in one click
-- Automatically populates player **seeds**, **country flags**, and **sponsor tags** into presets
+- Automatically populates player **seeds**, **country flags**, **sponsor tags**, and **pronouns** into presets
+  - Pronouns are pulled from each player's start.gg profile; if a player hasn't set theirs, the app just skips it and keeps whatever was already saved locally
 - **Doubles support** — all teammates in a doubles entrant each receive the team's seed
 - New player presets are created automatically; existing ones are updated
 - Country flag images are downloaded locally on fetch so they work offline in OBS
@@ -74,7 +79,8 @@ The scoring mode dropdown is data-driven from `Modes.json` and supports:
 ### Score management
 - **F1 / F2** hotkeys increment Player 1's or Player 2's score and push an update immediately — enable this in settings
 - **Shift+F1 / Shift+F2** decrement the respective score
-- **Invert score** mode flips which player F1 and F2 affect — useful when your layout puts P2 on the left
+- **Invert score** mode flips F1/F2 to decrease instead of increase the score (Shift+F1/F2 flips the other way) — useful when your layout puts P2 on the left
+- The +/− button tooltips automatically update to show "increase" or "decrease" depending on the Invert Score setting
 - Swapping players correctly carries over tags, pronouns, socials, seed, and country
 - Changing a player name resets both scores to prevent carryover from a previous set
 
