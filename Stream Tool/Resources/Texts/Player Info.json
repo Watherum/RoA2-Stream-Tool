@@ -87,7 +87,7 @@
     "name": "Average Alex",
     "tag": "C2F",
     "pronouns": "He/Him",
-    "seed": 1,
+    "seed": "",
     "country": "United States",
     "socials": {
       "twitter": "",
@@ -161,7 +161,7 @@
     "name": "Bowler",
     "tag": "",
     "pronouns": "",
-    "seed": 2,
+    "seed": "",
     "country": "United States",
     "socials": {},
     "characters": []
@@ -396,7 +396,7 @@
     "name": "Grunk",
     "tag": "C2F",
     "pronouns": "",
-    "seed": 3,
+    "seed": "",
     "country": "United States",
     "socials": {},
     "characters": []
@@ -839,8 +839,8 @@
   {
     "name": "Sourkroutt",
     "tag": "",
-    "pronouns": "",
-    "seed": 6,
+    "pronouns": "Dude",
+    "seed": "",
     "country": "United States",
     "socials": {},
     "characters": []
@@ -1014,7 +1014,7 @@
     "name": "Virgo",
     "tag": "GRNT",
     "pronouns": "",
-    "seed": 7,
+    "seed": "",
     "country": "",
     "socials": {},
     "characters": []
@@ -1059,7 +1059,7 @@
     "name": "Watherum",
     "tag": "C2F",
     "pronouns": "He/Him",
-    "seed": 5,
+    "seed": "",
     "country": "United States",
     "socials": {
       "twitter": "@Watherum",
@@ -1071,10 +1071,10 @@
     },
     "characters": [
       {
-        "character": "Galvan"
+        "character": "Ranno"
       },
       {
-        "character": "Ranno"
+        "character": "Galvan"
       },
       {
         "character": "Clairen"
@@ -1099,8 +1099,8 @@
   {
     "name": "ybm",
     "tag": "RATS",
-    "pronouns": "He/Him",
-    "seed": 4,
+    "pronouns": "",
+    "seed": "",
     "country": "United States",
     "socials": {},
     "characters": [

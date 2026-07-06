@@ -277,7 +277,8 @@ class PlayerFinder extends Finder {
         player.setTag(liveTag || pData.tag);
         // this will exclude bracket players
         if (player.profileType == "player") {
-            player.setPronouns(pData.pronouns);
+            const livePronouns = startGG.isLoaded() ? startGG.getPronouns(pData.name) : "";
+            player.setPronouns(livePronouns || pData.pronouns);
             if (player.setSeed) {
                 const liveSeed = startGG.isLoaded() ? startGG.getSeed(pData.name) : "";
                 player.setSeed(liveSeed || pData.seed);

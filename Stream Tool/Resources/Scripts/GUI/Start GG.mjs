@@ -17,7 +17,7 @@ query EventSeeding($slug: String!, $page: Int!, $perPage: Int!) {
         participants {
           gamerTag
           prefix
-          user { location { country } }
+          user { location { country } genderPronoun }
         }
       }
     }
@@ -34,6 +34,8 @@ class StartGG {
     #countryMap = new Map();
     /** @type {Map<string, string>} gamerTag (lowercase) → sponsor tag/prefix */
     #tagMap = new Map();
+    /** @type {Map<string, string>} gamerTag (lowercase) → pronouns */
+    #pronounMap = new Map();
     #loaded = false;
 
     setToken(token) { this.#token = token; }
@@ -69,12 +71,21 @@ class StartGG {
         return this.#tagMap.get(name.toLowerCase()) ?? "";
     }
 
+    /**
+     * Returns the pronouns for a given player name, or "" if not found/set
+     * @param {String} name - Player gamerTag
+     */
+    getPronouns(name) {
+        return this.#pronounMap.get(name.toLowerCase()) ?? "";
+    }
+
     /** Fetches all entrant seeds and countries from the current event slug */
     async fetchSeeds() {
 
         this.#seedMap.clear();
         this.#countryMap.clear();
         this.#tagMap.clear();
+        this.#pronounMap.clear();
         this.#loaded = false;
 
         const perPage = 200;
@@ -112,14 +123,17 @@ class StartGG {
                         const key = participant.gamerTag.toLowerCase();
                         const country = participant.user?.location?.country || "";
                         const tag = participant.prefix || "";
+                        const pronouns = participant.user?.genderPronoun || "";
                         if (entrant.initialSeedNum) this.#seedMap.set(key, entrant.initialSeedNum);
                         if (country) this.#countryMap.set(key, country);
                         if (tag) this.#tagMap.set(key, tag);
+                        if (pronouns) this.#pronounMap.set(key, pronouns);
                         allEntrants.push({
                             gamerTag: participant.gamerTag,
                             seed: entrant.initialSeedNum || "",
                             country,
-                            tag
+                            tag,
+                            pronouns
                         });
                     }
                 }
@@ -145,13 +159,14 @@ class StartGG {
                             if (entrant.seed !== "") preset.seed = entrant.seed;
                             if (entrant.country) preset.country = entrant.country;
                             if (entrant.tag) preset.tag = entrant.tag;
+                            if (entrant.pronouns) preset.pronouns = entrant.pronouns;
                             fs.writeFileSync(filePath, JSON.stringify(preset, null, 2));
                         } else {
                             // create a new preset
                             const preset = {
                                 name: entrant.gamerTag,
                                 tag: entrant.tag,
-                                pronouns: "",
+                                pronouns: entrant.pronouns || "",
                                 seed: entrant.seed,
                                 country: entrant.country,
                                 socials: {},

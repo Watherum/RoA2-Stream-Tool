@@ -70,7 +70,8 @@ class ProfileInfo {
         this.#pTypeSpan.textContent = profile.profileType;
 
         // display the current info for this player
-        this.#pronounsInp.value = profile.getPronouns();
+        const livePronouns = startGG.isLoaded() ? startGG.getPronouns(profile.getName()) : "";
+        this.#pronounsInp.value = livePronouns || profile.getPronouns();
         const liveTag = startGG.isLoaded() ? startGG.getTag(profile.getName()) : "";
         this.#tagInp.value = liveTag || profile.getTag();
         this.#nameInp.value = profile.getName();
