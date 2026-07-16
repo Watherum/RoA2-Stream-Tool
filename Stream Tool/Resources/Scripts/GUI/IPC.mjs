@@ -119,6 +119,13 @@ ipc.on('remoteGuiData', async (event, data) => {
         await playerFinder.setPlayerPresets();
         await commFinder.setCasterPresets();
 
+    } else if (jsonData.message == "syncSetting") {
+
+        // when a remote GUI toggles a synced setting, apply it here and relay
+        // it to every other remote GUI so nobody is left out of sync
+        settings.applySettingSync(jsonData.setting, jsonData.value);
+        ipc.send("sendData", JSON.stringify({id: "remoteGUI", message: "syncSetting", setting: jsonData.setting, value: jsonData.value}, null, 2));
+
     } else if (jsonData.message == "toggleWs") {
 
         // when a remote GUI clicks on the workshop toggle
@@ -158,4 +165,9 @@ ipc.on('remoteGuiData', async (event, data) => {
 /** Sends a signal to remote GUIs so their update their preset lists */
 export function updateRemotePresets() {
     ipc.send("sendData", JSON.stringify({id: "remoteGUI", message: "updatePresets"}, null, 2));
+}
+
+/** Broadcasts a settings toggle to all remote GUIs so they stay in sync */
+export function sendSettingSync(setting, value) {
+    ipc.send("sendData", JSON.stringify({id: "remoteGUI", message: "syncSetting", setting, value}, null, 2));
 }

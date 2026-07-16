@@ -90,8 +90,14 @@ class GuiSettings {
                 this.sendWsToggle();
             }            
         });
-        this.#customRound.addEventListener("click", () => {this.toggleCustomRound()});
-        this.#forceWLCheck.addEventListener("click", () => {this.toggleForceWL()});
+        this.#customRound.addEventListener("click", () => {
+            this.toggleCustomRound();
+            this.syncSettingToOthers("customRound", this.isCustomRoundChecked());
+        });
+        this.#forceWLCheck.addEventListener("click", () => {
+            this.toggleForceWL();
+            this.syncSettingToOthers("forceWL", this.isForceWLChecked());
+        });
         this.#scoreAutoCheck.addEventListener("click", () => {
             if (this.isScoreAutoChecked()) {
                 this.#invertScoreCheck.checked = false;
@@ -463,6 +469,43 @@ class GuiSettings {
     async sendWsToggle() {
         const remote = await import("./Remote Requests.mjs");
         remote.sendRemoteData({message: "toggleWs", value: this.isWsChecked()});
+    }
+
+    /**
+     * Immediately pushes a settings toggle to the other GUI(s) so Electron and
+     * remote GUIs can never desync on it. Electron broadcasts to all remote GUIs;
+     * a remote sends it to Electron, which then relays it to the rest.
+     * @param {String} setting - Name of the setting (e.g. "customRound")
+     * @param {Boolean} value - Current checkbox value
+     */
+    async syncSettingToOthers(setting, value) {
+        if (inside.electron) {
+            const ipc = await import("./IPC.mjs");
+            ipc.sendSettingSync(setting, value);
+        } else {
+            const remote = await import("./Remote Requests.mjs");
+            remote.sendRemoteData({ message: "syncSetting", setting, value });
+        }
+    }
+
+    /**
+     * Applies a settings toggle received from another GUI. Idempotent: if the
+     * value already matches, nothing happens, which prevents echo loops.
+     * @param {String} setting - Name of the setting
+     * @param {Boolean} value - Value to apply
+     */
+    applySettingSync(setting, value) {
+        if (setting == "customRound") {
+            if (value != this.isCustomRoundChecked()) {
+                this.setCustomRound(value);
+                this.toggleCustomRound();
+            }
+        } else if (setting == "forceWL") {
+            if (value != this.isForceWLChecked()) {
+                this.setForceWL(value);
+                this.toggleForceWL();
+            }
+        }
     }
 
     setForceWL(value) {

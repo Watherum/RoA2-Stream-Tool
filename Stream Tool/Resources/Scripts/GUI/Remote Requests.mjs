@@ -65,6 +65,10 @@ async function getData(data) {
 
         settings.toggleWs();
 
+    } else if (data.message == "syncSetting") {
+
+        settings.applySettingSync(data.setting, data.value);
+
     } else if (data.message == "startGGFetchResult") {
 
         settings.handleStartGGResult(data);
