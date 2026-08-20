@@ -296,7 +296,7 @@ class PresetBrowser {
 
     async #handleDelete(preset) {
 
-        deletePreset(preset.name);
+        await deletePreset(preset.name);
         this.#allPresets = this.#allPresets.filter(p => p.name !== preset.name);
         this.#filterList();
         playerFinder.setPlayerPresets();

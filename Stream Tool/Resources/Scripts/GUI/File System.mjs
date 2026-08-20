@@ -298,6 +298,11 @@ export async function deletePreset(name) {
 
         await flushPresetCache("Player Info");
 
+    } else {
+
+        const remote = await import("./Remote Requests.mjs");
+        remote.sendRemoteData({ message: "RemoteDeletePreset", name: name });
+
     }
 
 }

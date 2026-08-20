@@ -1,5 +1,5 @@
 import { replaceBracket, updateBracket } from './Bracket.mjs';
-import { rescanPresetCache, savePreset } from './File System.mjs';
+import { deletePreset, rescanPresetCache, savePreset } from './File System.mjs';
 import { commFinder } from './Finder/Comm Finder.mjs';
 import { playerFinder } from './Finder/Player Finder.mjs';
 import { updateGUI } from './Remote Update.mjs';
@@ -114,6 +114,15 @@ ipc.on('remoteGuiData', async (event, data) => {
 
         const [, folderName, name] = filePath.match(/^\/(.+)\/([^/]+)$/);
         await savePreset(folderName, name, jsonData);
+
+        // update current presets
+        await playerFinder.setPlayerPresets();
+        await commFinder.setCasterPresets();
+
+    } else if (jsonData.message == "RemoteDeletePreset") {
+
+        // when remote GUIs request a preset deletion
+        await deletePreset(jsonData.name);
 
         // update current presets
         await playerFinder.setPlayerPresets();
