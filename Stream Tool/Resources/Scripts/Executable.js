@@ -3,6 +3,13 @@ const fs = require('fs')
 const path = require('path')
 const http = require('http')
 
+// chromium aggressively throttles minimized / occluded windows, which would
+// freeze the renderer and stop remote gui updates from being processed;
+// these switches must be set before the app is ready
+app.commandLine.appendSwitch('disable-background-timer-throttling')
+app.commandLine.appendSwitch('disable-renderer-backgrounding')
+app.commandLine.appendSwitch('disable-backgrounding-occluded-windows')
+
 let resourcesPath, nodePath;
 let httpPort, wsPort, guiWidth, guiHeight, failed;
 let wsServer, sockets = [];
@@ -151,7 +158,7 @@ function createWindow() {
 
         backgroundColor: "#383838",
 
-        title: "RoA Stream Tool v18.2.0 [developer build]", // will get overwitten by gui html title
+        title: "RoA Stream Tool v18.3.0 [developer build]", // will get overwitten by gui html title
         icon: path.join(nodePath, 'icon.png'),
 
         webPreferences: {
@@ -159,10 +166,17 @@ function createWindow() {
             // i have not found a better way to make files external to the insides
             // of the exe work with electron, todo find a more updated way to do so
             nodeIntegration: true,
-            contextIsolation: false
+            contextIsolation: false,
+            // keep timers and message processing running while minimized
+            backgroundThrottling: false
         },
 
     })
+
+    // belt and braces, in case the webPreferences flag gets overridden
+    if (win.webContents.setBackgroundThrottling) {
+        win.webContents.setBackgroundThrottling(false)
+    }
 
     // we dont like menus
     win.removeMenu()
