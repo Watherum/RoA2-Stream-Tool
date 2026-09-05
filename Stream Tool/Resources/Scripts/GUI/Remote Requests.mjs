@@ -1,4 +1,4 @@
-import { replaceBracket } from "./Bracket.mjs";
+import { handleBracketImportResult, replaceBracket } from "./Bracket.mjs";
 import { commFinder } from "./Finder/Comm Finder.mjs";
 import { playerFinder } from "./Finder/Player Finder.mjs";
 import { displayNotif } from "./Notifications.mjs";
@@ -9,14 +9,27 @@ import { changeUpdateText, writeScoreboard } from "./Write Scoreboard.mjs";
 let webSocket;
 const updateRegion = document.getElementById('updateRegion');
 
-export function startWebsocket() {
+// the ws server moves to the next free port if its configured one is taken,
+// so we ask the http server that served this page where it actually landed
+let wsPort = 8080;
+async function findWsPort() {
+    try {
+        const res = await fetch("/wsport");
+        const data = await res.json();
+        if (data.wsPort) wsPort = data.wsPort;
+    } catch (e) { /* older server, stick with the default */ }
+}
+
+export async function startWebsocket() {
     
     changeUpdateText("RECONNECTING");
     // remove the reconnect click listener
     updateRegion.removeEventListener("click", startWebsocket);
+
+    await findWsPort();
     
 	// we need to connect to the websocket server
-	webSocket = new WebSocket("ws://"+window.location.hostname+":8080?id=remoteGUI");
+	webSocket = new WebSocket("ws://"+window.location.hostname+":"+wsPort+"?id=remoteGUI");
 	webSocket.onopen = () => { // if it connects successfully
         
         // everything will update everytime we get data from the server (the GUI)
@@ -72,6 +85,10 @@ async function getData(data) {
     } else if (data.message == "startGGFetchResult") {
 
         settings.handleStartGGResult(data);
+
+    } else if (data.message == "bracketImportResult") {
+
+        handleBracketImportResult(data);
 
     } else if (data.message == "rescanPresetsResult") {
 

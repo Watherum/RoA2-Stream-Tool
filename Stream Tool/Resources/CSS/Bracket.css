@@ -53,10 +53,10 @@ body {
 
 .roundTitle {
     font-size: 44px;
-    font-family: "RoundTitle";
-    color: black;
-    -webkit-text-stroke: 2px white;
-    transform: scaleX(.96);
+    /* same typeface the scoreboards give their round text: Deansgate
+       condensed, uppercased by the body rule above */
+    font-family: "RegularText";
+    color: #48bf91;
 }
 
 
@@ -94,6 +94,7 @@ body {
     width: 89%;
     white-space: nowrap;
     line-height: 20px;
+    color: white;
 }
 .playerTag {
     font-size: 16px;

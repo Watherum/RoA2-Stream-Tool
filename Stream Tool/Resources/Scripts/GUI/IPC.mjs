@@ -1,4 +1,4 @@
-import { replaceBracket, updateBracket } from './Bracket.mjs';
+import { applyImportedBracket, replaceBracket, updateBracket } from './Bracket.mjs';
 import { deletePreset, rescanPresetCache, savePreset } from './File System.mjs';
 import { commFinder } from './Finder/Comm Finder.mjs';
 import { playerFinder } from './Finder/Player Finder.mjs';
@@ -158,6 +158,15 @@ ipc.on('remoteGuiData', async (event, data) => {
             ipc.send("sendData", JSON.stringify({id: "remoteGUI", message: "updatePresets"}, null, 2));
         }
         ipc.send("sendData", JSON.stringify({id: "remoteGUI", message: "startGGFetchResult", ...result}, null, 2));
+
+    } else if (jsonData.message == "remoteBracketImport") {
+
+        // remote GUIs have no token, so we fetch the top 8 here and let the
+        // filled bracket reach them through the usual bracket broadcast
+        if (jsonData.slug) startGG.setSlug(jsonData.slug);
+        const result = await startGG.fetchTop8Sets();
+        if (result.success) await applyImportedBracket(result.bracket);
+        ipc.send("sendData", JSON.stringify({id: "remoteGUI", message: "bracketImportResult", ...result}, null, 2));
 
     } else if (jsonData.message == "remoteRescanPresets") {
 

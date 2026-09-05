@@ -65,6 +65,13 @@ function initHttpServer() {
             const server = http.createServer((request, response) => {
                 if (request.method === "GET" || request.method === "HEAD") {
                     let fname;
+                    if (request.url == "/wsport") {
+                        // the ws server may have moved off its configured port,
+                        // so remote GUIs ask us where it actually ended up
+                        response.writeHead(200, {'Content-Type': 'application/json'});
+                        response.end(JSON.stringify({ wsPort }));
+                        return;
+                    }
                     if (request.url == "/") { // main remote update page
                         fname = resourcesPath + "/GUI.html";
                     } else { // every other request will just send the file
@@ -158,7 +165,7 @@ function createWindow() {
 
         backgroundColor: "#383838",
 
-        title: "RoA Stream Tool v18.3.0 [developer build]", // will get overwitten by gui html title
+        title: "RoA Stream Tool v18.5.0 [developer build]", // will get overwitten by gui html title
         icon: path.join(nodePath, 'icon.png'),
 
         webPreferences: {
@@ -235,6 +242,14 @@ function createWindow() {
 
         // add this new connection to the array to keep track of them
         sockets.push({ws: socket, id: req.url.substring(5)})
+
+        // say who we are immediately. overlays scan a range of ports to find
+        // us, and without this they happily lock onto ANY websocket server
+        // sitting in that range and then sit there receiving nothing.
+        // heartbeat:true makes older overlays discard this frame harmlessly
+        try {
+            socket.send(JSON.stringify({ heartbeat: true, streamTool: true, wsPort }));
+        } catch (e) { /* client vanished mid handshake */ }
 
         // mark alive for the ping/pong dead-socket sweep below
         socket.isAlive = true;

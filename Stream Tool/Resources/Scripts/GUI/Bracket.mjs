@@ -7,6 +7,7 @@ import { inside } from './Globals.mjs';
 
 const bRoundSelect = document.getElementById('bracketRoundSelect');
 const bEncountersDiv = document.getElementById('bracketEncounters');
+const bImportButt = document.getElementById('bracketImport');
 
 // just the initial state of the bracket
 const blankPlayerData = {
@@ -36,6 +37,7 @@ document.getElementById('botBarBracket').addEventListener("click", () => {viewpo
 bRoundSelect.addEventListener("change", () => {createEncounters()});
 document.getElementById('bracketGoBack').addEventListener("click", () => {viewport.toCenter()});
 document.getElementById('bracketUpdate').addEventListener("click", () => {updateBracket()});
+bImportButt.addEventListener("click", () => {importFromStartGG()});
 // force change event for initial creation of encounters
 bRoundSelect.dispatchEvent(new Event('change'));
 
@@ -231,5 +233,88 @@ export async function replaceBracket(newBracket) {
     await createEncounters(true);
 
     displayNotif("Bracket was remotely updated");
+
+}
+
+
+/** Pulls the event's final phase off start.gg and drops its sets into the bracket */
+async function importFromStartGG() {
+
+    bImportButt.disabled = true;
+    displayNotif("Importing top 8 from start.gg...");
+
+    if (inside.electron) {
+
+        const { startGG } = await import("./Start GG.mjs");
+        const result = await startGG.fetchTop8Sets();
+
+        bImportButt.disabled = false;
+        if (result.success) {
+            await applyImportedBracket(result.bracket);
+            displayNotif(`Imported ${result.setsFound} sets from "${result.phaseName}"`);
+        } else {
+            displayNotif(`start.gg import failed: ${result.error}`);
+        }
+
+    } else {
+
+        // the token lives on the electron side, so it does the fetching for us.
+        // the filled bracket comes back on its own as a regular bracket update
+        const remote = await import("./Remote Requests.mjs");
+        const { settings } = await import("./Settings.mjs");
+        remote.sendRemoteData({ message: "remoteBracketImport", slug: settings.getStartGGSlug() });
+
+    }
+
+}
+
+/**
+ * Re-enables the import button and reports what the electron side found
+ * @param {Object} result - Result object from fetchTop8Sets()
+ */
+export function handleBracketImportResult(result) {
+
+    bImportButt.disabled = false;
+
+    if (result.success) {
+        displayNotif(`Imported ${result.setsFound} sets from "${result.phaseName}"`);
+    } else {
+        displayNotif(`start.gg import failed: ${result.error}`);
+    }
+
+}
+
+/**
+ * Overwrites the bracket with imported round data, then sends it out
+ * @param {Object} newRounds - Bracket rounds as built by fetchTop8Sets()
+*/
+export async function applyImportedBracket(newRounds) {
+
+    for (const round in newRounds) {
+
+        if (!bracketData[round]) continue;
+
+        for (let i = 0; i < newRounds[round].length; i++) {
+
+            const oldPlayer = bracketData[round][i];
+            const newPlayer = newRounds[round][i];
+
+            // start.gg knows nothing about characters, so hold on to whatever
+            // was picked for a slot as long as the same player is still in it
+            if (oldPlayer && newPlayer.name != "-" && oldPlayer.name == newPlayer.name) {
+                newPlayer.character = oldPlayer.character;
+                newPlayer.skin = oldPlayer.skin;
+                newPlayer.iconSrc = oldPlayer.iconSrc;
+            }
+
+            bracketData[round][i] = newPlayer;
+
+        }
+
+    }
+
+    // redraw the round we're looking at, then push everything to the clients
+    await createEncounters(true);
+    await updateBracket(true);
 
 }

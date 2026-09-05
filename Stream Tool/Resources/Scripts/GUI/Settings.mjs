@@ -647,6 +647,11 @@ class GuiSettings {
         this.save("zoom", this.#zoomValue);
     }
 
+    /** The start.gg event slug currently typed into settings */
+    getStartGGSlug() {
+        return this.#startGGSlug.value;
+    }
+
     async handleStartGGResult(result) {
         this.#startGGFetch.disabled = false;
         if (result.success) {
