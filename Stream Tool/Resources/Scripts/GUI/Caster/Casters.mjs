@@ -6,17 +6,20 @@ const casterDiv = document.getElementById("casterDiv");
 /** @type {Caster[]} */
 export const casters = [];
 
+/** Maximum amount of commentators the GUI allows */
+export const maxCasters = 9;
+
 let idCounter = 1;
 
 addCasterButt.addEventListener("click", addCaster);
 
 /** Adds a new commentator (unless theres too many) */
 export function addCaster() {
-    if (casters.length < 9) {
+    if (casters.length < maxCasters) {
         casters.push(new Caster(idCounter));
         casterDiv.appendChild(addCasterButt);
         idCounter++;
-        if (casters.length == 9) {
+        if (casters.length == maxCasters) {
             addCasterButt.disabled = true;
         } else {
             addCasterButt.disabled = false;

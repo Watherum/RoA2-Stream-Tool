@@ -1,1 +1,5 @@
-startgg.apiKey = 
+startgg.apiKey =
+parrygg.apiKey =
+challonge.apiKey =
+challonge.clientId =
+challonge.clientSecret =

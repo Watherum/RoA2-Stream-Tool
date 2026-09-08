@@ -1,12 +1,7 @@
-import { stPath, inside } from "./Globals.mjs";
+import { stPath, inside, BRACKET_SLOTS, blankBracketSlot, countryCodeFromName } from "./Globals.mjs";
 import { getPreset, saveManyPresets } from "./File System.mjs";
 
 const STARTGG_API = "https://api.start.gg/gql/alpha";
-
-let _rawCodes = {};
-try { if (inside.electron) _rawCodes = JSON.parse(require('fs').readFileSync(__dirname + '/COUNTRY_CODES.json', 'utf8')); } catch (e) {}
-/** Maps country name → ISO 3166-1 alpha-2 code */
-const COUNTRY_CODES = Object.fromEntries(Object.entries(_rawCodes).map(([code, name]) => [name, code]));
 
 const SEEDING_QUERY = `
 query EventSeeding($slug: String!, $page: Int!, $perPage: Int!) {
@@ -56,18 +51,6 @@ query PhaseSets($phaseId: ID!, $page: Int!, $perPage: Int!) {
     }
   }
 }`;
-
-/** Bracket round keys, paired with how many player slots each one holds */
-const BRACKET_SLOTS = {
-    WinnersSemis: 4,
-    WinnersFinals: 2,
-    GrandFinals: 2,
-    TrueFinals: 2,
-    LosersTop8: 4,
-    LosersQuarters: 4,
-    LosersSemis: 2,
-    LosersFinals: 2
-}
 
 class StartGG {
 
@@ -227,7 +210,7 @@ class StartGG {
             if (inside.electron) {
                 const fs = require('fs');
                 const uniqueCodes = new Set(
-                    allEntrants.map(e => COUNTRY_CODES[e.country]).filter(Boolean)
+                    allEntrants.map(e => countryCodeFromName(e.country)).filter(Boolean)
                 );
                 for (const code of uniqueCodes) {
                     const flagPath = `${stPath.flags}/${code}.png`;
@@ -380,7 +363,7 @@ class StartGG {
 
         const slots = [];
         for (let i = 0; i < slotCount; i++) {
-            slots.push({ name: "-", tag: "", character: "None", skin: "-", iconSrc: "", score: "-" });
+            slots.push(blankBracketSlot());
         }
 
         // start.gg labels sets A, B, C... going down the bracket, so that

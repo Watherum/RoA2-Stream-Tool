@@ -7,7 +7,7 @@ import { scores } from "./Score/Scores.mjs";
 import { stPath } from "./Globals.mjs";
 import { viewport } from "./Viewport.mjs";
 import { displayNotif } from "./Notifications.mjs";
-import { startGG } from "./Start GG.mjs";
+import { liveTag, liveSeed, liveCountry, livePronouns } from "./Importers.mjs";
 import { gamemode } from "./Gamemode Change.mjs";
 
 class PresetBrowser {
@@ -135,7 +135,7 @@ class PresetBrowser {
         const info = document.createElement("div");
         info.className = "pbInfo";
 
-        const displayTag = (startGG.isLoaded() ? startGG.getTag(preset.name) : "") || preset.tag || "";
+        const displayTag = liveTag(preset.name) || preset.tag || "";
         if (displayTag) {
             const tag = document.createElement("span");
             tag.className = "pbTag";
@@ -275,11 +275,10 @@ class PresetBrowser {
         player.markPresetPending();
         player.setName(preset.name);
         scores.forEach(s => s.setScore(0));
-        const liveTag = startGG.isLoaded() ? startGG.getTag(preset.name) : "";
-        player.setTag(liveTag || preset.tag || "");
-        player.setPronouns(preset.pronouns || "");
-        if (player.setSeed) player.setSeed(preset.seed || "");
-        if (player.setCountry) player.setCountry(preset.country || "");
+        player.setTag(liveTag(preset.name) || preset.tag || "");
+        player.setPronouns(livePronouns(preset.name) || preset.pronouns || "");
+        if (player.setSeed) player.setSeed(liveSeed(preset.name) || preset.seed || "");
+        if (player.setCountry) player.setCountry(liveCountry(preset.name) || preset.country || "");
         player.setSocials(preset.socials || {});
 
         if (char) {

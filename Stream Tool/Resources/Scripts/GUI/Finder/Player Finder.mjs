@@ -4,7 +4,7 @@ import { getRecolorImage } from "../GetImage.mjs";
 import { current, stPath } from "../Globals.mjs";
 import { charFinder } from "./Char Finder.mjs";
 import { scores } from "../Score/Scores.mjs";
-import { startGG } from "../Start GG.mjs";
+import { liveTag, liveSeed, liveCountry, livePronouns } from "../Importers.mjs";
 
 class PlayerFinder extends Finder {
 
@@ -264,20 +264,12 @@ class PlayerFinder extends Finder {
         // all them player data
         player.setName(pData.name);
         if (player.profileType == "player") scores.forEach(s => s.setScore(0));
-        const liveTag = startGG.isLoaded() ? startGG.getTag(pData.name) : "";
-        player.setTag(liveTag || pData.tag);
+        player.setTag(liveTag(pData.name) || pData.tag);
         // this will exclude bracket players
         if (player.profileType == "player") {
-            const livePronouns = startGG.isLoaded() ? startGG.getPronouns(pData.name) : "";
-            player.setPronouns(livePronouns || pData.pronouns);
-            if (player.setSeed) {
-                const liveSeed = startGG.isLoaded() ? startGG.getSeed(pData.name) : "";
-                player.setSeed(liveSeed || pData.seed);
-            }
-            if (player.setCountry) {
-                const liveCountry = startGG.isLoaded() ? startGG.getCountry(pData.name) : "";
-                player.setCountry(liveCountry || pData.country);
-            }
+            player.setPronouns(livePronouns(pData.name) || pData.pronouns);
+            if (player.setSeed) player.setSeed(liveSeed(pData.name) || pData.seed);
+            if (player.setCountry) player.setCountry(liveCountry(pData.name) || pData.country);
             player.setSocials(pData.socials);
         }
 

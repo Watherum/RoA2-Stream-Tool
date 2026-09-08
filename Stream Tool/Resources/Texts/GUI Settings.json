@@ -22,5 +22,14 @@
   "abbreviateRound": true,
   "abbreviateWL": false,
   "startGGTokenFromProps": true,
-  "introImage": false
+  "introImage": false,
+  "importSource": "startgg",
+  "parryGGToken": "",
+  "parryGGSlug": "",
+  "parryGGEvent": "",
+  "parryGGTokenFromProps": true,
+  "challongeToken": "",
+  "challongeSlug": "",
+  "challongeTokenFromProps": true,
+  "saveImportSlug": false
 }

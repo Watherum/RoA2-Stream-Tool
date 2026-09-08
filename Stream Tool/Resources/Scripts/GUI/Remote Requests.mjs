@@ -82,9 +82,9 @@ async function getData(data) {
 
         settings.applySettingSync(data.setting, data.value);
 
-    } else if (data.message == "startGGFetchResult") {
+    } else if (data.message == "importFetchResult") {
 
-        settings.handleStartGGResult(data);
+        settings.handleImportResult(data);
 
     } else if (data.message == "bracketImportResult") {
 

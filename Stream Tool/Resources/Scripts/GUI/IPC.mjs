@@ -4,7 +4,7 @@ import { commFinder } from './Finder/Comm Finder.mjs';
 import { playerFinder } from './Finder/Player Finder.mjs';
 import { updateGUI } from './Remote Update.mjs';
 import { settings } from './Settings.mjs';
-import { startGG } from './Start GG.mjs';
+import { setActiveSource, getActiveImporter } from './Importers.mjs';
 import { writeScoreboard } from './Write Scoreboard.mjs';
 
 const ipc = require('electron').ipcRenderer;
@@ -148,23 +148,24 @@ ipc.on('remoteGuiData', async (event, data) => {
         await replaceBracket(jsonData);
         updateBracket(true);
 
-    } else if (jsonData.message == "remoteStartGGFetch") {
+    } else if (jsonData.message == "remoteImportFetch") {
 
-        startGG.setSlug(jsonData.slug);
-        const result = await startGG.fetchSeeds();
+        // remote GUIs have no token, so the fetching happens over here
+        applyRemoteImport(jsonData);
+        const result = await getActiveImporter().fetchSeeds();
         if (result.success) {
             await playerFinder.setPlayerPresets();
             await commFinder.setCasterPresets();
             ipc.send("sendData", JSON.stringify({id: "remoteGUI", message: "updatePresets"}, null, 2));
         }
-        ipc.send("sendData", JSON.stringify({id: "remoteGUI", message: "startGGFetchResult", ...result}, null, 2));
+        ipc.send("sendData", JSON.stringify({id: "remoteGUI", message: "importFetchResult", ...result}, null, 2));
 
     } else if (jsonData.message == "remoteBracketImport") {
 
         // remote GUIs have no token, so we fetch the top 8 here and let the
         // filled bracket reach them through the usual bracket broadcast
-        if (jsonData.slug) startGG.setSlug(jsonData.slug);
-        const result = await startGG.fetchTop8Sets();
+        applyRemoteImport(jsonData);
+        const result = await getActiveImporter().fetchTop8Sets();
         if (result.success) await applyImportedBracket(result.bracket);
         ipc.send("sendData", JSON.stringify({id: "remoteGUI", message: "bracketImportResult", ...result}, null, 2));
 
@@ -188,4 +189,18 @@ export function updateRemotePresets() {
 /** Broadcasts a settings toggle to all remote GUIs so they stay in sync */
 export function sendSettingSync(setting, value) {
     ipc.send("sendData", JSON.stringify({id: "remoteGUI", message: "syncSetting", setting, value}, null, 2));
+}
+/**
+ * Points the importers at whatever a remote GUI asked for. The token always
+ * stays on this side, only the source and slug travel over the wire
+ * @param {Object} data - Message from the remote GUI
+ */
+function applyRemoteImport(data) {
+
+    if (data.source) setActiveSource(data.source);
+
+    const api = getActiveImporter();
+    if (data.slug) api.setSlug(data.slug);
+    if (api.setEvent) api.setEvent(data.event ?? "");
+
 }

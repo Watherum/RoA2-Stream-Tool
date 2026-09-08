@@ -62,19 +62,41 @@ The scoring mode dropdown is data-driven from `Modes.json` and supports:
 - Selecting a preset fills the player slot; changing the name clears both scores automatically
 - Each field in the player info editor has an **×** button to clear it individually
 - Preset data is cached in memory for fast loading even with a large player roster
-- **Rescan Player Presets** button in settings — manually refreshes the cache from disk if you add or edit preset files by hand (not needed after a start.gg import, that already keeps itself in sync)
+- **Rescan Player Presets** button in settings — manually refreshes the cache from disk if you add or edit preset files by hand (not needed after a bracket import, that already keeps itself in sync)
 
-### start.gg integration
-- Enter your tournament's event slug (or paste a full bracket URL) and fetch all entrant data in one click
-- Automatically populates player **seeds**, **country flags**, **sponsor tags**, and **pronouns** into presets
-  - Pronouns are pulled from each player's start.gg profile; if a player hasn't set theirs, the app just skips it and keeps whatever was already saved locally
-- **Doubles support** — all teammates in a doubles entrant each receive the team's seed
+### Bracket imports — start.gg, parry.gg & Challonge
+Pick your bracket site from the **Import from** dropdown in settings, then fetch all
+entrant data in one click. Each site keeps its own API key and slug, so switching
+between them doesn't make you retype anything.
+
+**Shared across all three:**
+- Paste a full bracket URL or type the bare slug — either works
+- Player **seeds** and **sponsor tags** are pulled into presets automatically
 - New player presets are created automatically; existing ones are updated
-- Country flag images are downloaded locally on fetch so they work offline in OBS
-- API token can be loaded securely from `app.properties.txt` (kept off the GUI entirely)
-- Operator on the remote GUI can fetch data without ever seeing the token
+- API keys can be loaded securely from `app.properties.txt` (kept off the GUI entirely)
+- Operator on the remote GUI can fetch data without ever seeing the key
+- **Top 8 import** in the bracket editor fills the bracket straight from the site's results
 - **Seed reset on startup** — saved seeds are cleared from all presets when the app launches so stale seeds from a previous tournament never carry over
-- Optional **"Remember slug between sessions"** setting to persist the event slug across restarts
+- Optional **"Remember slug between sessions"** setting to persist the slug across restarts
+
+**start.gg** — the most complete source:
+- Also populates **country flags** and **pronouns**
+  - Pronouns come from each player's start.gg profile; if a player hasn't set theirs, the app skips it and keeps whatever was already saved locally
+- Country flag images are downloaded locally on fetch so they work offline in OBS
+- **Doubles support** — all teammates in a doubles entrant each receive the team's seed
+- Addresses an *event* inside a tournament, so the slug reads `tournament/slug/event/slug`
+
+**parry.gg**:
+- Also populates **country flags** and **pronouns** from each player's profile
+- Addresses a whole tournament, so an extra **Event** field picks which event to read — leave it blank and the tool finds the Rivals of Aether II event on its own
+- Round names come from the site directly, so top 8 imports land in the right slots
+
+**Challonge**:
+- Seeds and sponsor tags only — Challonge has no game model and no user accounts, so it has no characters, countries, pronouns, or socials to give. Fill those from your presets as usual.
+- Sponsor tags are read from entry names written as `TAG | Player`
+- Accepts either a legacy v1 API key or an OAuth application, entered as `clientId:clientSecret` (the developer portal issues applications now). In `app.properties.txt`, use either `challonge.apiKey` or the `challonge.clientId` / `challonge.clientSecret` pair.
+- Challonge has no round names — just numbered rounds — so the tool works out Winners/Losers Finals, Grand Finals and the reset from the shape of the bracket
+- Community brackets work in both `org.challonge.com/slug` and `challonge.com/org/slug` forms
 
 ### Score management
 - **F1 / F2** hotkeys increment Player 1's or Player 2's score and push an update immediately — enable this in settings
@@ -98,7 +120,7 @@ The scoring mode dropdown is data-driven from `Modes.json` and supports:
 ### Remote GUI
 - Full GUI accessible from any device on the local network (phone, tablet, second PC)
 - **Open Remote Editor** button in settings launches the remote GUI in your default browser instantly
-- start.gg fetch is proxied securely through the host machine — the API token never leaves the Electron app
+- Bracket imports are proxied securely through the host machine — API keys never leave the Electron app
 
 ### Other quality-of-life additions
 - **Match info to clipboard** — copies a formatted match string for YouTube/Twitch titles

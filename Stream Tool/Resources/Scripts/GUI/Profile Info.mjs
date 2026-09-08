@@ -4,7 +4,7 @@ import { displayNotif } from "./Notifications.mjs";
 import { stPath } from "./Globals.mjs";
 import { playerFinder } from "./Finder/Player Finder.mjs";
 import { commFinder } from "./Finder/Comm Finder.mjs";
-import { startGG } from "./Start GG.mjs";
+import { liveTag, liveSeed, liveCountry, livePronouns } from "./Importers.mjs";
 
 class ProfileInfo {
 
@@ -70,15 +70,12 @@ class ProfileInfo {
         this.#pTypeSpan.textContent = profile.profileType;
 
         // display the current info for this player
-        const livePronouns = startGG.isLoaded() ? startGG.getPronouns(profile.getName()) : "";
-        this.#pronounsInp.value = livePronouns || profile.getPronouns();
-        const liveTag = startGG.isLoaded() ? startGG.getTag(profile.getName()) : "";
-        this.#tagInp.value = liveTag || profile.getTag();
-        this.#nameInp.value = profile.getName();
-        const liveSeed = startGG.isLoaded() ? startGG.getSeed(profile.getName()) : "";
-        this.#seedInp.value = liveSeed || (profile.getSeed ? profile.getSeed() : "");
-        const liveCountry = startGG.isLoaded() ? startGG.getCountry(profile.getName()) : "";
-        this.#countryInp.value = liveCountry || (profile.getCountry ? profile.getCountry() : "");
+        const name = profile.getName();
+        this.#pronounsInp.value = livePronouns(name) || profile.getPronouns();
+        this.#tagInp.value = liveTag(name) || profile.getTag();
+        this.#nameInp.value = name;
+        this.#seedInp.value = liveSeed(name) || (profile.getSeed ? profile.getSeed() : "");
+        this.#countryInp.value = liveCountry(name) || (profile.getCountry ? profile.getCountry() : "");
         const socials = profile.getSocials() || [];
         this.#twitterInp.value = socials.twitter || "";
         this.#twitchInp.value = socials.twitch || "";

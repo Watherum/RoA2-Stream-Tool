@@ -37,7 +37,7 @@ document.getElementById('botBarBracket').addEventListener("click", () => {viewpo
 bRoundSelect.addEventListener("change", () => {createEncounters()});
 document.getElementById('bracketGoBack').addEventListener("click", () => {viewport.toCenter()});
 document.getElementById('bracketUpdate').addEventListener("click", () => {updateBracket()});
-bImportButt.addEventListener("click", () => {importFromStartGG()});
+bImportButt.addEventListener("click", () => {importFromProvider()});
 // force change event for initial creation of encounters
 bRoundSelect.dispatchEvent(new Event('change'));
 
@@ -237,23 +237,25 @@ export async function replaceBracket(newBracket) {
 }
 
 
-/** Pulls the event's final phase off start.gg and drops its sets into the bracket */
-async function importFromStartGG() {
+/** Pulls the event's last rounds off the selected site and fills the bracket */
+async function importFromProvider() {
+
+    const { getActiveImporter, getActiveName } = await import("./Importers.mjs");
+    const source = getActiveName();
 
     bImportButt.disabled = true;
-    displayNotif("Importing top 8 from start.gg...");
+    displayNotif(`Importing top 8 from ${source}...`);
 
     if (inside.electron) {
 
-        const { startGG } = await import("./Start GG.mjs");
-        const result = await startGG.fetchTop8Sets();
+        const result = await getActiveImporter().fetchTop8Sets();
 
         bImportButt.disabled = false;
         if (result.success) {
             await applyImportedBracket(result.bracket);
             displayNotif(`Imported ${result.setsFound} sets from "${result.phaseName}"`);
         } else {
-            displayNotif(`start.gg import failed: ${result.error}`);
+            displayNotif(`${source} import failed: ${result.error}`);
         }
 
     } else {
@@ -262,7 +264,12 @@ async function importFromStartGG() {
         // the filled bracket comes back on its own as a regular bracket update
         const remote = await import("./Remote Requests.mjs");
         const { settings } = await import("./Settings.mjs");
-        remote.sendRemoteData({ message: "remoteBracketImport", slug: settings.getStartGGSlug() });
+        remote.sendRemoteData({
+            message: "remoteBracketImport",
+            source: settings.getImportSource(),
+            slug: settings.getImportSlug(),
+            event: settings.getImportEvent()
+        });
 
     }
 
@@ -272,14 +279,15 @@ async function importFromStartGG() {
  * Re-enables the import button and reports what the electron side found
  * @param {Object} result - Result object from fetchTop8Sets()
  */
-export function handleBracketImportResult(result) {
+export async function handleBracketImportResult(result) {
 
     bImportButt.disabled = false;
 
     if (result.success) {
         displayNotif(`Imported ${result.setsFound} sets from "${result.phaseName}"`);
     } else {
-        displayNotif(`start.gg import failed: ${result.error}`);
+        const { getActiveName } = await import("./Importers.mjs");
+        displayNotif(`${getActiveName()} import failed: ${result.error}`);
     }
 
 }

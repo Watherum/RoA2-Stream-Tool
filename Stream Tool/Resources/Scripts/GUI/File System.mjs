@@ -1,4 +1,4 @@
-import { casters } from './Caster/Casters.mjs';
+import { casters, maxCasters } from './Caster/Casters.mjs';
 import { charDisplayName, inside, stPath } from './Globals.mjs';
 import { players } from './Player/Players.mjs';
 import { round } from './Round.mjs';
@@ -325,12 +325,25 @@ export function saveSimpleTexts() {
     fs.writeFileSync(`${stPath.text}/Simple Texts/Round.txt`, round.getText());
     fs.writeFileSync(`${stPath.text}/Simple Texts/Tournament Name.txt`, tournament.getText());
 
-    for (let i = 0; i < casters.length; i++) {
-        fs.writeFileSync(`${stPath.text}/Simple Texts/Caster ${i + 1} Name.txt`, casters[i].getName());
-        const socials = casters[i].getSocials();
-        fs.writeFileSync(`${stPath.text}/Simple Texts/Caster ${i + 1} Twitter.txt`, socials.twitter || "");
-        fs.writeFileSync(`${stPath.text}/Simple Texts/Caster ${i + 1} Twitch.txt`, socials.twitch || "");
-        fs.writeFileSync(`${stPath.text}/Simple Texts/Caster ${i + 1} Youtube.txt`, socials.yt || "");
+    // go through every possible caster slot, so removed casters get their texts blanked
+    for (let i = 0; i < maxCasters; i++) {
+
+        const socials = casters[i] ? casters[i].getSocials() : {};
+        const casterTexts = {
+            "Name": casters[i] ? casters[i].getName() : "",
+            "Twitter": socials.twitter || "",
+            "Twitch": socials.twitch || "",
+            "Youtube": socials.yt || ""
+        }
+
+        for (const key in casterTexts) {
+            const path = `${stPath.text}/Simple Texts/Caster ${i + 1} ${key}.txt`;
+            // dont create files for slots that never had a caster
+            if (casters[i] || fs.existsSync(path)) {
+                fs.writeFileSync(path, casterTexts[key]);
+            }
+        }
+
     }
 
     for (let i = 0; i < players.length; i++) {

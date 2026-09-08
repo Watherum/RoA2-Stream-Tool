@@ -8,7 +8,7 @@ import { gamemode } from "./Gamemode Change.mjs";
 import { tournament } from "./Tournament.mjs";
 import { round } from "./Round.mjs";
 import { teams } from "./Team/Teams.mjs";
-import { startGG } from "./Start GG.mjs";
+import { importers, setActiveSource, getActiveSource, getActiveConfig } from "./Importers.mjs";
 import { playerFinder } from "./Finder/Player Finder.mjs";
 
 
@@ -46,12 +46,23 @@ class GuiSettings {
     #zoomValue = 100;
     #restoreWindowButt = document.getElementById("restoreWindowButt");
 
-    #startGGTokenBox = document.getElementById("startGGTokenBox");
-    #startGGToken = document.getElementById("startGGToken");
-    #startGGSlug = document.getElementById("startGGSlug");
-    #startGGSaveSlug = document.getElementById("saveStartGGSlug");
-    #startGGFetch = document.getElementById("startGGFetch");
-    #startGGStatus = document.getElementById("startGGStatus");
+    #importSourceSelect = document.getElementById("importSourceSelect");
+    #importTokenBox = document.getElementById("importTokenBox");
+    #importToken = document.getElementById("importToken");
+    #importSlugHint = document.getElementById("importSlugHint");
+    #importSlug = document.getElementById("importSlug");
+    #importEventBox = document.getElementById("importEventBox");
+    #importEvent = document.getElementById("importEvent");
+    #importSaveSlug = document.getElementById("saveImportSlug");
+    #importFetch = document.getElementById("importFetch");
+    #importStatus = document.getElementById("importStatus");
+
+    /** Token and slug of every importer, so switching source keeps them both */
+    #importState = {
+        startgg: { token: "", slug: "", event: "", fromProps: false },
+        parrygg: { token: "", slug: "", event: "", fromProps: false },
+        challonge: { token: "", slug: "", event: "", fromProps: false }
+    };
 
     #scoreBox1 = document.getElementById("scoreBox1");
     #scoreBox2 = document.getElementById("scoreBox2");
@@ -171,7 +182,7 @@ class GuiSettings {
             });
         } else {
             document.getElementById("settingsElectron").style.display = "none";
-            this.#startGGTokenBox.style.display = "none";
+            this.#importTokenBox.style.display = "none";
         }
 
         // clicking the settings button will bring up the menu
@@ -179,38 +190,67 @@ class GuiSettings {
             viewport.toSettings();
         });
 
-        // start.gg token and slug — save on change
-        this.#startGGToken.addEventListener("change", () => {
-            startGG.setToken(this.#startGGToken.value);
-            this.save("startGGToken", this.#startGGToken.value);
-            this.save("startGGTokenFromProps", false);
+        // swapping the import source keeps each site's own token and slug
+        this.#importSourceSelect.addEventListener("change", async () => {
+            this.#stashImportInputs();
+            setActiveSource(this.#importSourceSelect.value);
+            this.#applyImportSource();
+            this.save("importSource", getActiveSource());
         });
-        this.#startGGSlug.addEventListener("change", () => {
-            startGG.setSlug(this.#startGGSlug.value);
-            if (this.#startGGSaveSlug.checked) this.save("startGGSlug", this.#startGGSlug.value);
+
+        // import token, slug and event — save on change
+        this.#importToken.addEventListener("change", () => {
+            const config = getActiveConfig();
+            this.#importState[getActiveSource()].token = this.#importToken.value;
+            config.api.setToken(this.#importToken.value);
+            this.save(config.tokenSetting, this.#importToken.value);
+            this.save(config.propsSetting, false);
         });
-        this.#startGGSaveSlug.addEventListener("change", () => {
-            this.save("saveStartGGSlug", this.#startGGSaveSlug.checked);
-            if (this.#startGGSaveSlug.checked) {
-                this.save("startGGSlug", this.#startGGSlug.value);
-            } else {
-                this.save("startGGSlug", "");
+        this.#importSlug.addEventListener("change", () => {
+            const config = getActiveConfig();
+            this.#importState[getActiveSource()].slug = this.#importSlug.value;
+            config.api.setSlug(this.#importSlug.value);
+            if (this.#importSaveSlug.checked) this.save(config.slugSetting, this.#importSlug.value);
+        });
+        this.#importEvent.addEventListener("change", () => {
+            const config = getActiveConfig();
+            this.#importState[getActiveSource()].event = this.#importEvent.value;
+            if (config.api.setEvent) config.api.setEvent(this.#importEvent.value);
+            if (this.#importSaveSlug.checked) this.save("parryGGEvent", this.#importEvent.value);
+        });
+        this.#importSaveSlug.addEventListener("change", async () => {
+            await this.save("saveImportSlug", this.#importSaveSlug.checked);
+            // remembering is all or nothing, so every source follows the checkbox
+            for (const source in importers) {
+                const config = importers[source];
+                const remembered = this.#importSaveSlug.checked ? this.#importState[source].slug : "";
+                await this.save(config.slugSetting, remembered);
             }
+            await this.save("parryGGEvent",
+                this.#importSaveSlug.checked ? this.#importState.parrygg.event : "");
         });
 
         // fetch seeds button
-        this.#startGGFetch.addEventListener("click", async () => {
-            this.#startGGStatus.textContent = "Fetching...";
-            this.#startGGFetch.disabled = true;
+        this.#importFetch.addEventListener("click", async () => {
+            this.#importStatus.textContent = "Fetching...";
+            this.#importFetch.disabled = true;
+            this.#stashImportInputs();
             if (inside.electron) {
-                startGG.setToken(this.#startGGToken.value);
-                startGG.setSlug(this.#startGGSlug.value);
-                const result = await startGG.fetchSeeds();
-                await this.handleStartGGResult(result);
+                const config = getActiveConfig();
+                config.api.setToken(this.#importToken.value);
+                config.api.setSlug(this.#importSlug.value);
+                if (config.api.setEvent) config.api.setEvent(this.#importEvent.value);
+                const result = await config.api.fetchSeeds();
+                await this.handleImportResult(result);
             } else {
                 const remote = await import("./Remote Requests.mjs");
-                remote.sendRemoteData({ message: "remoteStartGGFetch", slug: this.#startGGSlug.value });
-                // button re-enabled when startGGFetchResult arrives
+                remote.sendRemoteData({
+                    message: "remoteImportFetch",
+                    source: getActiveSource(),
+                    slug: this.#importSlug.value,
+                    event: this.#importEvent.value
+                });
+                // button re-enabled when importFetchResult arrives
             }
         });
 
@@ -274,18 +314,27 @@ class GuiSettings {
             this.#changeZoom();
         }
 
-        if (inside.electron && guiSettings.startGGToken) {
-            this.#startGGToken.value = guiSettings.startGGToken;
-            startGG.setToken(guiSettings.startGGToken);
+        // saveStartGGSlug is what this checkbox used to be called
+        this.#importSaveSlug.checked =
+            guiSettings.saveImportSlug ?? guiSettings.saveStartGGSlug ?? false;
+
+        for (const source in importers) {
+            const config = importers[source];
+            const state = this.#importState[source];
+            if (inside.electron) state.token = guiSettings[config.tokenSetting] ?? "";
+            if (this.#importSaveSlug.checked) state.slug = guiSettings[config.slugSetting] ?? "";
+            if (state.token) config.api.setToken(state.token);
+            if (state.slug) config.api.setSlug(state.slug);
         }
 
-        if (guiSettings.saveStartGGSlug) {
-            this.#startGGSaveSlug.checked = true;
-            if (guiSettings.startGGSlug) {
-                this.#startGGSlug.value = guiSettings.startGGSlug;
-                startGG.setSlug(guiSettings.startGGSlug);
-            }
+        // parry.gg is the only source that takes an event, so the setting is its own
+        if (this.#importSaveSlug.checked) {
+            this.#importState.parrygg.event = guiSettings.parryGGEvent ?? "";
         }
+
+        setActiveSource(guiSettings.importSource ?? "startgg");
+        this.#importSourceSelect.value = getActiveSource();
+        this.#applyImportSource();
 
         // clear stale seeds from all preset files at startup (seeds are tournament-specific)
         if (inside.electron) {
@@ -310,27 +359,40 @@ class GuiSettings {
         if (inside.electron) {
             const fs = require('fs');
             const propsPath = stPath.text + '/../app.properties.txt';
-            let fromProps = false;
+            const props = {};
             if (fs.existsSync(propsPath)) {
                 const lines = fs.readFileSync(propsPath, 'utf8').split('\n');
                 for (const line of lines) {
                     const eqIdx = line.indexOf('=');
                     if (eqIdx === -1) continue;
-                    const key = line.slice(0, eqIdx).trim();
-                    const value = line.slice(eqIdx + 1).trim();
-                    if (key === 'startgg.apiKey' && value) {
-                        this.#startGGToken.value = value;
-                        this.#startGGToken.disabled = true;
-                        startGG.setToken(value);
-                        this.#startGGStatus.textContent = "Token loaded from app.properties.txt";
-                        fromProps = true;
-                        break;
-                    }
+                    props[line.slice(0, eqIdx).trim()] = line.slice(eqIdx + 1).trim();
                 }
             }
-            this.save("startGGTokenFromProps", fromProps);
-        } else if (guiSettings.startGGTokenFromProps) {
-            this.#startGGStatus.textContent = "Token loaded from app.properties.txt";
+            for (const source in importers) {
+                const config = importers[source];
+                let value = props[config.propsKey];
+                // challonge issues an application rather than a key, so its two
+                // halves are joined into the one credential the importer takes
+                if (!value && config.propsKeyPair) {
+                    const [idKey, secretKey] = config.propsKeyPair;
+                    if (props[idKey] && props[secretKey]) {
+                        value = `${props[idKey]}:${props[secretKey]}`;
+                    }
+                }
+                const state = this.#importState[source];
+                state.fromProps = !!value;
+                if (value) {
+                    state.token = value;
+                    config.api.setToken(value);
+                }
+                await this.save(config.propsSetting, state.fromProps);
+            }
+            this.#applyImportSource();
+        } else {
+            for (const source in importers) {
+                this.#importState[source].fromProps = !!guiSettings[importers[source].propsSetting];
+            }
+            this.#applyImportSource();
         }
 
     }
@@ -647,18 +709,67 @@ class GuiSettings {
         this.save("zoom", this.#zoomValue);
     }
 
-    /** The start.gg event slug currently typed into settings */
-    getStartGGSlug() {
-        return this.#startGGSlug.value;
+    /** The tournament slug currently typed into settings */
+    getImportSlug() {
+        return this.#importSlug.value;
     }
 
-    async handleStartGGResult(result) {
-        this.#startGGFetch.disabled = false;
+    /** The event currently typed into settings, only some sources use it */
+    getImportEvent() {
+        return this.#importEvent.value;
+    }
+
+    /** Which bracket site is currently selected */
+    getImportSource() {
+        return getActiveSource();
+    }
+
+    /** Remembers what is typed in right now, before the source changes under it */
+    #stashImportInputs() {
+        const state = this.#importState[getActiveSource()];
+        state.token = this.#importToken.value;
+        state.slug = this.#importSlug.value;
+        state.event = this.#importEvent.value;
+    }
+
+    /** Points every import input at the source that is currently selected */
+    #applyImportSource() {
+
+        const config = getActiveConfig();
+        const state = this.#importState[getActiveSource()];
+
+        this.#importToken.value = state.token;
+        this.#importToken.placeholder = config.tokenLabel;
+        // a token from app.properties.txt is not ours to edit
+        this.#importToken.disabled = state.fromProps;
+
+        this.#importSlug.value = state.slug;
+        this.#importSlug.placeholder = config.slugHint;
+        this.#importSlugHint.textContent = config.slugHint;
+
+        this.#importEvent.value = state.event;
+        this.#importEventBox.style.display = config.needsEvent ? "flex" : "none";
+
+        this.#importStatus.textContent = state.fromProps
+            ? "Token loaded from app.properties.txt" : "";
+
+        // the bracket editor imports from whatever is selected here
+        const bracketText = document.getElementById("bracketImportText");
+        if (bracketText) bracketText.textContent = `Import from ${config.name}`;
+
+        config.api.setToken(state.token);
+        config.api.setSlug(state.slug);
+        if (config.api.setEvent) config.api.setEvent(state.event);
+
+    }
+
+    async handleImportResult(result) {
+        this.#importFetch.disabled = false;
         if (result.success) {
             await playerFinder.setPlayerPresets();
-            this.#startGGStatus.textContent = `${result.count} players seeded, ${result.newPresets} new presets created`;
+            this.#importStatus.textContent = `${result.count} players seeded, ${result.newPresets} new presets created`;
         } else {
-            this.#startGGStatus.textContent = `Error: ${result.error}`;
+            this.#importStatus.textContent = `Error: ${result.error}`;
         }
     }
 

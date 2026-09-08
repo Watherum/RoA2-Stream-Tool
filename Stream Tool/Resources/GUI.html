@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RoA2 Stream Tool v18.5.0</title>
+  <title>RoA2 Stream Tool v19.0.0</title>
   <link rel="stylesheet" href="CSS/GUI.css">
   <link rel="stylesheet" href="CSS/GUI Custom.css">
   <script src="Scripts/GUI/mousetrap.min.js" defer></script>
@@ -452,33 +452,45 @@ Cannot be used with Update on score hotkey.">
 
         </div>
 
-        <div class="settingsTitle">start.gg</div>
+        <div class="settingsTitle">Tournament Import</div>
 
-        <div class="settingBox" id="startGGTokenBox">
-          <input type="password" id="startGGToken" class="textInput settingsTextInp mousetrap" placeholder="API Token" spellcheck="false" tabindex="-1">
+        <div class="settingBox" title="Which bracket site to pull players and brackets from">
+          <select id="importSourceSelect" class="selectDropDown">
+            <option value="startgg">start.gg</option>
+            <option value="parrygg">parry.gg</option>
+            <option value="challonge">Challonge</option>
+          </select>
         </div>
 
-        <div style="text-align: center; font-size: 0.75em; opacity: 0.6; padding: 2px 0 0;">tournament/slug/event/slug</div>
+        <div class="settingBox" id="importTokenBox">
+          <input type="password" id="importToken" class="textInput settingsTextInp mousetrap" placeholder="API Token" spellcheck="false" tabindex="-1">
+        </div>
+
+        <div id="importSlugHint" style="text-align: center; font-size: 0.75em; opacity: 0.6; padding: 2px 0 0;">tournament/slug/event/slug</div>
         <div class="settingBox">
-          <input type="text" id="startGGSlug" class="textInput settingsTextInp mousetrap" placeholder="tournament/slug/event/slug" spellcheck="false" tabindex="-1">
+          <input type="text" id="importSlug" class="textInput settingsTextInp mousetrap" placeholder="tournament/slug/event/slug" spellcheck="false" tabindex="-1">
         </div>
 
-        <div class="settingBox" title="Remembers the event slug between sessions">
-          <input type="checkbox" id="saveStartGGSlug" class="settingsCheck" tabindex="-1">
-          <label for="saveStartGGSlug" class="settingsText">Remember slug between sessions</label>
+        <div class="settingBox" id="importEventBox" title="Which event of the tournament to read, as a number (0 is the first) or the event's own slug. Leave empty to use the event named in a pasted bracket URL, or the Rivals 2 event">
+          <input type="text" id="importEvent" class="textInput settingsTextInp mousetrap" placeholder="Event (leave empty to autodetect)" spellcheck="false" tabindex="-1">
+        </div>
+
+        <div class="settingBox" title="Remembers the slug between sessions">
+          <input type="checkbox" id="saveImportSlug" class="settingsCheck" tabindex="-1">
+          <label for="saveImportSlug" class="settingsText">Remember slug between sessions</label>
         </div>
 
         <div id="settingsButtonSection">
-          <button class="settingsButton" id="startGGFetch" tabindex="-1">Fetch Data</button>
+          <button class="settingsButton" id="importFetch" tabindex="-1">Fetch Data</button>
         </div>
 
         <div class="settingBox">
-          <span id="startGGStatus" style="display: block; width: 100%; text-align: center;"></span>
+          <span id="importStatus" style="display: block; width: 100%; text-align: center;"></span>
         </div>
 
         <div class="settingsTitle">Misc</div>
 
-        <div style="text-align: center; font-size: 0.75em; opacity: 0.6; padding: 2px 0 0;">Only needed if you manually add/edit preset files yourself — not necessary after a start.gg import</div>
+        <div style="text-align: center; font-size: 0.75em; opacity: 0.6; padding: 2px 0 0;">Only needed if you manually add/edit preset files yourself — not necessary after a tournament import</div>
         <div id="settingsButtonSection">
           <button class="settingsButton" id="rescanPresetsButt" tabindex="-1" title="Rescans the Player Info preset folder from disk, useful if presets were edited or added outside the app">Rescan Player Presets</button>
         </div>
@@ -517,7 +529,7 @@ Cannot be used with Update on score hotkey.">
         <div class="pInfoIconCont">
           <load-svg src="SVGs/Globe.svg" class="pInfoIcon"></load-svg>
         </div>
-        <span>Import from start.gg</span>
+        <span id="bracketImportText">Import from start.gg</span>
       </button>
       <button id="bracketUpdate" class="pInfoBotButt">
         <div class="pInfoIconCont">
