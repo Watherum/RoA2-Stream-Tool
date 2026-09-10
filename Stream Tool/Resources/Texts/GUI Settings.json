@@ -17,7 +17,7 @@
   "remoteUpdatePort": 1111,
   "webSocketPort": 8080,
   "startGGToken": "",
-  "startGGSlug": "",
+  "startGGSlug": "https://www.start.gg/tournament/straight-into-the-abyss-65/event/rivals-2-singles/brackets/2388102/3443965",
   "saveStartGGSlug": false,
   "abbreviateRound": true,
   "abbreviateWL": false,
@@ -31,5 +31,23 @@
   "challongeToken": "",
   "challongeSlug": "",
   "challongeTokenFromProps": true,
-  "saveImportSlug": false
+  "saveImportSlug": true,
+  "bracketColors": {
+    "round": "#c90000",
+    "text": "#ffffff",
+    "score": "#000000"
+  },
+  "bracketAutoImport": 0,
+  "bracketColorPresets": [
+    {
+      "round": "#48bf91",
+      "text": "#ffffff",
+      "score": "#000000"
+    },
+    {
+      "round": "#c90000",
+      "text": "#ffffff",
+      "score": "#000000"
+    }
+  ]
 }

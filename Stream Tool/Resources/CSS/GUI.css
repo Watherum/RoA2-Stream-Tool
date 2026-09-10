@@ -714,7 +714,7 @@ button:hover {
 
 
 
-#presetBrowserButt {
+#presetBrowserButt, #bracketPresetBrowserButt {
   background-color: var(--bg4);
   height: 30px;
   padding: 0px 8px;
@@ -730,10 +730,10 @@ button:hover {
   font-family: 'Roboto-Medium';
   cursor: pointer;
 }
-#presetBrowserButt:hover {
+#presetBrowserButt:hover, #bracketPresetBrowserButt:hover {
   border-color: var(--selected);
 }
-#presetBrowserButt:active {
+#presetBrowserButt:active, #bracketPresetBrowserButt:active {
   background-color: var(--bg2);
 }
 
@@ -1059,6 +1059,12 @@ button:hover {
   text-transform: uppercase;
 }
 
+#bracketTopRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 #bracketEncounters {
   display: flex;
   flex-direction: column;
@@ -1107,9 +1113,149 @@ button:hover {
 }
 
 
+#bracketColors {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 4px;
+}
+.bColorBox {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 6px;
+  border-radius: 5px;
+  background-color: var(--bg2);
+}
+.bColorText {
+  font-size: 13px;
+  text-transform: uppercase;
+}
+.bColorInput {
+  width: 34px;
+  height: 22px;
+  padding: 0px;
+  border: 1px solid var(--focused);
+  border-radius: 4px;
+  background-color: transparent;
+  cursor: pointer;
+  transition: border-color 100ms;
+}
+.bColorInput:hover {
+  border-color: var(--selected);
+}
+.bColorInput::-webkit-color-swatch-wrapper {
+  padding: 2px;
+}
+.bHexInput {
+  width: 68px;
+  padding: 2px 4px;
+  border-radius: 4px;
+  font-size: 12px;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.bColorInput::-webkit-color-swatch {
+  border: none;
+  border-radius: 2px;
+}
+#bracketColorReset {
+  height: 28px;
+  padding: 0px 10px;
+  font-size: 13px;
+  text-transform: uppercase;
+  color: var(--text1);
+  background-color: var(--bg2);
+  border: 1px solid var(--focused);
+  border-radius: 5px;
+  cursor: pointer;
+  transition: border-color 100ms;
+}
+#bracketColorReset:hover {
+  border-color: var(--selected);
+}
+
+#bracketPresets {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 26px;
+}
+#bracketPresetList {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+#bracketPresetEmpty {
+  font-size: 12px;
+  color: var(--text2);
+}
+.bPresetWrap {
+  position: relative;
+  display: flex;
+}
+/* the three colors of a preset, stacked as stripes on its button */
+.bPreset {
+  width: 34px;
+  height: 22px;
+  border: 1px solid var(--focused);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: border-color 100ms;
+}
+.bPreset:hover {
+  border-color: var(--selected);
+}
+.bPresetDel {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 14px;
+  height: 14px;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  font-size: 11px;
+  line-height: 11px;
+  color: var(--text1);
+  background-color: var(--bg2);
+  border: 1px solid var(--focused);
+  border-radius: 100%;
+  cursor: pointer;
+}
+.bPresetWrap:hover .bPresetDel {
+  display: flex;
+}
+.bPresetDel:hover {
+  border-color: lightcoral;
+  color: lightcoral;
+}
+#bracketPresetSave {
+  width: 24px;
+  height: 24px;
+  font-size: 16px;
+  line-height: 16px;
+  color: var(--text1);
+  background-color: var(--bg2);
+  border: 1px solid var(--focused);
+  border-radius: 5px;
+  cursor: pointer;
+  transition: border-color 100ms;
+}
+#bracketPresetSave:hover {
+  border-color: var(--selected);
+}
+
+
 #bBotButts {
   display: flex;
+  align-items: center;
   gap: 10px;
+}
+#bracketAutoSelect {
+  height: 28px;
+  font-size: 13px;
 }
 
 

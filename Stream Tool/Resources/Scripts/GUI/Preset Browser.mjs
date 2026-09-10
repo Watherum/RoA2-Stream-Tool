@@ -16,9 +16,14 @@ class PresetBrowser {
     #searchInp = document.getElementById("presetBrowserSearch");
     #clearButt = document.getElementById("presetBrowserSearchClear");
     #list = document.getElementById("presetBrowserList");
+    #title = document.getElementById("presetBrowserTitle");
     #allPresets = [];
     #renderCycle = 0;
     #mousedownOnBackdrop = false;
+    /** "game" fills the scoreboard players, "bracket" fills the top 8 slots */
+    #mode = "game";
+    /** how many slots the bracket round being filled has */
+    #slots = 0;
 
     constructor() {
 
@@ -52,7 +57,21 @@ class PresetBrowser {
         this.#clearButt.classList.toggle("visible", this.#searchInp.value.length > 0);
     }
 
-    async show() {
+    /**
+     * Opens the browser
+     * @param {String} mode - "game" for the scoreboard, "bracket" for the top 8
+     */
+    async show(mode = "game") {
+
+        this.#mode = mode;
+
+        if (mode == "bracket") {
+            const { getBracketSlots, getBracketRoundName } = await import("./Bracket.mjs");
+            this.#slots = getBracketSlots();
+            this.#title.textContent = `Player Presets — ${getBracketRoundName()}`;
+        } else {
+            this.#title.textContent = "Player Presets";
+        }
 
         this.#allPresets = await getPresetList("Player Info");
         this.#searchInp.value = "";
@@ -162,6 +181,37 @@ class PresetBrowser {
 
         const buttons = document.createElement("div");
         buttons.className = "pbButtons";
+
+        if (this.#mode == "bracket") {
+
+            // one button per slot of the round currently being edited
+            for (let i = 0; i < this.#slots; i++) {
+                const slotButt = document.createElement("button");
+                slotButt.className = "pbButt";
+                slotButt.textContent = i + 1;
+                slotButt.setAttribute("title", `Place in slot ${i + 1} of this round`);
+                slotButt.addEventListener("click", () => this.#applyToBracket(i, preset, char));
+                buttons.appendChild(slotButt);
+            }
+
+            const bDelButt = document.createElement("button");
+            bDelButt.className = "pbButt pbDelButt";
+            bDelButt.textContent = "Delete";
+            bDelButt.addEventListener("click", () => this.#handleDelete(preset));
+            buttons.appendChild(bDelButt);
+
+            row.appendChild(info);
+            row.appendChild(buttons);
+
+            return { el: row, imgData: char ? {
+                el: charImg,
+                char: char.character,
+                skinName: char.skin,
+                hex: char.hex,
+                customImg: char.customImg,
+            } : null };
+
+        }
 
         const p1Butt = document.createElement("button");
         p1Butt.className = "pbButt pbP1Butt";
@@ -290,6 +340,19 @@ class PresetBrowser {
                 player.skinChange(player.findSkin(char.skin));
             }
         }
+
+    }
+
+    /**
+     * Fills one of the bracket round's slots with a preset
+     * @param {Number} slot - Position on the current round, starting at 0
+     * @param {Object} preset - Preset data as stored on its json file
+     * @param {Object} char - Character and skin picked off the preset
+     */
+    async #applyToBracket(slot, preset, char) {
+
+        const { applyPresetToBracket } = await import("./Bracket.mjs");
+        await applyPresetToBracket(slot, preset, char);
 
     }
 

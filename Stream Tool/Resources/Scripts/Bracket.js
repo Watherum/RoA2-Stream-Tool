@@ -336,11 +336,25 @@ function errorWebsocket() {
 }
 
 
+// text colors, as chosen on the GUI's bracket editor
+function updateColors(colors) {
+
+    if (!colors) return; // older GUIs don't send them, keep the css defaults
+
+    const root = document.documentElement;
+    if (colors.round) root.style.setProperty("--roundColor", colors.round);
+    if (colors.text) root.style.setProperty("--textColor", colors.text);
+    if (colors.score) root.style.setProperty("--scoreColor", colors.score);
+
+}
+
+
 // main loop
 async function updateData(data) {
 
     // actual update
 	bracketData = data;
+    updateColors(data.colors);
     for (const i of iteratePlayerData()) {
         i.update();
     }

@@ -756,6 +756,9 @@ class GuiSettings {
         // the bracket editor imports from whatever is selected here
         const bracketText = document.getElementById("bracketImportText");
         if (bracketText) bracketText.textContent = `Import from ${config.name}`;
+        const bracketButt = document.getElementById("bracketImport");
+        if (bracketButt) bracketButt.setAttribute("title",
+            `Fill this bracket with the sets of the event's last phase on ${config.name}`);
 
         config.api.setToken(state.token);
         config.api.setSlug(state.slug);

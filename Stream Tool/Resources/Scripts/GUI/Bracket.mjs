@@ -9,6 +9,53 @@ const bRoundSelect = document.getElementById('bracketRoundSelect');
 const bEncountersDiv = document.getElementById('bracketEncounters');
 const bImportButt = document.getElementById('bracketImport');
 
+// color pickers for the bracket overlay's texts
+const bColorInputs = {
+    round: document.getElementById('bracketRoundColor'),
+    text: document.getElementById('bracketTextColor'),
+    score: document.getElementById('bracketScoreColor')
+}
+const bHexInputs = {
+    round: document.getElementById('bracketRoundHex'),
+    text: document.getElementById('bracketTextHex'),
+    score: document.getElementById('bracketScoreHex')
+}
+const bColorReset = document.getElementById('bracketColorReset');
+const bPresetList = document.getElementById('bracketPresetList');
+const bPresetSave = document.getElementById('bracketPresetSave');
+const bAutoSelect = document.getElementById('bracketAutoSelect');
+
+// same values the Bracket.css fallbacks use
+const defaultColors = {
+    round: "#48bf91",
+    text: "#ffffff",
+    score: "#000000"
+}
+// what a fresh install starts with, so theres something to click on
+const starterPresets = [
+    {round: "#48bf91", text: "#ffffff", score: "#000000"},
+    {round: "#ffffff", text: "#ffffff", score: "#000000"},
+    {round: "#ffcc00", text: "#ffffff", score: "#000000"},
+    {round: "#ff5e5e", text: "#ffffff", score: "#000000"}
+]
+const maxPresets = 12;
+
+let bracketColors = {...defaultColors};
+let colorPresets = starterPresets.map(preset => ({...preset}));
+let colorSendTimer;
+let editSendTimer;
+
+// how long to wait after the last edit before pushing the bracket out
+const editDelay = 700;
+// and how many of those waits a still loading icon gets before we send anyway
+const maxEditWaits = 10;
+
+// automatic re-imports
+let autoSeconds = 0;    // 0 means off
+let autoTimer;
+let autoBusy = false;   // a fetch is still in flight
+let autoFailed = false; // so a broken slug doesn't notify every single tick
+
 // just the initial state of the bracket
 const blankPlayerData = {
     name: "-",
@@ -38,8 +85,387 @@ bRoundSelect.addEventListener("change", () => {createEncounters()});
 document.getElementById('bracketGoBack').addEventListener("click", () => {viewport.toCenter()});
 document.getElementById('bracketUpdate').addEventListener("click", () => {updateBracket()});
 bImportButt.addEventListener("click", () => {importFromProvider()});
+for (const type in bColorInputs) {
+    // while dragging the picker around, push the new color at a sane rate
+    bColorInputs[type].addEventListener("input", () => {colorChange(type, false)});
+    // and once its settled, store it for the next time the GUI opens
+    bColorInputs[type].addEventListener("change", () => {colorChange(type, true)});
+    // the hex box is the same color, just typed out
+    bHexInputs[type].addEventListener("input", () => {hexChange(type, false)});
+    bHexInputs[type].addEventListener("change", () => {hexChange(type, true)});
+}
+bColorReset.addEventListener("click", () => {setColors(defaultColors, true)});
+// picking a character, a skin or a player off a finder, or copying a game over,
+// all happen as clicks in here. programmatic changes never fire one, so this
+// can't bounce an incoming remote update straight back at its sender
+bEncountersDiv.addEventListener("click", () => {scheduleBracketSend()});
+document.getElementById('bracketPresetBrowserButt').addEventListener("click", async () => {
+    const { presetBrowser } = await import("./Preset Browser.mjs");
+    presetBrowser.show("bracket");
+});
+bPresetSave.addEventListener("click", () => {addPreset()});
+bAutoSelect.addEventListener("change", () => {
+    autoSeconds = Number(bAutoSelect.value);
+    autoFailed = false;
+    restartAutoTimer();
+    saveAuto();
+});
+drawPresets();
 // force change event for initial creation of encounters
 bRoundSelect.dispatchEvent(new Event('change'));
+
+
+/** How many player slots the round being edited has */
+export function getBracketSlots() {
+    return bracketPlayers.length;
+}
+
+/** Name of the round being edited, as written on its dropdown option */
+export function getBracketRoundName() {
+    return bRoundSelect.options[bRoundSelect.selectedIndex].textContent;
+}
+
+/**
+ * Drops a player preset into one of the current round's slots
+ * @param {Number} slot - Position on the round, starting at 0
+ * @param {Object} preset - Preset data as stored on its json file
+ * @param {Object} char - Character and skin to give the slot, if any
+ */
+export async function applyPresetToBracket(slot, preset, char) {
+
+    const player = bracketPlayers[slot];
+    if (!player) return;
+
+    const { liveTag } = await import("./Importers.mjs");
+
+    player.setName(preset.name);
+    player.setTag(liveTag(preset.name) || preset.tag || "");
+
+    if (char) {
+        await player.charChange(char.character, true);
+        if (char.customImg) {
+            const { setCurrentPlayer, customChange } = await import("./Custom Skin.mjs");
+            setCurrentPlayer(player);
+            await customChange(char.hex, char.skin);
+        } else {
+            await player.skinChange(player.findSkin(char.skin));
+        }
+    }
+
+    // the browser stays open, so push this out like any other manual edit
+    scheduleBracketSend();
+
+}
+
+
+/**
+ * Sends the bracket once the user has stopped editing for a moment
+ * @param {Number} waits - How many times we've waited on a loading icon
+ */
+function scheduleBracketSend(waits = 0) {
+
+    clearTimeout(editSendTimer);
+    editSendTimer = setTimeout(() => {
+
+        // a character or skin pick may still be loading its icon; wait it out
+        // rather than sending the one it's about to replace, but never forever
+        if (waits < maxEditWaits && bracketPlayers.some(p => p.getReadyState() === false)) {
+            return scheduleBracketSend(waits + 1);
+        }
+
+        updateBracket(true);
+
+    }, editDelay);
+
+}
+
+
+/** Loads the saved bracket editor settings, before the first bracket update */
+export async function initBracketSettings() {
+
+    if (!inside.electron) return; // remote GUIs get them with the bracket data
+
+    const { stPath } = await import("./Globals.mjs");
+    const { getJson } = await import("./File System.mjs");
+    const guiSettings = await getJson(`${stPath.text}/GUI Settings`);
+
+    setColors(guiSettings.bracketColors, false);
+    setPresets(guiSettings.bracketColorPresets);
+    setAuto(guiSettings.bracketAutoImport);
+
+}
+
+
+/**
+ * Sets how often the bracket re-imports itself, and starts the timer
+ * @param {Number} seconds - Time between imports, 0 to turn it off
+ */
+function setAuto(seconds) {
+
+    // only the values the dropdown offers, so a typo'd setting can't spam a site
+    if (![...bAutoSelect.options].some(option => Number(option.value) == seconds)) return;
+
+    autoSeconds = Number(seconds);
+    bAutoSelect.value = autoSeconds;
+    autoFailed = false;
+    restartAutoTimer();
+
+}
+
+/** Restarts the auto import timer with the current interval */
+function restartAutoTimer() {
+
+    clearInterval(autoTimer);
+
+    // the importer tokens live on the electron side, so the timer does too
+    if (!inside.electron || !autoSeconds) return;
+
+    autoTimer = setInterval(autoImport, autoSeconds * 1000);
+
+}
+
+/** Re-imports the bracket from the selected site, quietly */
+async function autoImport() {
+
+    if (autoBusy) return; // last fetch hasn't come back yet
+
+    // rebuilding the encounters mid-edit would eat what's being typed
+    if (bEncountersDiv.contains(document.activeElement)) return;
+
+    autoBusy = true;
+
+    try {
+
+        const { getActiveImporter } = await import("./Importers.mjs");
+        const result = await getActiveImporter().fetchTop8Sets();
+
+        if (result.success) {
+            await applyImportedBracket(result.bracket);
+            if (autoFailed) displayNotif("Auto import is working again");
+            autoFailed = false;
+        } else if (!autoFailed) {
+            // say it once, then stay quiet until it recovers
+            autoFailed = true;
+            displayNotif(`Auto import failed: ${result.error}`);
+        }
+
+    } finally {
+        autoBusy = false;
+    }
+
+}
+
+/** Stores the auto import interval, or sends it to the main GUI */
+async function saveAuto() {
+
+    if (inside.electron) {
+        const { settings } = await import("./Settings.mjs");
+        await settings.save("bracketAutoImport", autoSeconds);
+    } else {
+        // remote GUIs have no settings file; it travels with the bracket
+        updateBracket(true);
+    }
+
+}
+
+
+/**
+ * Replaces the preset list and redraws it
+ * @param {Array} presets - List of {round, text, score} objects
+ */
+function setPresets(presets) {
+
+    if (!Array.isArray(presets)) return; // nothing saved yet, keep the starters
+
+    colorPresets = presets.slice(0, maxPresets).map(preset => ({
+        round: readHex(preset.round) || defaultColors.round,
+        text: readHex(preset.text) || defaultColors.text,
+        score: readHex(preset.score) || defaultColors.score
+    }));
+
+    drawPresets();
+
+}
+
+/** Fills the preset row with a clickable swatch for each saved preset */
+function drawPresets() {
+
+    bPresetList.innerHTML = "";
+
+    if (!colorPresets.length) {
+        const emptyText = document.createElement('span');
+        emptyText.id = "bracketPresetEmpty";
+        emptyText.innerHTML = "None saved yet";
+        bPresetList.appendChild(emptyText);
+    }
+
+    for (let i = 0; i < colorPresets.length; i++) {
+
+        const preset = colorPresets[i];
+
+        const wrapper = document.createElement('div');
+        wrapper.className = "bPresetWrap";
+
+        const swatch = document.createElement('button');
+        swatch.className = "bPreset";
+        // each color gets its own stripe so the whole preset is visible at once
+        swatch.style.background = `linear-gradient(${preset.round} 0% 34%, ` +
+            `${preset.text} 34% 67%, ${preset.score} 67% 100%)`;
+        swatch.setAttribute("title",
+            `Round ${preset.round}
+Players ${preset.text}
+Score ${preset.score}`);
+        swatch.addEventListener("click", () => {setColors(preset, true)});
+
+        const delButt = document.createElement('span');
+        delButt.className = "bPresetDel";
+        delButt.innerHTML = "×";
+        delButt.setAttribute("title", "Delete this color preset");
+        delButt.addEventListener("click", () => {deletePreset(i)});
+
+        wrapper.appendChild(swatch);
+        wrapper.appendChild(delButt);
+        bPresetList.appendChild(wrapper);
+
+    }
+
+}
+
+/** Stores the colors currently on the pickers as a new preset */
+function addPreset() {
+
+    // no point in having the same three colors twice
+    const repeated = colorPresets.some(preset => preset.round == bracketColors.round &&
+        preset.text == bracketColors.text && preset.score == bracketColors.score);
+    if (repeated) return displayNotif("These colors are already a preset");
+
+    if (colorPresets.length >= maxPresets) {
+        return displayNotif(`Only ${maxPresets} color presets can be saved`);
+    }
+
+    colorPresets.push({...bracketColors});
+    drawPresets();
+    savePresets();
+    displayNotif("Color preset saved");
+
+}
+
+/**
+ * Removes a preset from the list
+ * @param {Number} index - Position of the preset to delete
+ */
+function deletePreset(index) {
+
+    colorPresets.splice(index, 1);
+    drawPresets();
+    savePresets();
+
+}
+
+/** Writes the preset list to the settings file, or sends it to the main GUI */
+async function savePresets() {
+
+    if (inside.electron) {
+        const { settings } = await import("./Settings.mjs");
+        await settings.save("bracketColorPresets", colorPresets);
+    } else {
+        // remote GUIs have no settings file; the presets travel with the bracket
+        updateBracket(true);
+    }
+
+}
+
+/**
+ * Applies a set of colors to the pickers and the local bracket object
+ * @param {Object} colors - Any of round, text and score as hex strings
+ * @param {Boolean} send - Save and push the new colors to everyone
+ */
+function setColors(colors, send) {
+
+    for (const type in bColorInputs) {
+        if (colors && colors[type]) bracketColors[type] = readHex(colors[type]) || bracketColors[type];
+        bColorInputs[type].value = bracketColors[type];
+        bHexInputs[type].value = bracketColors[type];
+    }
+
+    if (send) {
+        saveColor();
+        updateBracket(true);
+    }
+
+}
+
+/**
+ * Turns whatever was typed into a #rrggbb color, if it is one
+ * @param {String} value - Hex code, with or without the #, 3 or 6 digits
+ * @returns The color, or an empty string if it can't be read
+ */
+function readHex(value) {
+
+    const hex = String(value ?? "").trim().replace(/^#/, "");
+
+    if (!/^([0-9a-f]{3}|[0-9a-f]{6})$/i.test(hex)) return "";
+
+    // #abc is the same color as #aabbcc
+    const full = hex.length == 3 ? [...hex].map(digit => digit + digit).join("") : hex;
+
+    return `#${full.toLowerCase()}`;
+
+}
+
+/**
+ * Takes the color typed into one of the hex boxes
+ * @param {String} type - round, text or score
+ * @param {Boolean} store - Also write it to the settings file
+ */
+function hexChange(type, store) {
+
+    const hex = readHex(bHexInputs[type].value);
+
+    if (!hex) {
+        // half typed codes are normal, only put the box back when they're done
+        if (store) bHexInputs[type].value = bracketColors[type];
+        return;
+    }
+
+    bracketColors[type] = hex;
+    bColorInputs[type].value = hex;
+    if (store) bHexInputs[type].value = hex;
+
+    if (store) saveColor();
+
+    clearTimeout(colorSendTimer);
+    colorSendTimer = setTimeout(() => {updateBracket(true)}, 100);
+
+}
+
+/**
+ * Stores and broadcasts a color the user just picked
+ * @param {String} type - round, text or score
+ * @param {Boolean} store - Also write it to the settings file
+ */
+function colorChange(type, store) {
+
+    bracketColors[type] = bColorInputs[type].value;
+    bHexInputs[type].value = bracketColors[type];
+
+    if (store) saveColor();
+
+    // the picker fires on every mouse move, so don't flood the clients
+    clearTimeout(colorSendTimer);
+    colorSendTimer = setTimeout(() => {updateBracket(true)}, 100);
+
+}
+
+/** Writes the current colors to the settings file (electron only) */
+async function saveColor() {
+
+    if (!inside.electron) return;
+
+    const { settings } = await import("./Settings.mjs");
+    await settings.save("bracketColors", {...bracketColors});
+
+}
 
 
 /**
@@ -94,6 +520,11 @@ async function createEncounters(sameRound) {
         scoreInp.classList = "bScoreInp bInput textInput mousetrap";
         scoreInp.setAttribute("placeholder", "Score");
         bracketPlayers[i].scoreInp = scoreInp;
+
+        // typing anything in here sends the bracket out on its own
+        tagInp.addEventListener("input", () => {scheduleBracketSend()});
+        nameInp.addEventListener("input", () => {scheduleBracketSend()});
+        scoreInp.addEventListener("input", () => {scheduleBracketSend()});
 
         // add it all up
         newEnc.appendChild(charSelect);
@@ -169,6 +600,9 @@ export async function updateBracket(startup) {
     
     // save the current info
     updateLocalBracket();
+    bracketData.colors = {...bracketColors};
+    bracketData.colorPresets = colorPresets;
+    bracketData.autoImport = autoSeconds;
 
     // time to send it away
     if (inside.electron) {
@@ -229,6 +663,17 @@ function updateLocalBracket(previous) {
 export async function replaceBracket(newBracket) {
 
     bracketData = newBracket;
+
+    // the sender may have changed the overlay colors or the presets too
+    setColors(newBracket.colors, false);
+    setPresets(newBracket.colorPresets);
+    setAuto(newBracket.autoImport);
+    if (inside.electron) {
+        // one at a time; concurrent saves read a stale file and clobber it
+        await saveColor();
+        await savePresets();
+        await saveAuto();
+    }
 
     await createEncounters(true);
 

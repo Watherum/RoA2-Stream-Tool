@@ -56,7 +56,8 @@ body {
     /* same typeface the scoreboards give their round text: Deansgate
        condensed, uppercased by the body rule above */
     font-family: "RegularText";
-    color: #48bf91;
+    /* the GUI's bracket editor sets these vars; fallbacks are the defaults */
+    color: var(--roundColor, #48bf91);
 }
 
 
@@ -94,7 +95,7 @@ body {
     width: 89%;
     white-space: nowrap;
     line-height: 20px;
-    color: white;
+    color: var(--textColor, white);
 }
 .playerTag {
     font-size: 16px;
@@ -110,7 +111,7 @@ body {
     justify-content: center;
     align-items: center;
     font-size: 26px;
-    color: black;
+    color: var(--scoreColor, black);
     border-left: 35px solid;
     border-right: 35px solid;
     border-image: url('../Overlay/Bracket/Border\ White.png') 0 35 fill / 0 35px;
