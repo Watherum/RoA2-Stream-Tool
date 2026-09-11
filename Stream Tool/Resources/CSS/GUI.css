@@ -1065,6 +1065,19 @@ button:hover {
   gap: 8px;
 }
 
+/* the color panel and the round's players, side by side */
+#bracketMid {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+}
+#bracketSide {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
 #bracketEncounters {
   display: flex;
   flex-direction: column;
@@ -1115,9 +1128,9 @@ button:hover {
 
 #bracketColors {
   display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-top: 4px;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
 }
 .bColorBox {
   display: flex;
@@ -1131,21 +1144,22 @@ button:hover {
   font-size: 13px;
   text-transform: uppercase;
 }
+/* fixed width so every box lines its controls up with the ones above */
+.bColorBox .bColorText {
+  width: 52px;
+}
+/* the current color, click it for the wheel */
 .bColorInput {
   width: 34px;
   height: 22px;
-  padding: 0px;
+  box-sizing: border-box;
   border: 1px solid var(--focused);
   border-radius: 4px;
-  background-color: transparent;
   cursor: pointer;
   transition: border-color 100ms;
 }
 .bColorInput:hover {
   border-color: var(--selected);
-}
-.bColorInput::-webkit-color-swatch-wrapper {
-  padding: 2px;
 }
 .bHexInput {
   width: 68px;
@@ -1156,12 +1170,91 @@ button:hover {
   text-transform: uppercase;
 }
 
-.bColorInput::-webkit-color-swatch {
-  border: none;
-  border-radius: 2px;
+/* our own color wheel, so no second eyedropper tags along */
+#colorPickerPop {
+  position: fixed;
+  z-index: 200;
+  display: none;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px;
+  background-color: var(--bg2);
+  border: 1px solid var(--focused);
+  border-radius: 6px;
+  box-shadow: 0px 3px 10px rgba(0, 0, 0, .5);
+  user-select: none;
 }
+/* saturation left to right, brightness top to bottom */
+.cpSquare {
+  position: relative;
+  width: 160px;
+  height: 110px;
+  border-radius: 4px;
+  background-image: linear-gradient(to top, #000000, rgba(0, 0, 0, 0)),
+                    linear-gradient(to right, #ffffff, rgba(255, 255, 255, 0));
+  cursor: crosshair;
+}
+.cpHue {
+  position: relative;
+  width: 160px;
+  height: 14px;
+  border-radius: 4px;
+  background-image: linear-gradient(to right, #ff0000, #ffff00, #00ff00,
+                    #00ffff, #0000ff, #ff00ff, #ff0000);
+  cursor: ew-resize;
+}
+.cpDot, .cpHueDot {
+  position: absolute;
+  box-sizing: border-box;
+  border: 2px solid #ffffff;
+  border-radius: 100%;
+  box-shadow: 0px 0px 2px rgba(0, 0, 0, .8);
+  pointer-events: none;
+}
+.cpDot {
+  width: 12px;
+  height: 12px;
+  transform: translate(-50%, -50%);
+}
+.cpHueDot {
+  top: -2px;
+  width: 18px;
+  height: 18px;
+  transform: translateX(-50%);
+}
+
+/* the eyedropper next to each color box */
+.bColorPick {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 22px;
+  border: 1px solid var(--focused);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: border-color 100ms;
+}
+.bColorPick:hover {
+  border-color: var(--selected);
+}
+/* while the screens are being grabbed */
+.bColorPickBusy {
+  opacity: .4;
+  cursor: progress;
+}
+.bColorPickIcon {
+  width: 14px;
+  height: 14px;
+  fill: var(--iconFill);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 #bracketColorReset {
-  height: 28px;
+  height: 26px;
+  margin-top: 2px;
   padding: 0px 10px;
   font-size: 13px;
   text-transform: uppercase;
@@ -1178,14 +1271,22 @@ button:hover {
 
 #bracketPresets {
   display: flex;
-  align-items: center;
-  gap: 8px;
+  flex-direction: column;
+  gap: 5px;
   min-height: 26px;
 }
+#bracketPresetRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+}
+/* the swatches wrap into as many short rows as the panel needs */
 #bracketPresetList {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 6px;
+  max-width: 168px;
 }
 #bracketPresetEmpty {
   font-size: 12px;

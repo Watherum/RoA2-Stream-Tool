@@ -34,7 +34,7 @@
   "saveImportSlug": true,
   "bracketColors": {
     "round": "#c90000",
-    "text": "#ffffff",
+    "text": "#c90000",
     "score": "#000000"
   },
   "bracketAutoImport": 0,
@@ -46,7 +46,12 @@
     },
     {
       "round": "#c90000",
-      "text": "#ffffff",
+      "text": "#c90000",
+      "score": "#000000"
+    },
+    {
+      "round": "#48bf91",
+      "text": "#48bf91",
       "score": "#000000"
     }
   ]

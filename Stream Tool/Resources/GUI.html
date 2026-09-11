@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RoA2 Stream Tool v19.1.0</title>
+  <title>RoA2 Stream Tool v19.2.0</title>
   <link rel="stylesheet" href="CSS/GUI.css">
   <link rel="stylesheet" href="CSS/GUI Custom.css">
   <script src="Scripts/GUI/mousetrap.min.js" defer></script>
@@ -520,29 +520,45 @@ Cannot be used with Update on score hotkey.">
     </select>
       <div id="bracketPresetBrowserButt" title="Browse player presets to fill this round">Presets</div>
     </div>
-    <div id="bracketEncounters"></div>
-    <div id="bracketColors">
-      <div class="bColorBox" title="Color of the round titles on the bracket overlay">
-        <span class="bColorText">Round</span>
-        <input type="color" id="bracketRoundColor" class="bColorInput" value="#48bf91">
-        <input type="text" id="bracketRoundHex" class="bHexInput textInput mousetrap" spellcheck="false" maxlength="7" placeholder="#000000" title="Type a hex color code">
+    <!-- colors on the left, the round's players on the right -->
+    <div id="bracketMid">
+      <div id="bracketSide">
+        <div id="bracketColors">
+          <div class="bColorBox" title="Color of the round titles on the bracket overlay">
+            <span class="bColorText">Round</span>
+            <div id="bracketRoundColor" class="bColorInput" data-type="round" style="background-color: #48bf91" title="Open the color wheel"></div>
+            <input type="text" id="bracketRoundHex" class="bHexInput textInput mousetrap" spellcheck="false" maxlength="7" placeholder="#000000" title="Type a hex color code">
+            <div class="bColorPick" data-type="round" title="Pick a color from anywhere on your screen">
+              <load-svg src="SVGs/Eyedropper.svg" class="bColorPickIcon"></load-svg>
+            </div>
+          </div>
+          <div class="bColorBox" title="Color of the player tags and names on the bracket overlay">
+            <span class="bColorText">Players</span>
+            <div id="bracketTextColor" class="bColorInput" data-type="text" style="background-color: #ffffff" title="Open the color wheel"></div>
+            <input type="text" id="bracketTextHex" class="bHexInput textInput mousetrap" spellcheck="false" maxlength="7" placeholder="#000000" title="Type a hex color code">
+            <div class="bColorPick" data-type="text" title="Pick a color from anywhere on your screen">
+              <load-svg src="SVGs/Eyedropper.svg" class="bColorPickIcon"></load-svg>
+            </div>
+          </div>
+          <div class="bColorBox" title="Color of the scores on the bracket overlay">
+            <span class="bColorText">Score</span>
+            <div id="bracketScoreColor" class="bColorInput" data-type="score" style="background-color: #000000" title="Open the color wheel"></div>
+            <input type="text" id="bracketScoreHex" class="bHexInput textInput mousetrap" spellcheck="false" maxlength="7" placeholder="#000000" title="Type a hex color code">
+            <div class="bColorPick" data-type="score" title="Pick a color from anywhere on your screen">
+              <load-svg src="SVGs/Eyedropper.svg" class="bColorPickIcon"></load-svg>
+            </div>
+          </div>
+          <button id="bracketColorReset" title="Restore the default bracket colors">Reset</button>
+        </div>
+        <div id="bracketPresets">
+          <span class="bColorText">Color Presets</span>
+          <div id="bracketPresetRow">
+            <div id="bracketPresetList"></div>
+            <button id="bracketPresetSave" title="Save the current colors as a new color preset">+</button>
+          </div>
+        </div>
       </div>
-      <div class="bColorBox" title="Color of the player tags and names on the bracket overlay">
-        <span class="bColorText">Players</span>
-        <input type="color" id="bracketTextColor" class="bColorInput" value="#ffffff">
-        <input type="text" id="bracketTextHex" class="bHexInput textInput mousetrap" spellcheck="false" maxlength="7" placeholder="#000000" title="Type a hex color code">
-      </div>
-      <div class="bColorBox" title="Color of the scores on the bracket overlay">
-        <span class="bColorText">Score</span>
-        <input type="color" id="bracketScoreColor" class="bColorInput" value="#000000">
-        <input type="text" id="bracketScoreHex" class="bHexInput textInput mousetrap" spellcheck="false" maxlength="7" placeholder="#000000" title="Type a hex color code">
-      </div>
-      <button id="bracketColorReset" title="Restore the default bracket colors">Reset</button>
-    </div>
-    <div id="bracketPresets">
-      <span class="bColorText">Color Presets</span>
-      <div id="bracketPresetList"></div>
-      <button id="bracketPresetSave" title="Save the current colors as a new color preset">+</button>
+      <div id="bracketEncounters"></div>
     </div>
     <div id="bBotButts">
       <button id="bracketGoBack" class="pInfoBotButt">

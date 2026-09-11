@@ -83,6 +83,14 @@ export function resizable(value) {
     ipc.send('resizable', value);
 }
 
+/**
+ * Asks Electron to open the screen wide color picker
+ * @returns The picked color as #rrggbb, or null if it got cancelled
+ */
+export function pickScreenColor() {
+    return ipc.invoke('pickScreenColor');
+}
+
 /** Sends the signal to Electron to restore window dimensions */
 export function defaultWindowDimensions() {
     ipc.send('defaultWindow');

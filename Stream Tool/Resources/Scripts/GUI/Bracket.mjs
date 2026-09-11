@@ -4,6 +4,7 @@ import { PlayerBracket } from "./Player/Player Bracket.mjs";
 import { displayNotif } from './Notifications.mjs';
 import { scores } from './Score/Scores.mjs';
 import { inside } from './Globals.mjs';
+import { openColorPicker } from './Color Picker.mjs';
 
 const bRoundSelect = document.getElementById('bracketRoundSelect');
 const bEncountersDiv = document.getElementById('bracketEncounters');
@@ -86,13 +87,26 @@ document.getElementById('bracketGoBack').addEventListener("click", () => {viewpo
 document.getElementById('bracketUpdate').addEventListener("click", () => {updateBracket()});
 bImportButt.addEventListener("click", () => {importFromProvider()});
 for (const type in bColorInputs) {
-    // while dragging the picker around, push the new color at a sane rate
-    bColorInputs[type].addEventListener("input", () => {colorChange(type, false)});
-    // and once its settled, store it for the next time the GUI opens
-    bColorInputs[type].addEventListener("change", () => {colorChange(type, true)});
+    // the swatch opens our own color wheel; while its being dragged around
+    // we push the new color at a sane rate, and once its settled we store it
+    bColorInputs[type].addEventListener("click", () => {
+        openColorPicker(
+            bColorInputs[type],
+            bracketColors[type],
+            (hex, settled) => {colorChange(type, hex, settled)}
+        );
+    });
     // the hex box is the same color, just typed out
     bHexInputs[type].addEventListener("input", () => {hexChange(type, false)});
     bHexInputs[type].addEventListener("change", () => {hexChange(type, true)});
+}
+for (const pickButt of document.querySelectorAll('.bColorPick')) {
+    // browsers that dont have an eyedropper of their own dont get a button
+    if (!inside.electron && !window.EyeDropper) {
+        pickButt.style.display = "none";
+        continue;
+    }
+    pickButt.addEventListener("click", () => {pickFromScreen(pickButt.dataset.type, pickButt)});
 }
 bColorReset.addEventListener("click", () => {setColors(defaultColors, true)});
 // picking a character, a skin or a player off a finder, or copying a game over,
@@ -376,6 +390,41 @@ async function savePresets() {
 }
 
 /**
+ * Grabs a color from anywhere on the screen, outside this app included
+ * @param {String} type - round, text or score
+ * @param {HTMLElement} butt - The button that was clicked
+ */
+async function pickFromScreen(type, butt) {
+
+    let hex;
+
+    if (inside.electron) {
+        // chromium's own eyedropper cant see past this window, so electron
+        // screenshots every monitor and we click on that instead. that takes
+        // a moment, so say something is happening while we wait for it
+        butt.classList.add("bColorPickBusy");
+        const { pickScreenColor } = await import("./IPC.mjs");
+        try {
+            hex = await pickScreenColor();
+        } finally {
+            butt.classList.remove("bColorPickBusy");
+        }
+    } else if (window.EyeDropper) {
+        // remote GUIs run on a real browser, which does have a proper one
+        try {
+            const result = await new window.EyeDropper().open();
+            hex = result.sRGBHex;
+        } catch (e) { return } // they hit escape
+    }
+
+    hex = readHex(hex);
+    if (!hex) return;
+
+    setColors({[type]: hex}, true);
+
+}
+
+/**
  * Applies a set of colors to the pickers and the local bracket object
  * @param {Object} colors - Any of round, text and score as hex strings
  * @param {Boolean} send - Save and push the new colors to everyone
@@ -384,7 +433,7 @@ function setColors(colors, send) {
 
     for (const type in bColorInputs) {
         if (colors && colors[type]) bracketColors[type] = readHex(colors[type]) || bracketColors[type];
-        bColorInputs[type].value = bracketColors[type];
+        bColorInputs[type].style.backgroundColor = bracketColors[type];
         bHexInputs[type].value = bracketColors[type];
     }
 
@@ -429,7 +478,7 @@ function hexChange(type, store) {
     }
 
     bracketColors[type] = hex;
-    bColorInputs[type].value = hex;
+    bColorInputs[type].style.backgroundColor = hex;
     if (store) bHexInputs[type].value = hex;
 
     if (store) saveColor();
@@ -442,12 +491,14 @@ function hexChange(type, store) {
 /**
  * Stores and broadcasts a color the user just picked
  * @param {String} type - round, text or score
+ * @param {String} hex - The new color, as #rrggbb
  * @param {Boolean} store - Also write it to the settings file
  */
-function colorChange(type, store) {
+function colorChange(type, hex, store) {
 
-    bracketColors[type] = bColorInputs[type].value;
-    bHexInputs[type].value = bracketColors[type];
+    bracketColors[type] = hex;
+    bColorInputs[type].style.backgroundColor = hex;
+    bHexInputs[type].value = hex;
 
     if (store) saveColor();
 

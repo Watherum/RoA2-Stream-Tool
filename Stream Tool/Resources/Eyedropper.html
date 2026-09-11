@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Pick a color</title>
+<style>
+    html, body {
+        margin: 0px;
+        padding: 0px;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        /* all but invisible, just enough for the window to catch the mouse.
+           an opaque window here would have everything underneath think it
+           was covered up and stop drawing itself, which is the opposite of
+           what a live picker wants */
+        background-color: rgba(0, 0, 0, .004);
+        cursor: crosshair;
+        user-select: none;
+        font-family: sans-serif;
+    }
+    /* the live feed of this monitor. its never shown, the real screen is
+       right there underneath us; its only here to be read from */
+    #shot {
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        width: 1px;
+        height: 1px;
+        opacity: .01;
+        pointer-events: none;
+    }
+    /* the zoomed in square that follows the cursor around */
+    #loupe {
+        position: absolute;
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        pointer-events: none;
+    }
+    #zoom {
+        width: 132px;
+        height: 132px;
+        border: 2px solid #ffffff;
+        border-radius: 50%;
+        box-shadow: 0px 0px 0px 2px rgba(0, 0, 0, .6);
+        background-color: #000000;
+    }
+    #label {
+        margin-top: 6px;
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-size: 13px;
+        text-transform: uppercase;
+        color: #ffffff;
+        background-color: rgba(0, 0, 0, .75);
+    }
+    #hint {
+        position: absolute;
+        bottom: 24px;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 6px 14px;
+        border-radius: 6px;
+        font-size: 14px;
+        color: #ffffff;
+        background-color: rgba(0, 0, 0, .75);
+        pointer-events: none;
+    }
+</style>
+</head>
+<body>
+    <video id="shot" autoplay muted playsinline></video>
+    <div id="loupe">
+        <canvas id="zoom" width="132" height="132"></canvas>
+        <span id="label">#000000</span>
+    </div>
+    <div id="hint">Click anywhere to pick a color &nbsp;·&nbsp; Esc to cancel</div>
+
+<script>
+const { ipcRenderer } = require('electron');
+
+const video = document.getElementById('shot');
+const loupe = document.getElementById('loupe');
+const zoomCanvas = document.getElementById('zoom');
+const zoomCtx = zoomCanvas.getContext('2d');
+const label = document.getElementById('label');
+
+// how many screen pixels the loupe shows, and how big each one gets drawn
+const zoomPixels = 11;
+const half = (zoomPixels - 1) / 2;
+const zoomScale = zoomCanvas.width / zoomPixels;
+
+// only the little patch under the cursor ever gets read back
+const sample = document.createElement('canvas');
+sample.width = zoomPixels;
+sample.height = zoomPixels;
+const sampleCtx = sample.getContext('2d', {willReadFrequently: true});
+
+let stream;
+let lastHex = "";
+let ready = false;
+
+// ask the main process which monitor we are sitting on, then watch it live
+ipcRenderer.invoke('eyedropperSource').then(async (data) => {
+
+    if (!data) { cancel(); return; }
+
+    const watch = (sourceId) => navigator.mediaDevices.getUserMedia({
+        audio: false,
+        video: {
+            mandatory: {
+                chromeMediaSource: 'desktop',
+                chromeMediaSourceId: sourceId,
+                minWidth: data.width,
+                maxWidth: data.width,
+                minHeight: data.height,
+                maxHeight: data.height
+            }
+        }
+    });
+
+    try {
+        stream = await watch(data.sourceId);
+    } catch (e) {
+        // the id we were given is stale, ask for one thats not
+        try {
+            const fresh = await ipcRenderer.invoke('eyedropperSource', true);
+            stream = await watch(fresh.sourceId);
+        } catch (e2) { cancel(); return; }
+    }
+
+    video.srcObject = stream;
+    video.addEventListener("playing", () => {
+        zoomCtx.imageSmoothingEnabled = false;
+        ready = true;
+    });
+
+});
+
+// let go of the capture on the way out
+window.addEventListener("beforeunload", () => {
+    if (stream) stream.getTracks().forEach(track => track.stop());
+});
+
+/** Turns window coordinates into a position on the feed */
+function toShotPos(clientX, clientY) {
+    return {
+        x: Math.min(video.videoWidth - 1, Math.max(0, Math.floor(clientX * video.videoWidth / window.innerWidth))),
+        y: Math.min(video.videoHeight - 1, Math.max(0, Math.floor(clientY * video.videoHeight / window.innerHeight)))
+    };
+}
+
+/**
+ * Grabs the patch of screen under the cursor, straight off the live feed
+ * @param {Object} pos - Where on the feed to look
+ * @returns That pixel's color, as #rrggbb
+ */
+function readAt(pos) {
+
+    sampleCtx.clearRect(0, 0, zoomPixels, zoomPixels);
+    sampleCtx.drawImage(
+        video,
+        pos.x - half, pos.y - half, zoomPixels, zoomPixels,
+        0, 0, zoomPixels, zoomPixels
+    );
+
+    const middle = sampleCtx.getImageData(half, half, 1, 1).data;
+    const hex = (value) => value.toString(16).padStart(2, "0");
+
+    return `#${hex(middle[0])}${hex(middle[1])}${hex(middle[2])}`;
+
+}
+
+document.addEventListener("mousemove", (event) => {
+
+    if (!ready) return;
+
+    const pos = toShotPos(event.clientX, event.clientY);
+    lastHex = readAt(pos);
+
+    // the neighbourhood of the cursor, blown up
+    zoomCtx.clearRect(0, 0, zoomCanvas.width, zoomCanvas.height);
+    zoomCtx.drawImage(sample, 0, 0, zoomPixels, zoomPixels, 0, 0, zoomCanvas.width, zoomCanvas.height);
+
+    // crosshair over the exact pixel being read
+    zoomCtx.strokeStyle = "rgba(0, 0, 0, .8)";
+    zoomCtx.lineWidth = 1;
+    zoomCtx.strokeRect(half * zoomScale + .5, half * zoomScale + .5, zoomScale - 1, zoomScale - 1);
+    zoomCtx.strokeStyle = "rgba(255, 255, 255, .9)";
+    zoomCtx.strokeRect(half * zoomScale - .5, half * zoomScale - .5, zoomScale + 1, zoomScale + 1);
+
+    label.textContent = lastHex;
+    loupe.style.display = "flex";
+
+    // keep the loupe on screen when close to an edge
+    const boxWidth = 140, boxHeight = 165, margin = 20;
+    let left = event.clientX + margin;
+    let top = event.clientY + margin;
+    if (left + boxWidth > window.innerWidth) left = event.clientX - margin - boxWidth;
+    if (top + boxHeight > window.innerHeight) top = event.clientY - margin - boxHeight;
+    loupe.style.left = `${left}px`;
+    loupe.style.top = `${top}px`;
+
+});
+
+document.addEventListener("mouseleave", () => {loupe.style.display = "none"});
+
+document.addEventListener("mousedown", (event) => {
+
+    if (event.button != 0) { cancel(); return; } // right click backs out
+    if (!ready) return;
+
+    const pos = toShotPos(event.clientX, event.clientY);
+    ipcRenderer.send('eyedropperPick', readAt(pos));
+
+});
+
+document.addEventListener("keydown", (event) => {
+    if (event.key == "Escape") cancel();
+});
+
+function cancel() {
+    ipcRenderer.send('eyedropperCancel');
+}
+</script>
+</body>
+</html>
