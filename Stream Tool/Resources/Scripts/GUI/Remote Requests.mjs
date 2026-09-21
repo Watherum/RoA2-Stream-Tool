@@ -2,7 +2,7 @@ import { handleBracketImportResult, replaceBracket } from "./Bracket.mjs";
 import { commFinder } from "./Finder/Comm Finder.mjs";
 import { playerFinder } from "./Finder/Player Finder.mjs";
 import { displayNotif } from "./Notifications.mjs";
-import { updateGUI } from "./Remote Update.mjs";
+import { applyFullState, receiveLiveDiff, startLiveSync, stopLiveSync } from "./Live Sync.mjs";
 import { settings } from "./Settings.mjs";
 import { changeUpdateText, writeScoreboard } from "./Write Scoreboard.mjs";
 
@@ -50,6 +50,8 @@ export async function startWebsocket() {
 }
 function errorWebsocket() {
 
+    stopLiveSync();
+
     // show error message
     displayNotif("Connection error, please reconnect.");
     // delete current websocket
@@ -65,9 +67,14 @@ async function getData(data) {
 
     if (data.gamemode) { // if this is a GUI update
         
-        await updateGUI(data);
+        await applyFullState(data);
+        startLiveSync();
         changeUpdateText("UPDATE");
         updateRegion.addEventListener("click", writeScoreboard)
+
+    } else if (data.message == "liveDiff") {
+
+        receiveLiveDiff(data);
 
     } else if (data.message == "updatePresets") {
 

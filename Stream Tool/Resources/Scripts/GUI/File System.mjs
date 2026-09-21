@@ -352,9 +352,14 @@ export function saveSimpleTexts() {
         fs.writeFileSync(`${stPath.text}/Simple Texts/Player ${i+1} Pronouns.txt`, players[i].getPronouns());
         fs.writeFileSync(`${stPath.text}/Simple Texts/Player ${i+1} Seed.txt`, players[i].seed?.toString() || "");
         fs.writeFileSync(`${stPath.text}/Simple Texts/Player ${i + 1} Character.txt`, charDisplayName(players[i].char));
-        fs.copyFileSync(`${stPath.charBase}/${players[i].char}/icons/Default.png`, `${stPath.text}/Simple Texts/Player ${i + 1} Character Icon/Default.png`);
+        // image folders may not exist yet (fresh installs only ship some of them)
+        const iconDir = `${stPath.text}/Simple Texts/Player ${i + 1} Character Icon`;
+        const flagDir = `${stPath.text}/Simple Texts/Player ${i + 1} Flag`;
+        fs.mkdirSync(iconDir, { recursive: true });
+        fs.mkdirSync(flagDir, { recursive: true });
+        fs.copyFileSync(`${stPath.charBase}/${players[i].char}/Icons/Default.png`, `${iconDir}/Default.png`);
         if (players[i].country) {
-            fs.copyFileSync(`${stPath.flags}/${players[i].country}.png`, `${stPath.text}/Simple Texts/Player ${i + 1} Flag/flag.png`);
+            fs.copyFileSync(`${stPath.flags}/${players[i].country}.png`, `${flagDir}/flag.png`);
         }
     }
 

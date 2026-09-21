@@ -15,8 +15,9 @@ import { wl } from "./WinnersLosers.mjs";
 /**
  * Updates the entire GUI with values sent remotely
  * @param {Object} data GUI info
+ * @param {Boolean} live - True for live sync changes, which skip the notification
  */
-export async function updateGUI(data) {
+export async function updateGUI(data, live = false) {
 
     // set the gamemode and scoremode
     if (data.selectMode != gamemode.getSelectValue()) {
@@ -89,8 +90,15 @@ export async function updateGUI(data) {
     }
 
     // round info
-    round.setText(data.round, data.roundIndex, data.roundNumber);
-    round.checkGrands();
+    // live syncs come in constantly, so only touch the round when it changed
+    // (setText re-applies any bestOf the round forces)
+    const roundChanged = data.round != round.getText()
+        || data.roundIndex != round.getIndex()
+        || data.roundNumber != round.getNumber();
+    if (!live || roundChanged) {
+        round.setText(data.round, data.roundIndex, data.roundNumber);
+        round.checkGrands();
+    }
     wl.setLeft(data.wl[0]);
     wl.setRight(data.wl[1]);
     tournament.setText(data.tournamentName);
@@ -117,6 +125,6 @@ export async function updateGUI(data) {
     };
 
     // write it down
-    displayNotif("GUI was remotely updated");
+    if (!live) displayNotif("GUI was remotely updated");
     
 }

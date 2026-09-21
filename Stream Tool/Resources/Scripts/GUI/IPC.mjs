@@ -2,10 +2,10 @@ import { applyImportedBracket, replaceBracket, updateBracket } from './Bracket.m
 import { deletePreset, rescanPresetCache, savePreset } from './File System.mjs';
 import { commFinder } from './Finder/Comm Finder.mjs';
 import { playerFinder } from './Finder/Player Finder.mjs';
-import { updateGUI } from './Remote Update.mjs';
 import { settings } from './Settings.mjs';
 import { setActiveSource, getActiveImporter } from './Importers.mjs';
-import { writeScoreboard } from './Write Scoreboard.mjs';
+import { buildScoreboardJson, writeScoreboard } from './Write Scoreboard.mjs';
+import { applyFullState, receiveLiveDiff } from './Live Sync.mjs';
 
 const ipc = require('electron').ipcRenderer;
 
@@ -47,9 +47,22 @@ export function updateBracketData(data) {
     bracketData = data;
 }
 
-/** Sends current game data to remote GUIs */
+/**
+ * Sends the live GUI state to remote GUIs, not the last sent update, so
+ * remote GUIs match what's on screen (mode, unsent changes, etc.)
+ */
 export function sendRemoteGameData() {
-    ipc.send("sendData", JSON.stringify(remoteID(gameData), null, 2));
+    const data = buildScoreboardJson();
+    data.id = "remoteGUI";
+    ipc.send("sendData", JSON.stringify(data, null, 2));
+}
+/**
+ * Sends live GUI changes to remote GUIs
+ * @param {String} origin - GUI that made the changes, so it can ignore them
+ * @param {Array} changes - [path, value] pairs
+ */
+export function sendLiveDiff(origin, changes) {
+    ipc.send("sendData", JSON.stringify({id: "remoteGUI", message: "liveDiff", origin, changes}));
 }
 /** Sends current bracket data to remote GUIs */
 export function sendRemoteBracketData() {
@@ -104,8 +117,13 @@ ipc.on('remoteGuiData', async (event, data) => {
     if (jsonData.message == "RemoteUpdateGUI") {
 
         // when we get data from remote GUIs
-        await updateGUI(jsonData);
+        await applyFullState(jsonData);
         writeScoreboard();
+
+    } else if (jsonData.message == "liveDiff") {
+
+        // live changes from a remote GUI, no overlay update
+        receiveLiveDiff(jsonData);
 
     } else if (jsonData.message == "RemoteRequestData") {
 

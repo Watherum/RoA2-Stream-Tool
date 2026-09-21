@@ -8,6 +8,7 @@ import { teams } from './GUI/Team/Teams.mjs';
 import './GUI/Swap Players.mjs'; // so it loads the listener
 import { addCaster } from './GUI/Caster/Casters.mjs';
 import { writeScoreboard } from './GUI/Write Scoreboard.mjs';
+import { startLiveSync } from './GUI/Live Sync.mjs';
 import { loadKeybinds } from './GUI/Keybinds.mjs';
 import { initBracketSettings, updateBracket } from './GUI/Bracket.mjs';
 import { inside, stPath } from './GUI/Globals.mjs';
@@ -88,6 +89,7 @@ async function init() {
     // update the GUI on startup so we have something to send to browsers
     if (inside.electron) {
         writeScoreboard();
+        startLiveSync();
         await initBracketSettings();
         updateBracket(true);
     } else { // remote GUIs will ask about the current main GUI state

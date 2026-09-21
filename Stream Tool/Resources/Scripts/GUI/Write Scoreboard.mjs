@@ -50,6 +50,46 @@ export async function writeScoreboard() {
         updateRegion.removeEventListener("click", writeScoreboard);
     }
 
+    const scoreboardJson = buildScoreboardJson();
+
+    // its time to send the data away
+    if (inside.electron) {
+
+        // fall back to "[Color] Team" when no team name is entered
+        for (let i = 0; i < 2; i++) {
+            if (!scoreboardJson.teamName[i]) {
+                scoreboardJson.teamName[i] = `${currentColors[i].name} Team`;
+            }
+        }
+
+        const ipc = await import("./IPC.mjs");
+        ipc.updateGameData(JSON.stringify(scoreboardJson, null, 2));
+        ipc.sendGameData();
+        ipc.sendRemoteGameData();
+
+        //simple .txt files
+        if (settings.isSimpleTextsChecked()) {
+            saveSimpleTexts();
+        }
+
+    } else { // remote update stuff
+
+        const remote = await import("./Remote Requests.mjs");
+        scoreboardJson.id = "";
+        scoreboardJson.message = "RemoteUpdateGUI";
+        remote.sendRemoteData(scoreboardJson);
+
+    }
+
+}
+
+/**
+ * Snapshots the current state of the GUI, including changes that
+ * haven't been sent with the update button yet
+ * @returns {Object} Game data object
+ */
+export function buildScoreboardJson() {
+
     // this is what's going to be sent to the browsers
     const scoreboardJson = {
         player: [], // more lines will be added below
@@ -121,13 +161,6 @@ export async function writeScoreboard() {
 
     }
 
-    // fall back to "[Color] Team" when no team name is entered
-    for (let i = 0; i < 2; i++) {
-        if (!teams[i].getName()) {
-            scoreboardJson.teamName[i] = `${currentColors[i].name} Team`;
-        }
-    }
-
     // do the same for the casters
     for (let i = 0; i < casters.length; i++) {
         scoreboardJson.caster.push({
@@ -138,26 +171,6 @@ export async function writeScoreboard() {
         })
     }
 
-    // its time to send the data away
-    if (inside.electron) {
-
-        const ipc = await import("./IPC.mjs");
-        ipc.updateGameData(JSON.stringify(scoreboardJson, null, 2));
-        ipc.sendGameData();
-        ipc.sendRemoteGameData();
-
-        //simple .txt files
-        if (settings.isSimpleTextsChecked()) {
-            saveSimpleTexts();
-        }
-
-    } else { // remote update stuff
-
-        const remote = await import("./Remote Requests.mjs");
-        scoreboardJson.id = "";
-        scoreboardJson.message = "RemoteUpdateGUI";
-        remote.sendRemoteData(scoreboardJson);
-
-    }
+    return scoreboardJson;
 
 }
