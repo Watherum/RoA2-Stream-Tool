@@ -17,7 +17,7 @@
   "remoteUpdatePort": 1111,
   "webSocketPort": 8080,
   "startGGToken": "",
-  "startGGSlug": "https://www.start.gg/tournament/evo-2026/event/rivals-of-aether-ii",
+  "startGGSlug": "",
   "saveStartGGSlug": false,
   "abbreviateRound": true,
   "abbreviateWL": false,
@@ -31,7 +31,7 @@
   "challongeToken": "",
   "challongeSlug": "",
   "challongeTokenFromProps": true,
-  "saveImportSlug": true,
+  "saveImportSlug": false,
   "bracketColors": {
     "round": "#c90000",
     "text": "#c90000",
