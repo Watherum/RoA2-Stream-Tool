@@ -5,6 +5,8 @@ const PARRY_API = "https://grpcweb.parry.gg";
 const TOURNAMENTS = "parrygg.services.TournamentService/GetTournaments";
 const MATCHES = "parrygg.services.MatchService/GetMatches";
 const PLACEMENTS = "parrygg.services.BracketService/GetBracketPlacements";
+const BRACKET = "parrygg.services.BracketService/GetBracket";
+const PHASE = "parrygg.services.PhaseService/GetPhase";
 
 /** Round labels parry.gg uses, paired with the bracket round they fill */
 const ROUND_LABELS = [
@@ -33,6 +35,8 @@ class ParryGG {
     /** @type {Map<string, string>} gamerTag (lowercase) → pronouns */
     #pronounMap = new Map();
     #loaded = false;
+    /** @type {Map<string, string>} bracket id → name of the phase it sits in */
+    #phaseOfBracket = new Map();
 
     setToken(token) { this.#token = token; }
 
@@ -430,6 +434,165 @@ class ParryGG {
         } catch (err) {
             return { success: false, error: err.message };
         }
+
+    }
+
+    /**
+     * Lists the event's phases and the brackets (pools) inside each
+     * @returns {Object} success and phases [{id, name, groups: [{id, name}]}], or an error
+     */
+    async fetchPhaseList() {
+
+        try {
+
+            const tournament = await this.#getTournament();
+            const event = this.#getEvent(tournament);
+            if (!event.phases?.length) throw new Error(`"${event.name ?? event.slug}" has no phases yet.`);
+
+            // the tournament only gives phase slugs, their names come with each phase.
+            // parry leaves a zero index out, so a missing one is the first phase
+            const ordered = [...event.phases].sort((a, b) => (a.index ?? 0) - (b.index ?? 0));
+            const phases = await Promise.all(ordered.map(async phase => {
+                const data = await this.#post(PHASE, { id: phase.id }, true);
+                return { ...phase, ...data?.phase };
+            }));
+
+            this.#phaseOfBracket.clear();
+
+            return {
+                success: true,
+                phases: phases.map(phase => {
+                    const name = phase.name || phase.slug;
+                    const brackets = phase.brackets ?? [];
+                    brackets.forEach(bracket => this.#phaseOfBracket.set(bracket.id, name));
+                    return {
+                        id: phase.id,
+                        name,
+                        // "Pool A1" reads "A1" here, the dropdown adds its own "Pool"
+                        groups: brackets
+                            .map(bracket => ({
+                                id: bracket.id,
+                                name: (bracket.name || bracket.slug).replace(/^pool[\s-]+/i, "")
+                            }))
+                            .sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }))
+                    };
+                })
+            };
+
+        } catch (err) {
+            return { success: false, error: err.message };
+        }
+
+    }
+
+    /**
+     * Pulls every match of one bracket, arranged round by round
+     * @param {String} groupId - parry.gg bracket id
+     * @returns {Object} success, name, rounds [{round, label, side, sets}], advancing
+     * and nextPhaseId, or an error
+     */
+    async fetchGroupBracket(groupId) {
+
+        try {
+
+            const data = await this.#post(BRACKET, { id: groupId });
+            const bracket = data?.bracket;
+            if (!bracket) throw new Error("Bracket not found.");
+
+            const matches = bracket.matches ?? [];
+            if (!matches.length) throw new Error("That bracket has no matches yet.");
+
+            const seeds = new Map((bracket.seeds ?? []).map(seed => [seed.id, seed]));
+
+            // parry names every round itself, winners and losers both counting up from 1
+            const labels = new Map((bracket.rounds ?? []).map(round =>
+                [`${round.winnersSide ? "w" : "l"}${round.number}`, round.label]));
+            const labelOf = (match) => labels.get(`${match.winnersSide ? "w" : "l"}${match.round}`) ?? "";
+
+            // A, B ... Z, AA: shorter identifiers come first
+            const byIdentifier = (a, b) => String(a.identifier).length - String(b.identifier).length ||
+                String(a.identifier).localeCompare(String(b.identifier));
+
+            const byRound = new Map();
+            for (const match of matches) {
+                // losers rounds go negative, the same way start.gg numbers them
+                const round = match.winnersSide ? match.round : -match.round;
+                if (!byRound.has(round)) byRound.set(round, []);
+                byRound.get(round).push(match);
+            }
+
+            const rounds = [...byRound.entries()].map(([round, roundMatches]) => {
+
+                const label = labelOf(roundMatches[0]) || `Round ${Math.abs(round)}`;
+                const grand = /grand final/i.test(label);
+                const reset = grand && /reset/i.test(label);
+
+                return {
+                    round,
+                    label: reset ? "True Finals" : grand ? "Grand Finals" : label,
+                    side: grand ? "grand" : round < 0 ? "losers" : "winners",
+                    // the reset only gets its players once the grand final asks for it
+                    hidden: reset && !roundMatches.some(m => (m.slots ?? []).some(s => s.seedId)),
+                    sets: [...roundMatches].sort(byIdentifier).map(match => ({
+                        identifier: match.identifier ?? "",
+                        players: [0, 1].map(i => this.#viewerPlayer(match, i, seeds))
+                    }))
+                };
+
+            });
+
+            // winners rounds, then grand finals, then losers, each in play order
+            const order = { winners: 0, grand: 1, losers: 2 };
+            rounds.sort((a, b) => order[a.side] - order[b.side] || Math.abs(a.round) - Math.abs(b.round));
+
+            // every progression is one player sent on, and they all head the same way
+            const progressions = bracket.progressions ?? [];
+
+            return {
+                success: true,
+                name: this.#phaseOfBracket.get(groupId) ?? "",
+                rounds,
+                advancing: progressions.length,
+                nextPhaseId: progressions[0]?.targetPhaseId ?? ""
+            };
+
+        } catch (err) {
+            return { success: false, error: err.message };
+        }
+
+    }
+
+    /**
+     * One side of a match as the bracket viewer overlay draws it
+     * @param {Object} match - Match from a bracket
+     * @param {Number} position - 0 for the top player, 1 for the bottom one
+     * @param {Map} seeds - The bracket's seeds by id
+     */
+    #viewerPlayer(match, position, seeds) {
+
+        const player = { name: "", tag: "", score: "" };
+
+        const slot = (match.slots ?? []).find(s => (s.slot ?? 0) == position);
+        if (!slot) return player;
+
+        // a seed we can't resolve means that seat hasn't been decided yet
+        const seed = seeds.get(slot.seedId);
+        if (seed) {
+            const players = this.#playersOfSeed(seed);
+            player.name = this.#nameOfSeed(seed);
+            if (players.length == 1) player.tag = players[0].tag;
+        }
+
+        if (slot.state == "SLOT_STATE_DQ") {
+            player.score = "DQ";
+        } else if (match.state == "MATCH_STATE_COMPLETED") {
+            // parry leaves zeroes out, so a finished match with no score had none
+            player.score = String(slot.score ?? 0);
+        } else if (slot.score != null) {
+            player.score = String(slot.score);
+        }
+
+        return player;
 
     }
 

@@ -1,4 +1,4 @@
-import { applyImportedBracket, replaceBracket, updateBracket } from './Bracket.mjs';
+import { importBracket, replaceBracket, updateBracket } from './Bracket.mjs';
 import { deletePreset, rescanPresetCache, savePreset } from './File System.mjs';
 import { commFinder } from './Finder/Comm Finder.mjs';
 import { playerFinder } from './Finder/Player Finder.mjs';
@@ -21,6 +21,7 @@ const ipc = require('electron').ipcRenderer;
 // we will store data to send to the browsers here
 let gameData;
 let bracketData;
+let viewerData;
 
 
 // when a new browser connects
@@ -29,6 +30,7 @@ ipc.on('requestData', () => {
     // send the current (not updated) data
     sendGameData();
     sendBracketData();
+    sendViewerData();
 
 })
 
@@ -45,6 +47,13 @@ export function sendBracketData() {
 }
 export function updateBracketData(data) {
     bracketData = data;
+}
+/** Sends the bracket viewer's rounds to the Bracket Phases overlay */
+export function sendViewerData() {
+    if (viewerData) ipc.send('sendData', viewerData);
+}
+export function updateViewerData(data) {
+    viewerData = data;
 }
 
 /**
@@ -188,11 +197,10 @@ ipc.on('remoteGuiData', async (event, data) => {
 
     } else if (jsonData.message == "remoteBracketImport") {
 
-        // remote GUIs have no token, so we fetch the top 8 here and let the
-        // filled bracket reach them through the usual bracket broadcast
+        // remote GUIs have no token, so we import the bracket here and let it
+        // reach them through the usual bracket broadcast
         applyRemoteImport(jsonData);
-        const result = await getActiveImporter().fetchTop8Sets();
-        if (result.success) await applyImportedBracket(result.bracket);
+        const result = await importBracket();
         ipc.send("sendData", JSON.stringify({id: "remoteGUI", message: "bracketImportResult", ...result}, null, 2));
 
     } else if (jsonData.message == "remoteRescanPresets") {

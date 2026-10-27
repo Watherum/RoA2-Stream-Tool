@@ -52,6 +52,55 @@ query PhaseSets($phaseId: ID!, $page: Int!, $perPage: Int!) {
   }
 }`;
 
+const PHASE_GROUPS_QUERY = `
+query EventPhaseGroups($slug: String!) {
+  event(slug: $slug) {
+    phases {
+      id
+      name
+      phaseOrder
+      phaseGroups(query: { page: 1, perPage: 64 }) {
+        nodes { id displayIdentifier }
+      }
+    }
+  }
+}`;
+
+// the placements of a pool that move on to the next phase
+const GROUP_PROGRESSIONS_QUERY = `
+query GroupProgressions($groupId: ID!) {
+  phaseGroup(id: $groupId) {
+    progressionsOut { id originPlacement }
+  }
+}`;
+
+const GROUP_SETS_QUERY = `
+query GroupSets($groupId: ID!, $page: Int!, $perPage: Int!) {
+  phaseGroup(id: $groupId) {
+    displayIdentifier
+    phase { name }
+    sets(page: $page, perPage: $perPage, sortType: ROUND) {
+      pageInfo { totalPages }
+      nodes {
+        id
+        identifier
+        round
+        fullRoundText
+        state
+        winnerId
+        slots {
+          entrant {
+            id
+            name
+            participants { gamerTag prefix }
+          }
+          standing { stats { score { value } } }
+        }
+      }
+    }
+  }
+}`;
+
 class StartGG {
 
     #token = "";
@@ -293,6 +342,177 @@ class StartGG {
         } catch (err) {
             return { success: false, error: err.message };
         }
+
+    }
+
+    /**
+     * Lists the event's phases and the bracket groups (pools) inside each
+     * @returns {Object} success and phases [{id, name, groups: [{id, name}]}], or an error
+     */
+    async fetchPhaseList() {
+
+        try {
+
+            if (!this.#slug) throw new Error("No event slug set.");
+
+            const data = await this.#gql(PHASE_GROUPS_QUERY, { slug: this.#slug });
+            const phases = data?.event?.phases;
+            if (!phases?.length) throw new Error("Event not found, or it has no phases. Check the slug.");
+
+            return {
+                success: true,
+                phases: [...phases]
+                    .sort((a, b) => a.phaseOrder - b.phaseOrder)
+                    .map(phase => ({
+                        id: String(phase.id),
+                        name: phase.name,
+                        groups: (phase.phaseGroups?.nodes ?? []).map(group => ({
+                            id: String(group.id),
+                            name: group.displayIdentifier
+                        }))
+                    }))
+            };
+
+        } catch (err) {
+            return { success: false, error: err.message };
+        }
+
+    }
+
+    /**
+     * Pulls every set of one bracket group, arranged round by round
+     * @param {String} groupId - start.gg phase group id (the last number in a bracket link)
+     * @returns {Object} success, name and rounds [{round, label, side, sets}], or an error
+     */
+    async fetchGroupBracket(groupId) {
+
+        try {
+
+            const sets = [];
+            let page = 1;
+            let totalPages = 1;
+            let group;
+            do {
+                const data = await this.#gql(GROUP_SETS_QUERY, { groupId, page, perPage: 60 });
+                group = data?.phaseGroup;
+                if (!group) throw new Error("Bracket not found.");
+                totalPages = group.sets.pageInfo.totalPages;
+                sets.push(...group.sets.nodes);
+                page++;
+            } while (page <= totalPages);
+
+            if (!sets.length) throw new Error("That bracket has no sets yet.");
+
+            const byIdentifier = (a, b) => String(a.identifier ?? a.id)
+                .localeCompare(String(b.identifier ?? b.id), undefined, { numeric: true });
+
+            // the grand final and its bracket reset are each their own round,
+            // whether or not start.gg gives them different round numbers
+            const grandSets = sets.filter(set => /grand final/i.test(set.fullRoundText || ""))
+                .sort((a, b) => a.round - b.round || byIdentifier(a, b));
+            const [grandFinal, reset] = grandSets;
+
+            // group the rest of the sets by round
+            const byRound = new Map();
+            for (const set of sets) {
+                if (grandSets.includes(set)) continue;
+                if (!byRound.has(set.round)) byRound.set(set.round, []);
+                byRound.get(set.round).push(set);
+            }
+
+            const rounds = [...byRound.entries()].map(([round, roundSets]) => {
+
+                const text = roundSets[0].fullRoundText || "";
+                // start.gg numbers winners rounds upwards and losers rounds downwards
+                const ordered = [...roundSets].sort(byIdentifier);
+
+                return {
+                    round,
+                    label: text || `Round ${round}`,
+                    side: round < 0 ? "losers" : "winners",
+                    sets: ordered.map(set => ({
+                        identifier: set.identifier ?? "",
+                        players: [0, 1].map(i => this.#viewerPlayer(set.slots?.[i]))
+                    }))
+                };
+
+            });
+
+            if (grandFinal) {
+
+                const toRound = (set, round, label, hidden) => ({
+                    round, label, side: "grand", hidden,
+                    sets: [{
+                        identifier: set.identifier ?? "",
+                        players: [0, 1].map(i => this.#viewerPlayer(set.slots?.[i]))
+                    }]
+                });
+
+                rounds.push(toRound(grandFinal, grandFinal.round, "Grand Finals", false));
+
+                if (reset) {
+                    // the reset (True Finals) only happens if the player who came
+                    // up through losers wins the grand final, so it stays hidden
+                    // until then, or until it has been played
+                    const winnersFinal = sets.filter(set => set.round > 0 && !grandSets.includes(set))
+                        .sort((a, b) => b.round - a.round)[0];
+                    const losersSide = grandFinal.winnerId && winnersFinal?.winnerId &&
+                        grandFinal.winnerId != winnersFinal.winnerId;
+                    const played = reset.state == 3 || reset.slots?.some(slot =>
+                        slot.standing?.stats?.score?.value != null);
+                    const round = reset.round == grandFinal.round ? grandFinal.round + 1 : reset.round;
+                    rounds.push(toRound(reset, round, "True Finals", !(losersSide || played)));
+                }
+
+            }
+
+            // winners rounds, then grand finals, then losers, each in play order
+            const order = { winners: 0, grand: 1, losers: 2 };
+            rounds.sort((a, b) => order[a.side] - order[b.side] || Math.abs(a.round) - Math.abs(b.round));
+
+            // how many players this pool sends on; asked for on its own so a
+            // problem with it never costs us the bracket itself
+            let advancing = null;
+            try {
+                const data = await this.#gql(GROUP_PROGRESSIONS_QUERY, { groupId });
+                const progressions = data?.phaseGroup?.progressionsOut;
+                if (Array.isArray(progressions)) advancing = progressions.length;
+            } catch (e) {}
+
+            return {
+                success: true,
+                name: group.phase?.name ?? "",
+                rounds,
+                advancing
+            };
+
+        } catch (err) {
+            return { success: false, error: err.message };
+        }
+
+    }
+
+    /** A set slot as the bracket viewer overlay draws it */
+    #viewerPlayer(slot) {
+
+        const player = { name: "", tag: "", score: "" };
+        if (!slot) return player;
+
+        // an empty slot means that seat hasn't been decided yet
+        if (slot.entrant) {
+            const parts = slot.entrant.participants || [];
+            if (parts.length == 1) {
+                player.name = parts[0].gamerTag;
+                player.tag = parts[0].prefix || "";
+            } else {
+                player.name = slot.entrant.name;
+            }
+        }
+
+        const score = slot.standing?.stats?.score?.value;
+        if (score != null) player.score = score < 0 ? "DQ" : String(score);
+
+        return player;
 
     }
 

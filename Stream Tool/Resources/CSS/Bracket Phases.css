@@ -1,0 +1,88 @@
+/* Bracket Phases page only; the base look (fonts, player boxes, scores) comes
+   from Bracket.css */
+
+/* the whole bracket, scaled by the script so it always fits the screen */
+#fit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 50px;
+    transform-origin: center center;
+}
+
+/* the phase's name, in the corner so the bracket keeps the whole screen,
+   and under it, what that pool qualifies into */
+#viewHead {
+    position: absolute;
+    top: 30px;
+    left: 40px;
+}
+#viewTitle {
+    font-size: 54px;
+    color: var(--roundColor, #48bf91);
+}
+#viewQualifier {
+    font-size: 26px;
+    color: var(--textColor, #ffffff);
+}
+
+/* top 8 is laid out exactly like Bracket.html, at its own size */
+#fit.top8 {
+    width: 100%;
+    gap: 100px;
+}
+.top8 .viewRow {
+    width: 90%;
+    justify-content: space-around;
+    gap: 0;
+}
+.top8 .matches {
+    gap: 25px;
+}
+.top8 .round {
+    gap: 25px;
+}
+
+/* left or right aligned, the bracket hugs that side (scaling from that edge),
+   with the same margin the scaling leaves when centered */
+#content[data-align="left"],
+#content[data-align="right"] {
+    box-sizing: border-box;
+    padding: 0 48px;
+}
+#content[data-align="left"] { align-items: flex-start; }
+#content[data-align="right"] { align-items: flex-end; }
+[data-align="left"] #fit { align-items: flex-start; transform-origin: left center; }
+[data-align="right"] #fit { align-items: flex-end; transform-origin: right center; }
+/* a top 8 normally spreads across the screen, so it packs together to be aligned */
+[data-align="left"] #fit.top8,
+[data-align="right"] #fit.top8 {
+    width: auto;
+}
+[data-align="left"] .top8 .viewRow,
+[data-align="right"] .top8 .viewRow {
+    width: auto;
+    gap: 80px;
+}
+
+.viewRow {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 40px;
+}
+
+/* a round is a column of matches, centered so later rounds sit between earlier ones */
+.matches {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 22px;
+}
+
+.playerName.tbd {
+    opacity: .5;
+}
+.playerDiv.lost {
+    opacity: .55;
+}

@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RoA2 Stream Tool v19.3.0</title>
+  <title>RoA2 Stream Tool v20.0.0</title>
   <link rel="stylesheet" href="CSS/GUI.css">
   <link rel="stylesheet" href="CSS/GUI Custom.css">
   <script src="Scripts/GUI/mousetrap.min.js" defer></script>
@@ -505,8 +505,8 @@ Cannot be used with Update on score hotkey.">
 
   </div>
 
-  <div id="bracket">
-    <div id="bracketTitle">Top 8 Bracket Editor</div>
+  <div id="bracket" class="notTop8">
+    <div id="bracketTitle">Bracket Viewer</div>
     <div id="bracketTopRow">
     <select id="bracketRoundSelect" class="selectDropDown">
       <option value="WinnersSemis">Winners Semis</option>
@@ -523,6 +523,28 @@ Cannot be used with Update on score hotkey.">
     <!-- colors on the left, the round's players on the right -->
     <div id="bracketMid">
       <div id="bracketSide">
+        <div id="bracketView" title="What the Bracket Phases overlay shows. Changes go out right away">
+          <div id="bracketViewHead">
+            <span class="bColorText">Phases Overlay</span>
+          </div>
+          <select id="bracketViewGroup" class="selectDropDown">
+            <option value="">Import a bracket first</option>
+          </select>
+          <select id="bracketViewSide" class="selectDropDown">
+            <option value="both">Winners + Losers</option>
+            <option value="winners">Winners only</option>
+            <option value="losers">Losers only</option>
+          </select>
+          <select id="bracketViewRound" class="selectDropDown">
+            <option value="all">All rounds</option>
+          </select>
+          <select id="bracketViewAlign" class="selectDropDown" title="Where the bracket sits across the overlay">
+            <option value="left">Align: Left</option>
+            <option value="center">Align: Center</option>
+            <option value="right">Align: Right</option>
+          </select>
+          <input type="text" id="bracketViewNext" class="textInput mousetrap" spellcheck="false" placeholder="Next phase" title="What this pool qualifies into, filled in from the bracket site. Type to change it, or clear it to hide the line. Picking a bracket fills it in again">
+        </div>
         <div id="bracketColors">
           <div class="bColorBox" title="Color of the round titles on the bracket overlay">
             <span class="bColorText">Round</span>

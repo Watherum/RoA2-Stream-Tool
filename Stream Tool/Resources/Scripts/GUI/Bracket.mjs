@@ -6,6 +6,7 @@ import { scores } from './Score/Scores.mjs';
 import { inside } from './Globals.mjs';
 import { openColorPicker } from './Color Picker.mjs';
 
+const bracketDiv = document.getElementById('bracket');
 const bRoundSelect = document.getElementById('bracketRoundSelect');
 const bEncountersDiv = document.getElementById('bracketEncounters');
 const bImportButt = document.getElementById('bracketImport');
@@ -25,6 +26,11 @@ const bColorReset = document.getElementById('bracketColorReset');
 const bPresetList = document.getElementById('bracketPresetList');
 const bPresetSave = document.getElementById('bracketPresetSave');
 const bAutoSelect = document.getElementById('bracketAutoSelect');
+const bViewGroup = document.getElementById('bracketViewGroup');
+const bViewSide = document.getElementById('bracketViewSide');
+const bViewRound = document.getElementById('bracketViewRound');
+const bViewAlign = document.getElementById('bracketViewAlign');
+const bViewNext = document.getElementById('bracketViewNext');
 
 // same values the Bracket.css fallbacks use
 const defaultColors = {
@@ -45,6 +51,17 @@ let bracketColors = {...defaultColors};
 let colorPresets = starterPresets.map(preset => ({...preset}));
 let colorSendTimer;
 let editSendTimer;
+
+// what the Bracket Phases overlay is showing: a bracket group (pool), which
+// side of it, which round (a round number, or "all"), where it sits on screen, and
+// the phase its pool qualifies into (null follows the bracket site, a string is typed in)
+let bracketView = {group: "", side: "both", round: "all", align: "center", next: null};
+let viewPhases = [];    // [{id, name, groups: [{id, name}]}], loaded from the site
+let viewRounds = [];    // [{round, label, side}] of the group on display
+let viewerBracket = null; // the group's rounds and sets, only kept on the electron side
+let viewRefreshing = false; // a refresh is still in flight
+let viewNextTimer;
+let viewAutoNext = ""; // the next phase the main GUI worked out, for remote GUIs
 
 // how long to wait after the last edit before pushing the bracket out
 const editDelay = 700;
@@ -123,6 +140,19 @@ bAutoSelect.addEventListener("change", () => {
     autoFailed = false;
     restartAutoTimer();
     saveAuto();
+});
+bViewGroup.addEventListener("change", () => {viewChange({group: bViewGroup.value, round: "all"})});
+bViewSide.addEventListener("change", () => {viewChange({side: bViewSide.value})});
+bViewRound.addEventListener("change", () => {viewChange({round: bViewRound.value})});
+bViewAlign.addEventListener("change", () => {viewChange({align: bViewAlign.value})});
+bViewNext.addEventListener("input", () => {
+    bracketView.next = bViewNext.value;
+    // wait for the typing to stop before saving and sending
+    clearTimeout(viewNextTimer);
+    viewNextTimer = setTimeout(async () => {
+        await saveView();
+        updateBracket(true);
+    }, 400);
 });
 drawPresets();
 // force change event for initial creation of encounters
@@ -206,6 +236,280 @@ export async function initBracketSettings() {
     setColors(guiSettings.bracketColors, false);
     setPresets(guiSettings.bracketColorPresets);
     setAuto(guiSettings.bracketAutoImport);
+    setView(guiSettings.bracketView);
+    // the token is in place by now; if it isn't these just stay empty
+    await loadPhases();
+    if (bracketView.group) await fetchViewer(true);
+
+}
+
+
+/**
+ * Applies the group, side and round the Phases overlay should show, to the dropdowns
+ * @param {Object} view - Any of group, side and round
+ */
+function setView(view) {
+
+    if (view) {
+        if (typeof view.group == "string") bracketView.group = view.group;
+        if (["both", "winners", "losers"].includes(view.side)) bracketView.side = view.side;
+        if (view.round !== undefined) bracketView.round = String(view.round);
+        if (["left", "center", "right"].includes(view.align)) bracketView.align = view.align;
+        if (view.next === null || typeof view.next == "string") bracketView.next = view.next;
+    }
+
+    drawGroups();
+    bViewSide.value = bracketView.side;
+    bViewAlign.value = bracketView.align;
+    drawRounds();
+    drawNext();
+
+}
+
+/** Name of the phase the picked bracket sends players to, if the site knows one */
+function autoNext() {
+
+    // remote GUIs don't have the bracket, so they go by what the main one worked out
+    if (!inside.electron) return viewAutoNext;
+
+    // parry.gg says exactly where its pools send players
+    const target = viewPhases.find(phase => phase.id == viewerBracket?.nextPhaseId);
+    if (target) return target.name;
+
+    // otherwise, whichever phase is played next
+    const index = viewPhases.findIndex(phase => phase.groups.some(group => group.id == bracketView.group));
+    return index < 0 ? "" : viewPhases[index + 1]?.name ?? "";
+
+}
+
+/** Shows the next phase on its text box, typed or from the bracket site */
+function drawNext() {
+    // don't fight someone typing, the value is already theirs
+    if (document.activeElement == bViewNext) return;
+    bViewNext.value = bracketView.next ?? autoNext();
+}
+
+/** Fills the bracket dropdown with the loaded phases and their groups */
+function drawGroups() {
+
+    bViewGroup.innerHTML = "";
+
+    const none = document.createElement("option");
+    none.value = "";
+    none.textContent = viewPhases.length ? "Pick a bracket" : "Import a bracket first";
+    bViewGroup.appendChild(none);
+
+    let known = false;
+    for (const phase of viewPhases) {
+        const optGroup = document.createElement("optgroup");
+        optGroup.label = phase.name;
+        for (const group of phase.groups) {
+            const option = document.createElement("option");
+            option.value = group.id;
+            option.textContent = phase.groups.length > 1 && !/top\s*8/i.test(phase.name) ?
+                `${phase.name} - Pool ${group.name}` : phase.name;
+            optGroup.appendChild(option);
+            if (group.id == bracketView.group) known = true;
+        }
+        bViewGroup.appendChild(optGroup);
+    }
+
+    // a bracket picked in an earlier session, before the phases were loaded
+    if (bracketView.group && !known) {
+        const option = document.createElement("option");
+        option.value = bracketView.group;
+        option.textContent = `Bracket ${bracketView.group}`;
+        bViewGroup.appendChild(option);
+    }
+
+    bViewGroup.value = bracketView.group;
+    lockTop8Editor();
+
+}
+
+/** Fills the round dropdown with the rounds that match the side filter */
+function drawRounds() {
+
+    bViewRound.innerHTML = "";
+
+    const all = document.createElement("option");
+    all.value = "all";
+    all.textContent = "All rounds";
+    bViewRound.appendChild(all);
+
+    for (const round of viewRounds) {
+        // grand finals show whichever side is picked
+        if (bracketView.side != "both" && round.side != "grand" && round.side != bracketView.side) continue;
+        const option = document.createElement("option");
+        option.value = String(round.round);
+        option.textContent = round.label;
+        bViewRound.appendChild(option);
+    }
+
+    // the picked round may not exist on this side or bracket
+    if (![...bViewRound.options].some(option => option.value == bracketView.round)) {
+        bracketView.round = "all";
+    }
+    bViewRound.value = bracketView.round;
+    lockTop8Editor();
+
+}
+
+/**
+ * Is the bracket picked for the phases overlay a top 8? Same test the overlay
+ * uses: a phase called top 8, or the shape of a double elimination top 8
+ */
+function viewIsTop8() {
+
+    // nothing picked yet, so nothing to edit
+    if (!bracketView.group) return false;
+
+    const phase = viewPhases.find(phase => phase.groups.some(group => group.id == bracketView.group));
+    const count = side => viewRounds.filter(round => round.side == side).length;
+    const winners = count("winners"), losers = count("losers");
+
+    const named = /top\s*8/i.test(phase?.name || "");
+    const shaped = losers == 4 && (winners == 2 || winners == 3);
+
+    return (named || shaped) && winners >= 2 && losers >= 4 && count("grand") >= 1;
+
+}
+
+/** Hides the top 8 player editing (round dropdown, presets, players) until the bracket is a top 8 */
+function lockTop8Editor() {
+    bracketDiv.classList.toggle("notTop8", !viewIsTop8());
+}
+
+/**
+ * Takes a change made on the overlay dropdowns, saves it and sends it out
+ * @param {Object} change - Any of group, side and round
+ */
+async function viewChange(change) {
+
+    const newGroup = change.group !== undefined && change.group != bracketView.group;
+    // a different pool qualifies somewhere else, so the bracket site fills it in again
+    if (newGroup) change.next = null;
+    setView(change);
+    await saveView();
+
+    // a different bracket means fetching its sets; side and round only filter
+    if (newGroup && inside.electron) await fetchViewer();
+
+    updateBracket(true);
+
+}
+
+/** Loads the event's phases and brackets from the import source (electron only), quietly */
+async function loadPhases() {
+
+    if (!inside.electron) return;
+
+    const { getActiveImporter } = await import("./Importers.mjs");
+    const api = getActiveImporter();
+
+    // start.gg and parry.gg can feed the phases overlay, Challonge can't
+    if (!api.fetchPhaseList) return;
+
+    const result = await api.fetchPhaseList();
+    if (!result.success) return;
+
+    viewPhases = result.phases;
+
+    // a bracket picked on a different event, left over from an earlier url.
+    // start.gg ids are unique site wide, so it would still load if we kept it
+    const known = viewPhases.some(phase => phase.groups.some(group => group.id == bracketView.group));
+    if (bracketView.group && !known) {
+        bracketView.group = "";
+        bracketView.round = "all";
+        bracketView.next = null;
+        viewerBracket = null;
+        viewRounds = [];
+        await saveView();
+    }
+
+    setView();
+
+}
+
+/**
+ * Imports everything the bracket page shows (electron only): the top 8 for
+ * Bracket.html, plus the event's phases and the picked bracket for the phases overlay
+ * @returns {Object} Result object from fetchTop8Sets()
+ */
+export async function importBracket() {
+
+    const { getActiveImporter } = await import("./Importers.mjs");
+
+    const [result] = await Promise.all([
+        getActiveImporter().fetchTop8Sets(),
+        loadPhases().then(() => bracketView.group ? fetchViewer(true) : null)
+    ]);
+
+    // either way the phases overlay gets what was just loaded
+    if (result.success) await applyImportedBracket(result.bracket);
+    else await updateBracket(true);
+
+    return result;
+
+}
+
+/** Re-downloads the bracket on the phases overlay, quietly, so scores stay current */
+async function refreshViewer() {
+
+    if (!bracketView.group || viewRefreshing) return;
+
+    viewRefreshing = true;
+    try {
+        await fetchViewer(true);
+        updateBracket(true);
+    } finally {
+        viewRefreshing = false;
+    }
+
+}
+
+/**
+ * Downloads the sets of the bracket picked on the overlay dropdown
+ * @param {Boolean} quiet - Don't notify if it fails
+ */
+async function fetchViewer(quiet) {
+
+    if (!inside.electron) return;
+
+    if (!bracketView.group) {
+        viewerBracket = null;
+        viewRounds = [];
+        drawRounds();
+        return;
+    }
+
+    const { getActiveImporter } = await import("./Importers.mjs");
+    const api = getActiveImporter();
+    if (!api.fetchGroupBracket) return;
+
+    const result = await api.fetchGroupBracket(bracketView.group);
+
+    if (!result.success) {
+        if (!quiet) displayNotif(`Couldn't load that bracket: ${result.error}`);
+        return;
+    }
+
+    viewerBracket = result;
+    viewRounds = result.rounds.filter(round => !round.hidden)
+        .map(({round, label, side}) => ({round, label, side}));
+    drawRounds();
+    // the bracket may say where it sends players
+    drawNext();
+
+}
+
+/** Writes the overlay view to the settings file (electron only) */
+async function saveView() {
+
+    if (!inside.electron) return;
+
+    const { settings } = await import("./Settings.mjs");
+    await settings.save("bracketView", {...bracketView});
 
 }
 
@@ -234,7 +538,10 @@ function restartAutoTimer() {
     // the importer tokens live on the electron side, so the timer does too
     if (!inside.electron || !autoSeconds) return;
 
-    autoTimer = setInterval(autoImport, autoSeconds * 1000);
+    autoTimer = setInterval(() => {
+        autoImport();
+        refreshViewer();
+    }, autoSeconds * 1000);
 
 }
 
@@ -654,6 +961,10 @@ export async function updateBracket(startup) {
     bracketData.colors = {...bracketColors};
     bracketData.colorPresets = colorPresets;
     bracketData.autoImport = autoSeconds;
+    bracketData.view = {...bracketView};
+    bracketData.viewPhases = viewPhases;
+    bracketData.viewRounds = viewRounds;
+    bracketData.viewAutoNext = autoNext();
 
     // time to send it away
     if (inside.electron) {
@@ -667,6 +978,10 @@ export async function updateBracket(startup) {
         ipc.updateBracketData(JSON.stringify(bracketData, null, 2));
         ipc.sendBracketData();
         ipc.sendRemoteBracketData();
+
+        // the phases overlay gets its own, much bigger, payload
+        ipc.updateViewerData(JSON.stringify(buildViewerData()));
+        ipc.sendViewerData();
         if (!startup) displayNotif("Bracket has been updated");
 
     } else {
@@ -680,6 +995,54 @@ export async function updateBracket(startup) {
         remote.sendRemoteData(bracketData);
 
     }
+
+}
+
+/** Phase name for the overlay's corner; the group's own name only matters when the phase has several */
+function viewerTitle() {
+
+    if (!viewerBracket) return "";
+
+    const phase = viewPhases.find(phase => phase.groups.some(group => group.id == bracketView.group));
+    const group = phase?.groups.find(group => group.id == bracketView.group);
+
+    const title = phase && phase.groups.length > 1 ? `${phase.name} ${group.name}` : viewerBracket.name;
+
+    // there's only ever one top 8, whatever number start.gg gave its group
+    return title.replace(/(top\s*8)\s+\d+$/i, "$1");
+
+}
+
+/** What the picked pool qualifies into: the phase played after its own, if any */
+function viewerQualifier() {
+
+    if (!viewerBracket) return "";
+
+    // typed in on the gui, or the phase the bracket site sends it to
+    const auto = bracketView.next === null;
+    const next = (auto ? autoNext() : bracketView.next).trim();
+    // cleared, the last phase, or a pool the site says sends nobody on
+    if (!next || (auto && viewerBracket.advancing === 0)) return "";
+
+    return viewerBracket.advancing ? `Top ${viewerBracket.advancing} advance to ${next}`
+        : `Qualifying into ${next}`;
+
+}
+
+/** What the Bracket Phases overlay needs to draw the picked bracket */
+function buildViewerData() {
+
+    return {
+        id: "bracketviewer",
+        name: viewerTitle(),
+        qualifier: viewerQualifier(),
+        phase: viewerBracket ? viewerBracket.name : "",
+        rounds: viewerBracket ? viewerBracket.rounds : [],
+        side: bracketView.side,
+        round: bracketView.round,
+        align: bracketView.align,
+        colors: {...bracketColors}
+    };
 
 }
 
@@ -719,11 +1082,24 @@ export async function replaceBracket(newBracket) {
     setColors(newBracket.colors, false);
     setPresets(newBracket.colorPresets);
     setAuto(newBracket.autoImport);
+    const oldGroup = bracketView.group;
+    setView(newBracket.view);
+    if (inside.electron) {
+        // the main GUI is the one with the token: it loads what a remote picks
+        if (bracketView.group != oldGroup) await fetchViewer();
+    } else {
+        // remote GUIs only mirror what the main one loaded
+        viewPhases = newBracket.viewPhases ?? viewPhases;
+        viewRounds = newBracket.viewRounds ?? viewRounds;
+        viewAutoNext = newBracket.viewAutoNext ?? viewAutoNext;
+        setView();
+    }
     if (inside.electron) {
         // one at a time; concurrent saves read a stale file and clobber it
         await saveColor();
         await savePresets();
         await saveAuto();
+        await saveView();
     }
 
     await createEncounters(true);
@@ -736,19 +1112,18 @@ export async function replaceBracket(newBracket) {
 /** Pulls the event's last rounds off the selected site and fills the bracket */
 async function importFromProvider() {
 
-    const { getActiveImporter, getActiveName } = await import("./Importers.mjs");
+    const { getActiveName } = await import("./Importers.mjs");
     const source = getActiveName();
 
     bImportButt.disabled = true;
-    displayNotif(`Importing top 8 from ${source}...`);
+    displayNotif(`Importing bracket from ${source}...`);
 
     if (inside.electron) {
 
-        const result = await getActiveImporter().fetchTop8Sets();
+        const result = await importBracket();
 
         bImportButt.disabled = false;
         if (result.success) {
-            await applyImportedBracket(result.bracket);
             displayNotif(`Imported ${result.setsFound} sets from "${result.phaseName}"`);
         } else {
             displayNotif(`${source} import failed: ${result.error}`);

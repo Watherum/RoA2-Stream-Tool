@@ -363,13 +363,15 @@ async function updateData(data) {
     if (bracketData["TrueFinals"][0].name != "-" || bracketData["TrueFinals"][1].name != "-") {
         if (window.getComputedStyle(document.getElementById("TrueFinals")).getPropertyValue("display") == "none") {
             document.getElementById("TrueFinals").style.display = "flex";
-            resizeText(playerData[8].nameEl);
-            resizeText(playerData[9].nameEl);
+            for (const player of playerData["TrueFinals"]) {
+                resizeText(player.nameEl.parentElement);
+            }
         }
     } else {
         document.getElementById("TrueFinals").style.display = "none";
     }
-    
+
+
 }
 function* iteratePlayerData() {
     for(let key of Object.entries(playerData)) {
