@@ -189,7 +189,8 @@ function buildMatch(set) {
         Number.isFinite(scoreA) && Number.isFinite(scoreB) && scoreA != scoreB;
 
     set.players.forEach((player, i) => {
-        const lost = decided && (i == 0 ? scoreA < scoreB : scoreB < scoreA);
+        // a DQ fades back like any loss
+        const lost = player.score == "DQ" || decided && (i == 0 ? scoreA < scoreB : scoreB < scoreA);
         encounter.appendChild(buildPlayer(player, lost));
     });
 

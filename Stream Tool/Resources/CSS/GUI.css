@@ -1066,7 +1066,7 @@ button:hover {
   align-items: center;
   gap: 8px;
 }
-/* the top 8 editor only shows up once the picked bracket is a top 8 */
+/* the top 8 editor hides for events with fewer than 8 players */
 #bracket.notTop8 #bracketTopRow,
 #bracket.notTop8 #bracketEncounters {
   display: none;

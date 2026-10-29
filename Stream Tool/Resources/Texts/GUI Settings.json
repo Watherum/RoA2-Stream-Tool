@@ -1,5 +1,5 @@
 {
-  "guiWidth": 715,
+  "guiWidth": 713,
   "guiHeight": 493,
   "allowIntro": false,
   "workshop": false,
@@ -37,7 +37,7 @@
     "text": "#c90000",
     "score": "#000000"
   },
-  "bracketAutoImport": 0,
+  "bracketAutoImport": 60,
   "bracketColorPresets": [
     {
       "round": "#48bf91",
@@ -56,10 +56,10 @@
     }
   ],
   "bracketView": {
-    "group": "3347848",
+    "group": "3507227",
     "side": "both",
     "round": "all",
     "align": "center",
-    "next": "Top 8"
+    "next": null
   }
 }

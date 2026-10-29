@@ -62,6 +62,10 @@ let viewerBracket = null; // the group's rounds and sets, only kept on the elect
 let viewRefreshing = false; // a refresh is still in flight
 let viewNextTimer;
 let viewAutoNext = ""; // the next phase the main GUI worked out, for remote GUIs
+let eventEntrants = null; // players in the event, as of the last Fetch Data
+let encountersQueue = Promise.resolve(); // the encounter rebuild in progress, if any
+// marks a dropdown value as the top 8 cut from the end of a bracket
+const top8Prefix = "top8:";
 
 // how long to wait after the last edit before pushing the bracket out
 const editDelay = 700;
@@ -289,6 +293,49 @@ function drawNext() {
     bViewNext.value = bracketView.next ?? autoNext();
 }
 
+/**
+ * The dropdown value of a top 8 cut from the final phase, for events that don't
+ * have a top 8 phase of their own
+ * @returns {String} "top8:" plus the final bracket's id, or "" if there's no need for one
+ */
+function cutTop8Id() {
+
+    if (eventEntrants != null && eventEntrants < 8) return "";
+    if (viewPhases.some(phase => /top\s*8/i.test(phase.name))) return "";
+
+    // a final phase split into several brackets has no single top 8 to cut
+    const last = viewPhases[viewPhases.length - 1];
+    if (!last || last.groups.length != 1) return "";
+
+    return top8Prefix + last.groups[0].id;
+
+}
+
+/** The bracket site's id for the picked bracket, without any top 8 marking */
+function pickedGroupId() {
+    return bracketView.group.startsWith(top8Prefix) ?
+        bracketView.group.slice(top8Prefix.length) : bracketView.group;
+}
+
+/**
+ * Keeps just the rounds of a double elimination top 8: the last two winners
+ * rounds, grand finals, and the last four losers rounds
+ * @param {Array} rounds - Every round of the bracket, as fetchGroupBracket() gives them
+ */
+function cutTop8Rounds(rounds) {
+
+    const ofSide = side => rounds.filter(round => round.side == side)
+        .sort((a, b) => Math.abs(a.round) - Math.abs(b.round));
+    const winners = ofSide("winners"), losers = ofSide("losers");
+
+    // not shaped like a double elimination bracket, so there's nothing to cut
+    if (winners.length < 2 || losers.length < 4) return rounds;
+
+    const kept = [...winners.slice(-2), ...ofSide("grand"), ...losers.slice(-4)];
+    return rounds.filter(round => kept.includes(round));
+
+}
+
 /** Fills the bracket dropdown with the loaded phases and their groups */
 function drawGroups() {
 
@@ -312,6 +359,19 @@ function drawGroups() {
             if (group.id == bracketView.group) known = true;
         }
         bViewGroup.appendChild(optGroup);
+    }
+
+    // events without a top 8 phase still get one, cut from the end of their final bracket
+    const top8 = cutTop8Id();
+    if (top8) {
+        const optGroup = document.createElement("optgroup");
+        optGroup.label = "Top 8";
+        const option = document.createElement("option");
+        option.value = top8;
+        option.textContent = "Top 8";
+        optGroup.appendChild(option);
+        bViewGroup.appendChild(optGroup);
+        if (top8 == bracketView.group) known = true;
     }
 
     // a bracket picked in an earlier session, before the phases were loaded
@@ -355,29 +415,22 @@ function drawRounds() {
 
 }
 
-/**
- * Is the bracket picked for the phases overlay a top 8? Same test the overlay
- * uses: a phase called top 8, or the shape of a double elimination top 8
- */
-function viewIsTop8() {
-
-    // nothing picked yet, so nothing to edit
-    if (!bracketView.group) return false;
-
-    const phase = viewPhases.find(phase => phase.groups.some(group => group.id == bracketView.group));
-    const count = side => viewRounds.filter(round => round.side == side).length;
-    const winners = count("winners"), losers = count("losers");
-
-    const named = /top\s*8/i.test(phase?.name || "");
-    const shaped = losers == 4 && (winners == 2 || winners == 3);
-
-    return (named || shaped) && winners >= 2 && losers >= 4 && count("grand") >= 1;
-
+/** Hides the top 8 player editing (round dropdown, presets, players) when the event is too small for one */
+function lockTop8Editor() {
+    // until a fetch says how many entered, assume there's a top 8
+    bracketDiv.classList.toggle("notTop8", eventEntrants != null && eventEntrants < 8);
 }
 
-/** Hides the top 8 player editing (round dropdown, presets, players) until the bracket is a top 8 */
-function lockTop8Editor() {
-    bracketDiv.classList.toggle("notTop8", !viewIsTop8());
+/**
+ * Takes in the results of a Fetch Data: remembers how many entered, then
+ * imports the bracket right away (electron only)
+ * @param {Object} result - Result object from fetchSeeds()
+ */
+export async function importAfterFetch(result) {
+    if (!result.success) return;
+    eventEntrants = result.count;
+    lockTop8Editor();
+    await importFromProvider();
 }
 
 /**
@@ -417,7 +470,8 @@ async function loadPhases() {
 
     // a bracket picked on a different event, left over from an earlier url.
     // start.gg ids are unique site wide, so it would still load if we kept it
-    const known = viewPhases.some(phase => phase.groups.some(group => group.id == bracketView.group));
+    const known = viewPhases.some(phase => phase.groups.some(group => group.id == bracketView.group)) ||
+        bracketView.group == cutTop8Id();
     if (bracketView.group && !known) {
         bracketView.group = "";
         bracketView.round = "all";
@@ -487,11 +541,18 @@ async function fetchViewer(quiet) {
     const api = getActiveImporter();
     if (!api.fetchGroupBracket) return;
 
-    const result = await api.fetchGroupBracket(bracketView.group);
+    const result = await api.fetchGroupBracket(pickedGroupId());
 
     if (!result.success) {
         if (!quiet) displayNotif(`Couldn't load that bracket: ${result.error}`);
         return;
+    }
+
+    // a top 8 cut from the final bracket: only its last rounds, under the
+    // top 8 name so the overlay lays it out like one
+    if (bracketView.group.startsWith(top8Prefix)) {
+        result.rounds = cutTop8Rounds(result.rounds);
+        result.name = "Top 8";
     }
 
     viewerBracket = result;
@@ -830,7 +891,16 @@ async function saveColor() {
  * Creates encounter divs for the bracket section when changing round
  * @param {Boolean} - If we're on the same round as before
  */
-async function createEncounters(sameRound) {
+function createEncounters(sameRound) {
+    // one rebuild at a time: an overlapping one (say, an auto import tick) would
+    // kill the shaders of players still loading and mix both into bracketPlayers,
+    // leaving the update button stuck on "loading characters"
+    const run = encountersQueue.then(() => buildEncounters(sameRound));
+    encountersQueue = run.catch(() => {});
+    return run;
+}
+
+async function buildEncounters(sameRound) {
 
     // first of all, save current contents to object
     if (!sameRound && bracketPlayers[0]) { // not same as previous round and not first run
@@ -895,7 +965,8 @@ async function createEncounters(sameRound) {
         bracketPlayers[i].setTag(bracketData[bRoundSelect.value][i].tag);
         bracketPlayers[i].setScore(bracketData[bRoundSelect.value][i].score);
         await bracketPlayers[i].charChange(bracketData[bRoundSelect.value][i].character);
-        bracketPlayers[i].skinChange(bracketData[bRoundSelect.value][i].skin);
+        // waited on so the next rebuild can't unload this shader mid recolor
+        await bracketPlayers[i].skinChange(bracketData[bRoundSelect.value][i].skin);
         bracketPlayers[i].setFinderListeners();
 
         if (i%2 == 0) {
@@ -955,7 +1026,10 @@ async function copyFromGameToBracket() {
  * @param {Boolean} startup - Won't show a "bracket updated" notification if true
  */
 export async function updateBracket(startup) {
-    
+
+    // a half built round would save half loaded players over the real ones
+    await encountersQueue;
+
     // save the current info
     updateLocalBracket();
     bracketData.colors = {...bracketColors};
@@ -965,6 +1039,7 @@ export async function updateBracket(startup) {
     bracketData.viewPhases = viewPhases;
     bracketData.viewRounds = viewRounds;
     bracketData.viewAutoNext = autoNext();
+    bracketData.eventEntrants = eventEntrants;
 
     // time to send it away
     if (inside.electron) {
@@ -1092,6 +1167,7 @@ export async function replaceBracket(newBracket) {
         viewPhases = newBracket.viewPhases ?? viewPhases;
         viewRounds = newBracket.viewRounds ?? viewRounds;
         viewAutoNext = newBracket.viewAutoNext ?? viewAutoNext;
+        if (newBracket.eventEntrants !== undefined) eventEntrants = newBracket.eventEntrants;
         setView();
     }
     if (inside.electron) {

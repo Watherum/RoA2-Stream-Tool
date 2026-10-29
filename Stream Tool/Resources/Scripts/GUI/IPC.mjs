@@ -1,4 +1,4 @@
-import { importBracket, replaceBracket, updateBracket } from './Bracket.mjs';
+import { importAfterFetch, importBracket, replaceBracket, updateBracket } from './Bracket.mjs';
 import { deletePreset, rescanPresetCache, savePreset } from './File System.mjs';
 import { commFinder } from './Finder/Comm Finder.mjs';
 import { playerFinder } from './Finder/Player Finder.mjs';
@@ -194,6 +194,8 @@ ipc.on('remoteGuiData', async (event, data) => {
             ipc.send("sendData", JSON.stringify({id: "remoteGUI", message: "updatePresets"}, null, 2));
         }
         ipc.send("sendData", JSON.stringify({id: "remoteGUI", message: "importFetchResult", ...result}, null, 2));
+        // the bracket comes along with the players, and reaches remotes as a bracket update
+        await importAfterFetch(result);
 
     } else if (jsonData.message == "remoteBracketImport") {
 

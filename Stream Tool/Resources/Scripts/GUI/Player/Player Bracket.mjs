@@ -116,15 +116,17 @@ export class PlayerBracket extends Player {
             this.skinSel.innerHTML = skin.name;
         }
 
-        // check if an icon for this skin exists, recolor if not
-        await this.setIconImg();
-
         // store custom data for remote gui shenanigans
         this.skinHex = skin.hex;
         this.customImg = skin.customImg;
 
-        // notify the user that we done here
-        this.setReady(true);
+        try {
+            // check if an icon for this skin exists, recolor if not
+            await this.setIconImg();
+        } finally {
+            // a failed icon can't leave the update button stuck on loading
+            this.setReady(true);
+        }
 
     }
 

@@ -242,6 +242,9 @@ class GuiSettings {
                 if (config.api.setEvent) config.api.setEvent(this.#importEvent.value);
                 const result = await config.api.fetchSeeds();
                 await this.handleImportResult(result);
+                // the bracket comes along with the players
+                const { importAfterFetch } = await import("./Bracket.mjs");
+                await importAfterFetch(result);
             } else {
                 const remote = await import("./Remote Requests.mjs");
                 remote.sendRemoteData({
